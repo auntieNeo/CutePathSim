@@ -1,8 +1,8 @@
 CONFIG += debug
 message($$CONFIG)
 VERSION = 0.0.1
-HEADERS += board.h boardView.h component.h connecion.h mainWindow.h
-SOURCES += board.cpp boardView.cpp component.h connection.h main.cpp mainWindow.cpp
+HEADERS += board.h boardView.h component.h connection.h mainWindow.h
+SOURCES += board.cpp boardView.cpp component.cpp connection.cpp main.cpp mainWindow.cpp
 #FORMS += mainWindow.ui
 #TRANSLATIONS += cutePathSim_ja.ts
 QT += svg
