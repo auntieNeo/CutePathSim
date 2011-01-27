@@ -1,0 +1,4 @@
+namespace Kanagram
+{
+  const int BOARD_MARGIN = 20, TILE_MARGIN = 10, TILE_WIDTH = 100, TILE_HEIGHT = 100, TILE_HOLDER_HEIGHT = 0;
+}
