@@ -3,7 +3,7 @@
 
 #include <QGraphicsView>
 
-namespace Kanagram
+namespace CutePathSim
 {
   class BoardView : public QGraphicsView
   {

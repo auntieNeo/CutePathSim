@@ -1,6 +1,6 @@
 #include "boardView.h"
 
-namespace Kanagram
+namespace CutePathSim
 {
   BoardView::BoardView(QWidget *parent) : QGraphicsView(parent)
   {
