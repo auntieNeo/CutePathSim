@@ -12,7 +12,7 @@ namespace CutePathSim
       class Input
       {
         public:
-          Input(const QString &name, int width, InputCallback inputCallback, Component *m_component);
+          Input(const QString &name, int width, char *inputBuffer, Component *m_component);
           ~Input();
 
           QString name() { return m_name; }
@@ -60,6 +60,8 @@ namespace CutePathSim
 
       Input *getInput(const &QString name);
       Input *getOutput(const &QString name);
+
+      virtual void run() = 0;
 
     protected:
       void mousePressEvent(QGraphicsSceneMouseEvent *event);
