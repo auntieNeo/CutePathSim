@@ -13,9 +13,24 @@ namespace CutePathSim
       Connection(const QString &name, QGraphicsItem *parent = 0);
       ~Connection();
 
+      struct Input
+      {
+        public:
+          // function pointer here :P
+          QString name;
+      };
+
+      struct Output
+      {
+        public:
+          // function pointer here :P
+          QString name;
+      }
+
     private:
-      QHash<Input *, QString>;
-      QHash<Output *, QString>;
+      QHash</*function pointer here*/, QString> inputs;
+      QHash</*function pointer here*/, QString> outputs;
+      QHash<
   };
 }
 
