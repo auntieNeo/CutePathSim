@@ -1,7 +1,11 @@
 #ifndef COMPONENT_H_
 #define COMPONENT_H_
 
+#include <QGraphicsItem>
 #include <QHash>
+#include <QMutex>
+#include <QMutexLocker>
+#include <QString>
 
 namespace CutePathSim
 {
@@ -9,6 +13,7 @@ namespace CutePathSim
   {
     typedef int (Component::*InputCallback) (char *data, int width);
     public:
+      class Output;
       class Input
       {
         public:
@@ -17,8 +22,7 @@ namespace CutePathSim
 
           QString name() { return m_name; }
           int width() { return m_width; }
-          char *inputBuffer() { return m_inputBuffer; }
-          void unlockInputMutex();
+          void writeToInput(char *data);
           void waitInputMutex();
           Component *component() { return m_component; }
           Output *connection() { return m_connection; }
@@ -27,8 +31,8 @@ namespace CutePathSim
           QString m_name;
           int m_width;
           char *m_inputBuffer;
-          QMutex m_inputBufferMutex;
-          QMutexLocker m_inputBufferMutexLocker;
+          QMutex *m_inputBufferMutex;
+          QMutexLocker *m_inputBufferMutexLocker;
           Component *m_component;
           Output *m_connection;
       };
@@ -42,7 +46,7 @@ namespace CutePathSim
           // TODO: Add a connect/disconnect method?
           QString name() { return m_name; }
           int width() { return m_width; }
-          Component *component { return m_component; }
+          Component *component() { return m_component; }
           QList<Input *> connections() { return m_connections; }
 
         private:
@@ -55,11 +59,11 @@ namespace CutePathSim
       Component(QGraphicsItem *parent = 0);
       ~Component();
 
-      QList<Input> getInputs();
-      QList<Outputs> getOutputs();
+      QList<Input *> getInputs() { return m_inputs.values(); }
+      QList<Output *> getOutputs() { return m_outputs.values(); }
 
-      Input *getInput(const &QString name);
-      Input *getOutput(const &QString name);
+      Input *getInputs(const QString &name);
+      Input *getOutputs(const QString &name);
 
       virtual void run() = 0;
 
@@ -72,9 +76,8 @@ namespace CutePathSim
 
     private:
 
-      QHash<Input *, QString>;
-      QHash<Output *, QString>;
-      QList<pointertocomponent pointertomethod
+      QHash<QString, Input *> m_inputs;
+      QHash<QString, Output *> m_outputs;
   };
 }
 

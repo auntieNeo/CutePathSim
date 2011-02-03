@@ -9,7 +9,7 @@ namespace CutePathSim
    * \class Component
    * Models a component of a digital system with inputs and outputs.
    */
-  Component::Component(int x, int y, QGraphicsItem *parent) : QGraphicsSvgItem(parent)
+  Component::Component(QGraphicsItem *parent) : QGraphicsItem(parent)
   {
   }
 
@@ -17,31 +17,13 @@ namespace CutePathSim
   {
   }
 
-  QList<Input *> Component::getInputs()
-  {
-    // TODO
-  }
-
-  QList<Outputs *> Component::getOutputs()
-  {
-    // TODO
-  }
-
   void Component::mousePressEvent(QGraphicsSceneMouseEvent *)
   {
   }
 
-  void Component::mouseDragEvent(QGraphicsSceneDragDropEvent *event)
+  void Component::mouseDragEvent(QGraphicsSceneDragDropEvent * /*event*/)
   {
     // TODO: implement dragging of components on the graphics scene
-  }
-
-  void Component::mousePressEvent(QGraphicsSceneMouseEvent *event)
-  {
-  }
-
-  void Component::mouseDragEvent(QGraphicsSceneDragDropEvent *event)
-  {
   }
 
   /**
@@ -50,8 +32,9 @@ namespace CutePathSim
    * Component does \b not assume ownership of \a input. The derived class is responsible for storing inputs and outputs.
    * \sa addOutput()
    */
-  void Component::addInput(Input *input, const QString &name)
+  void Component::addInput(Component::Input * /*input*/)
   {
+    // TODO
   }
 
   /**
@@ -60,8 +43,9 @@ namespace CutePathSim
    * Component does \b not assume ownership of \a output. The derived class is responsible for managing inputs and outputs.
    * \sa addInput()
    */
-  void Component::addOutput(Output *output, const QString &name)
+  void Component::addOutput(Component::Output *output)
   {
+    // TODO
   }
 
   /**
@@ -78,8 +62,10 @@ namespace CutePathSim
   {
     m_name = name;
     m_width = width;
-    m_inputBuffer = inputCallback;
+    m_inputBuffer = new char[width / 8 + ((width % 8) ? 1 : 0)];
     m_component = component;
+    m_inputBufferMutex = new QMutex();
+    m_inputBufferMutexLocker = new QMutexLocker(m_inputBufferMutex);
   }
 
   Component::Input::~Input()
@@ -98,19 +84,9 @@ namespace CutePathSim
    */
 
   /**
-   * \fn Component::Input::inputBuffer()
-   * Returns the buffer to be filled when the input recieves data.
-   * \note This is the kind of thing that needs a mutex if we're going to have this threaded! I thought simpler might be better in this case, since we are modeling raw bits. Enough Q_ASSERTS and there shouldn't be any segfaults. *crosses fingers*
+   * \fn Component::Input::writeToInput()
+   * Writes to the input on the component. This method is thread safe.
    */
-
-  /**
-   * Unlocks the mutex placed on the input buffer, basically telling the recipient's thread that it's now okay to read the input buffer.
-   * This should be called from the output thread after the input buffer has been filled.
-   */
-  void Component::Input::unlockInputMutex()
-  {
-    // TODO
-  }
 
   /**
    * Waits for (and then locks) the mutex, allowing the recipiant thread to read the input buffer.
@@ -130,5 +106,15 @@ namespace CutePathSim
   /**
    * \fn Component::Input::connection()
    * Returns a pointer to the output that is connected to this input.
+   */
+
+  /**
+   * \class Component::Output
+   * The Output class represents an output interface on a Component.
+   */
+
+  /**
+   * \fn Component::Input::name()
+   * Returns the name of the output.
    */
 }

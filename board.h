@@ -7,7 +7,7 @@
 
 namespace CutePathSim
 {
-  class Tile;
+  class Component;
 
   class Board : public QGraphicsScene
   {
