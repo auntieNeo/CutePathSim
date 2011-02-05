@@ -62,8 +62,8 @@ namespace CutePathSim
       QList<Input *> getInputs() { return m_inputs.values(); }
       QList<Output *> getOutputs() { return m_outputs.values(); }
 
-      Input *getInputs(const QString &name);
-      Input *getOutputs(const QString &name);
+      Input *getInput(const QString &name);
+      Output *getOutput(const QString &name);
 
       virtual void run() = 0;
 

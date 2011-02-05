@@ -17,6 +17,40 @@ namespace CutePathSim
   {
   }
 
+  /**
+   * \fn getInputs()
+   * Returns a list containing pointers to the inputs owned by the component.
+   *
+   * \sa getInput() getOutputs()
+   */
+
+  /**
+   * \fn getOutputs()
+   * Returns a list containing pointers to the outputs owned by the component.
+   *
+   * \sa getOutput() getInputs()
+   */
+
+  /**
+   * Returns a pointer to the input associated with the \a name.
+   *
+   * \sa getInputs() getOutput()
+   */
+  Component::Input *Component::getInput(const QString &name)
+  {
+    return m_inputs.value(name);
+  }
+
+  /**
+   * Returns a pointer to the output associated with the \a name.
+   *
+   * \sa getOutputs() getInput()
+   */
+  Component::Output *Component::getOutput(const QString &name)
+  {
+    return m_outputs.value(name);
+  }
+
   void Component::mousePressEvent(QGraphicsSceneMouseEvent *)
   {
   }
@@ -32,9 +66,9 @@ namespace CutePathSim
    * Component does \b not assume ownership of \a input. The derived class is responsible for storing inputs and outputs.
    * \sa addOutput()
    */
-  void Component::addInput(Component::Input * /*input*/)
+  void Component::addInput(Component::Input * input)
   {
-    // TODO
+    m_inputs.insert(input->name(), input);
   }
 
   /**
@@ -45,8 +79,13 @@ namespace CutePathSim
    */
   void Component::addOutput(Component::Output *output)
   {
-    // TODO
+    m_outputs.insert(output->name(), output);
   }
+
+  /**
+   * \fn run()
+   * Pure virtual method that is called from the component's work thread. This is where derived classes should do their processing.
+   */
 
   /**
    * \class Component::Input
@@ -54,9 +93,9 @@ namespace CutePathSim
    */
 
   /**
-   * Constructs an Input class with the name \i name. 
+   * Constructs an Input class with the name \a name. 
    *
-   * The constructed object represents an input that accepts \i width bits and uses the buffer \i inputBuffer to recieve input, with the object \i component as the recipient.
+   * The constructed object represents an input that accepts \a width bits and uses the buffer \a inputBuffer to recieve input, with the object \a component as the recipient.
    */
   Component::Input::Input(const QString &name, int width, char *inputBuffer, Component *component)
   {
