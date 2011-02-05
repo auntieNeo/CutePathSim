@@ -22,8 +22,7 @@ namespace CutePathSim
 
           QString name() { return m_name; }
           int width() { return m_width; }
-          void writeToInput(char *data);
-          void waitInputMutex();
+          void writeToInput(const char *data);
           Component *component() { return m_component; }
           Output *connection() { return m_connection; }
 
@@ -31,8 +30,6 @@ namespace CutePathSim
           QString m_name;
           int m_width;
           char *m_inputBuffer;
-          QMutex *m_inputBufferMutex;
-          QMutexLocker *m_inputBufferMutexLocker;
           Component *m_component;
           Output *m_connection;
       };

@@ -103,8 +103,6 @@ namespace CutePathSim
     m_width = width;
     m_inputBuffer = new char[width / 8 + ((width % 8) ? 1 : 0)];
     m_component = component;
-    m_inputBufferMutex = new QMutex();
-    m_inputBufferMutexLocker = new QMutexLocker(m_inputBufferMutex);
   }
 
   Component::Input::~Input()
@@ -123,18 +121,13 @@ namespace CutePathSim
    */
 
   /**
-   * \fn Component::Input::writeToInput()
-   * Writes to the input on the component. This method is thread safe.
+   * Writes to the input buffer for this input.
+   *
+   * This should be called for each input on each cycle, otherwise the input buffer won't change for that cycle!
    */
-
-  /**
-   * Waits for (and then locks) the mutex, allowing the recipiant thread to read the input buffer.
-   * \fixme There may or may not be a need for another mutex to prevent the input buffer from being changed after it's locked. I'm not certain how the control component is supposed to work, or if it's going to synchronise the threads or something. Some of this threaded stuff is beyond me, but I write it anyway. :P
-   * \note These mutexes are the reason that, even though this is threaded, the threads will never give us any real performance benefit, and will probably only hurt us. This is a common pitfall with threads; if there is a lot of message passing between objects, then the problem probably isn't very parallel, and there will be a lot of threads waiting on threads. The reason I decided to go with threads was because it should avoid dealing with components waiting on inputs from components that haven't been called yet, and potentially save me some graph theory.
-   */
-  void Component::Input::waitInputMutex()
+  void Component::Input::writeToInput(const char *data)
   {
-    // TODO
+    memcpy(m_inputBuffer, data, m_width);
   }
 
   /**
