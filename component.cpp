@@ -51,6 +51,15 @@ namespace CutePathSim
     return m_outputs.value(name);
   }
 
+  QRectF Component::boundingRect() const
+  {
+    // TODO: add up margins and the size of the child connections
+  }
+
+  void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0)
+  {
+  }
+
   void Component::mousePressEvent(QGraphicsSceneMouseEvent *)
   {
   }
@@ -97,9 +106,8 @@ namespace CutePathSim
    *
    * The constructed object represents an input that accepts \a width bits, with the object \a component as the recipient.
    */
-  Component::Input::Input(const QString &name, int width, Component *component)
+  Component::Input::Input(const QString &name, int width, Component *component) : Interface(name, component)
   {
-    m_name = name;
     m_width = width;
     m_bufferSize = width / 8 + ((width % 8) ? 1 : 0);
     m_inputBuffer = new char[m_bufferSize];
@@ -111,11 +119,6 @@ namespace CutePathSim
     disconnect();
     delete m_inputBuffer;
   }
-
-  /**
-   * \fn Component::Input::name()
-   * Returns the name of the input.
-   */
 
   /**
    * \fn Component::Input::width()
@@ -187,11 +190,11 @@ namespace CutePathSim
    *
    * The constructed object represents an output that sends out \a width bits, with the object \a component as the sender.
    */
-  Component::Output::Output(const QString &name, int width, Component *m_component)
+  Component::Output::Output(const QString &name, int width, Component *component) : Interface(name, component)
   {
-    m_name = name;
     m_width = 1;
     m_bufferSize = width / 8 + ((width % 8) ? 1 : 0);
+    m_component = component;
   }
 
   Component::Output::~Output()
@@ -201,11 +204,6 @@ namespace CutePathSim
       input->disconnect();
     }
   }
-
-  /**
-   * \fn Component::Output::name()
-   * Returns the name of the output.
-   */
 
   /**
    * \fn Component::Output::width()
