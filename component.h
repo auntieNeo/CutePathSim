@@ -17,18 +17,28 @@ namespace CutePathSim
       class Input
       {
         public:
-          Input(const QString &name, int width, char *inputBuffer, Component *m_component);
+          friend class Output;
+
+          Input(const QString &name, int width, Component *m_component);
           ~Input();
 
           QString name() { return m_name; }
           int width() { return m_width; }
-          void writeToInput(const char *data);
           Component *component() { return m_component; }
           Output *connection() { return m_connection; }
+          void connect(Output *output);
+          void disconnect();
+
+        protected:
+          // to avoid recursions with Output::disconnect()
+          void m_disconnect() { m_connection = 0; }
+          // to avoid recursions with Output::disconnect()
+          void m_connect(Output *output) { m_connection = output; }
+          void writeToInput(const char *data) { memcpy(m_inputBuffer, data, m_bufferSize); }
 
         private:
           QString m_name;
-          int m_width;
+          int m_width, m_bufferSize;
           char *m_inputBuffer;
           Component *m_component;
           Output *m_connection;
@@ -37,6 +47,8 @@ namespace CutePathSim
       class Output
       {
         public:
+          friend class Input;
+
           Output(const QString &name, int width, Component *m_component);
           ~Output();
 
@@ -44,13 +56,22 @@ namespace CutePathSim
           QString name() { return m_name; }
           int width() { return m_width; }
           Component *component() { return m_component; }
-          QList<Input *> connections() { return m_connections; }
+          QSet<Input *> connections() { return m_connections; }
+          void connect(Input *input);
+          void disconnect(Input *input);
+          void write(const char *data);
+
+        protected:
+          // to avoid recursions with Input::connect()
+          void m_connect(Input *input) { m_connections.insert(input); }
+          // to avoid recursions with Input::disconnect()
+          void m_disconnect(Input *input) { m_connections.remove(input); }
 
         private:
           QString m_name;
           int m_width;
           Component *m_component;
-          QList<Input *> m_connections;
+          QSet<Input *> m_connections;
       };
 
       Component(QGraphicsItem *parent = 0);

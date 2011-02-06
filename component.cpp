@@ -97,11 +97,12 @@ namespace CutePathSim
    *
    * The constructed object represents an input that accepts \a width bits and uses the buffer \a inputBuffer to recieve input, with the object \a component as the recipient.
    */
-  Component::Input::Input(const QString &name, int width, char *inputBuffer, Component *component)
+  Component::Input::Input(const QString &name, int width, Component *component)
   {
     m_name = name;
     m_width = width;
-    m_inputBuffer = new char[width / 8 + ((width % 8) ? 1 : 0)];
+    m_bufferSize = width / 8 + ((width % 8) ? 1 : 0);
+    m_inputBuffer = new char[m_bufferSize];
     m_component = component;
   }
 
@@ -121,18 +122,8 @@ namespace CutePathSim
    */
 
   /**
-   * Writes to the input buffer for this input.
-   *
-   * This should be called for each input on each cycle, otherwise the input buffer won't change for that cycle!
-   */
-  void Component::Input::writeToInput(const char *data)
-  {
-    memcpy(m_inputBuffer, data, m_width);
-  }
-
-  /**
    * \fn Component::Input::component()
-   * Returns a pointer to the component this input corresponds to, the recipient of the input.
+   * Returns a pointer to the component this input corresponds to, the recipient of the data.
    */
 
   /**
@@ -141,12 +132,88 @@ namespace CutePathSim
    */
 
   /**
+   * Connects this input to \a output. Any existing connection is disconnected, as inputs can only recieve from one output at a time.
+   */
+  void Component::Input::connect(Output *output)
+  {
+    disconnect();
+
+    if(output == 0)
+      return;
+
+    output->m_connect(this);
+    m_connect(output);
+  }
+
+  /**
+   * Disconnects the input.
+   * \fixme I'm not even sure if this should even be implemented. As of now, the graph assumes that each component depends upon each of it's inputs during the topological sort, so for a disconnected input to make any sense, there should be a "dependant" property for each input, and proper handling of unconnected inputs.
+   */
+  void Component::Input::disconnect()
+  {
+    if(m_connection)
+    {
+      m_connection->m_disconnect(this);
+      m_disconnect();
+    }
+  }
+
+  /**
    * \class Component::Output
    * The Output class represents an output interface on a Component.
    */
 
   /**
-   * \fn Component::Input::name()
+   * \fn Component::Output::name()
    * Returns the name of the output.
    */
+
+  /**
+   * \fn Component::Output::width()
+   * Returns the number of bits that the output sends out.
+   */
+
+  /**
+   * \fn Component::Output::component()
+   * Returns a pointer to the component this output corresponds to, the sender of the data.
+   */
+
+  /**
+   * Connects this output to \a input.
+   */
+  void Component::Output::connect(Input *input)
+  {
+    if(input == 0)
+      return;
+
+    m_connect(input);
+    input->m_connect(this);
+  }
+
+  /**
+   * Disconnects \a input from this output.
+   */
+  void Component::Output::disconnect(Input *input)
+  {
+    if(m_connections.contains(input))
+    {
+      input->m_disconnect();
+      m_disconnect(input);
+    }
+  }
+
+  /**
+   * Writes \a data to the input buffer of all of the inputs that this output is connected to.
+   *
+   * This should be called for each output on each cycle, otherwise the receiving input buffers will stay the same as they were the last cycle!
+   *
+   * Classes calling write() should politely make sure that any remainder bits in \a data (i.e. bits greater than width() if width() % 8 != 0) are zeroed out.
+   */
+  void Component::Output::write(const char *data)
+  {
+    foreach(Input *input, m_connections)
+    {
+      input->writeToInput(data);
+    }
+  }
 }
