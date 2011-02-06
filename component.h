@@ -3,8 +3,7 @@
 
 #include <QGraphicsItem>
 #include <QHash>
-#include <QMutex>
-#include <QMutexLocker>
+#include <QSet>
 #include <QString>
 
 namespace CutePathSim
@@ -77,7 +76,7 @@ namespace CutePathSim
       };
 
       Component(QGraphicsItem *parent = 0);
-      ~Component();
+      virtual ~Component();
 
       QList<Input *> getInputs() { return m_inputs.values(); }
       QList<Output *> getOutputs() { return m_outputs.values(); }

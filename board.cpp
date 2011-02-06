@@ -9,6 +9,8 @@ namespace CutePathSim
   Board::Board(QObject *parent) : QGraphicsScene(parent)
   {
     setBackgroundBrush(QBrush(Qt::darkGreen));
+
+    // FIXME: remove this test code
   }
 
   Board::~Board()
