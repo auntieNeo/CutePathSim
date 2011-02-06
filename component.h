@@ -28,11 +28,13 @@ namespace CutePathSim
           Output *connection() { return m_connection; }
           void connect(Output *output);
           void disconnect();
+          void read(char *buffer);
+          int bufferSize() { return m_bufferSize; }
 
         protected:
           // to avoid recursions with Output::disconnect()
           void m_disconnect() { m_connection = 0; }
-          // to avoid recursions with Output::disconnect()
+          // to avoid recursions with Output::connect()
           void m_connect(Output *output) { m_connection = output; }
           void writeToInput(const char *data) { memcpy(m_inputBuffer, data, m_bufferSize); }
 
@@ -52,7 +54,6 @@ namespace CutePathSim
           Output(const QString &name, int width, Component *m_component);
           ~Output();
 
-          // TODO: Add a connect/disconnect method?
           QString name() { return m_name; }
           int width() { return m_width; }
           Component *component() { return m_component; }
@@ -60,6 +61,7 @@ namespace CutePathSim
           void connect(Input *input);
           void disconnect(Input *input);
           void write(const char *data);
+          int bufferSize() { return m_bufferSize; }
 
         protected:
           // to avoid recursions with Input::connect()
@@ -69,7 +71,7 @@ namespace CutePathSim
 
         private:
           QString m_name;
-          int m_width;
+          int m_width, m_bufferSize;
           Component *m_component;
           QSet<Input *> m_connections;
       };

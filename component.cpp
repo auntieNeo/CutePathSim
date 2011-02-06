@@ -74,7 +74,7 @@ namespace CutePathSim
   /**
    * Adds an output to the list of outputs used by the component.
    *
-   * Component does \b not assume ownership of \a output. The derived class is responsible for managing inputs and outputs.
+   * Component does \b not assume ownership of \a output. The derived class is responsible for storing inputs and outputs.
    * \sa addInput()
    */
   void Component::addOutput(Component::Output *output)
@@ -95,7 +95,7 @@ namespace CutePathSim
   /**
    * Constructs an Input class with the name \a name. 
    *
-   * The constructed object represents an input that accepts \a width bits and uses the buffer \a inputBuffer to recieve input, with the object \a component as the recipient.
+   * The constructed object represents an input that accepts \a width bits, with the object \a component as the recipient.
    */
   Component::Input::Input(const QString &name, int width, Component *component)
   {
@@ -108,7 +108,8 @@ namespace CutePathSim
 
   Component::Input::~Input()
   {
-    // TODO: Maybe remove this from m_connection's own list of connections? To avoid any nasty segfaults if m_connection tries to connect and dereference us.
+    disconnect();
+    delete m_inputBuffer;
   }
 
   /**
@@ -147,21 +148,59 @@ namespace CutePathSim
 
   /**
    * Disconnects the input.
-   * \fixme I'm not even sure if this should even be implemented. As of now, the graph assumes that each component depends upon each of it's inputs during the topological sort, so for a disconnected input to make any sense, there should be a "dependant" property for each input, and proper handling of unconnected inputs.
    */
   void Component::Input::disconnect()
   {
-    if(m_connection)
-    {
-      m_connection->m_disconnect(this);
-      m_disconnect();
-    }
+    if(m_connection == 0)
+      return;
+
+    m_connection->m_disconnect(this);
+    m_disconnect();
   }
+
+  /**
+   * Copies the data stored in the input buffer to \a buffer.
+   *
+   * \warning \a buffer should be at least as large as bufferSize().
+   *
+   * \sa bufferSize()
+   */
+  void Component::Input::read(char *buffer)
+  {
+    memcpy(buffer, m_inputBuffer, m_bufferSize);
+  }
+
+  /**
+   * \fn Component::Input::bufferSize()
+   * Returns the size of the input buffer used by read().
+   *
+   * \sa read()
+   */
 
   /**
    * \class Component::Output
    * The Output class represents an output interface on a Component.
    */
+
+  /**
+   * Constructs an Input class with the name \a name. 
+   *
+   * The constructed object represents an output that sends out \a width bits, with the object \a component as the sender.
+   */
+  Component::Output::Output(const QString &name, int width, Component *m_component)
+  {
+    m_name = name;
+    m_width = 1;
+    m_bufferSize = width / 8 + ((width % 8) ? 1 : 0);
+  }
+
+  Component::Output::~Output()
+  {
+    foreach(Input *input, m_connections)
+    {
+      input->disconnect();
+    }
+  }
 
   /**
    * \fn Component::Output::name()
@@ -195,6 +234,9 @@ namespace CutePathSim
    */
   void Component::Output::disconnect(Input *input)
   {
+    if(input == 0)
+      return;
+
     if(m_connections.contains(input))
     {
       input->m_disconnect();
@@ -205,9 +247,13 @@ namespace CutePathSim
   /**
    * Writes \a data to the input buffer of all of the inputs that this output is connected to.
    *
-   * This should be called for each output on each cycle, otherwise the receiving input buffers will stay the same as they were the last cycle!
+   * \warning \a data should be at least as large as bufferSize().
+   *
+   * \warning This method should be called for each output on each cycle, otherwise the receiving input buffers will stay the same as they were the last cycle!
    *
    * Classes calling write() should politely make sure that any remainder bits in \a data (i.e. bits greater than width() if width() % 8 != 0) are zeroed out.
+   *
+   * \sa bufferSize()
    */
   void Component::Output::write(const char *data)
   {
@@ -216,4 +262,11 @@ namespace CutePathSim
       input->writeToInput(data);
     }
   }
+
+  /**
+   * \fn Component::Output::bufferSize()
+   * Returns the size of the data sent by write().
+   *
+   * \sa write()
+   */
 }
