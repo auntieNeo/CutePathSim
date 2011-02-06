@@ -13,17 +13,17 @@ namespace CutePathSim
   {
     m_fileMenu = menuBar()->addMenu(tr("&File"));
 
-    // populate the new game menu
+    // populate the menu bar
     m_newSimulationMenu = m_fileMenu->addMenu(tr("&New Simulation"));
     m_openSimulationMenu = m_fileMenu->addMenu(tr("&Open Simulation..."));
     connect(m_newSimulationMenu, SIGNAL(triggered()), this, SLOT(newSimulation()));
     connect(m_openSimulationMenu, SIGNAL(triggered()), this, SLOT(openSimulation()));
 
-    // add the board view
-    m_boardView = new BoardView(this);
-    m_board = new Board();
-    m_boardView->setScene(m_board);
-    setCentralWidget(m_boardView);
+    // add the graph view
+    m_componentGraphView = new ComponentGraphView(this);
+    m_componentGraph = new ComponentGraph();
+    m_componentGraphView->setScene(m_componentGraph);
+    setCentralWidget(m_componentGraphView);
   }
 
   MainWindow::~MainWindow()

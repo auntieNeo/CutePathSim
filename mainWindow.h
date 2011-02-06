@@ -6,8 +6,8 @@
 
 namespace CutePathSim
 {
-  class Board;
-  class BoardView;
+  class ComponentGraph;
+  class ComponentGraphView;
 
   class MainWindow : public QMainWindow
   {
@@ -23,8 +23,8 @@ namespace CutePathSim
 
     private:
       QMenu *m_fileMenu, *m_newSimulationMenu, *m_openSimulationMenu;
-      Board *m_board;
-      BoardView *m_boardView;
+      ComponentGraph *m_componentGraph;
+      ComponentGraphView *m_componentGraphView;
   };
 }
 
