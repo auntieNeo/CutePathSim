@@ -2,7 +2,7 @@
 #define COMPONENT_H_
 
 #include <QGraphicsItem>
-#include <QHash>
+#include <QMap>
 #include <QSet>
 #include <QString>
 
@@ -102,10 +102,16 @@ namespace CutePathSim
 
     private:
       // style options for drawing the components
+      // FIXME: I don't know why the following code manages to link without these statics being defined somewhere.
       static const qreal BORDER_BRUSH_WIDTH = 2;
-      static const qreal LEFT_MARGIN = 20, RIGHT_MARGIN = 20, TOP_MARGIN = 35, BOTTOM_MARGIN = 20, CONNECTION_MARGIN = 7;
-      QHash<QString, Input *> m_inputs;
-      QHash<QString, Output *> m_outputs;
+      static const qreal LEFT_MARGIN = 20, RIGHT_MARGIN = 20, TOP_MARGIN = 35, BOTTOM_MARGIN = 20, INTERFACE_MARGIN = 7;
+      static const qreal FONT_SIZE;
+
+      QMap<QString, Input *> m_inputs;
+      QMap<QString, Output *> m_outputs;
+
+      void repositionInterfaces();
+      qreal maxInterfaceWidth() const;
   };
 }
 

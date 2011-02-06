@@ -1,3 +1,7 @@
+#include <QApplication>
+#include <QFontMetrics>
+#include <QPainter>
+
 #include "interface.h"
 
 namespace CutePathSim
@@ -15,6 +19,7 @@ namespace CutePathSim
   Interface::Interface(const QString &name, QGraphicsItem *parent) : QGraphicsItem(parent)
   {
     m_name = name;
+    m_textWidth = QApplication::fontMetrics().size(Qt::TextSingleLine, m_name).width();
   }
 
   Interface::~Interface()
@@ -28,11 +33,32 @@ namespace CutePathSim
 
   QRectF Interface::boundingRect() const
   {
-    // TODO
-    return QRect(0,0,0,0);
+    return QRect(-LEFT_MARGIN - m_textWidth / 2, -TOP_MARGIN - FONT_SIZE / 2, LEFT_MARGIN + m_textWidth + RIGHT_MARGIN, TOP_MARGIN + FONT_SIZE + BOTTOM_MARGIN);
   }
 
   void Interface::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
   {
+    QLinearGradient gradient(0, 0, 0, boundingRect().height());
+    gradient.setColorAt(0, Qt::white);
+    gradient.setColorAt(1, color());
+    QBrush gradientBrush(gradient);
+    painter->setBrush(gradientBrush);
+    QPen borderPen;
+    borderPen.setWidth(BORDER_PEN_WIDTH);
+    painter->setPen(borderPen);
+    QRect drawingRect(boundingRect().x() + BORDER_PEN_WIDTH / 2, boundingRect().y() + BORDER_PEN_WIDTH / 2, boundingRect().width() - BORDER_PEN_WIDTH, boundingRect().height() - BORDER_PEN_WIDTH);
+    painter->drawRoundedRect(drawingRect, 5, 5);
+    // TODO: move this font stuff somewhere else
+    QFont font("Helvetica");
+    font.setStyleStrategy(QFont::PreferAntialias);
+    painter->setFont(font);
+    painter->drawText(drawingRect, Qt::AlignCenter, name());
   }
+
+  const qreal Interface::BORDER_PEN_WIDTH;
+  const qreal Interface::LEFT_MARGIN;
+  const qreal Interface::RIGHT_MARGIN;
+  const qreal Interface::TOP_MARGIN;
+  const qreal Interface::BOTTOM_MARGIN;
+  const qreal Interface::FONT_SIZE;
 }

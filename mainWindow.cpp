@@ -4,8 +4,7 @@
 #include "componentGraph.h"
 #include "componentGraphView.h"
 #include "mainWindow.h"
-
-#define TEST 0
+#include "mux.h"
 
 namespace CutePathSim
 {
@@ -24,10 +23,22 @@ namespace CutePathSim
     m_componentGraph = new ComponentGraph();
     m_componentGraphView->setScene(m_componentGraph);
     setCentralWidget(m_componentGraphView);
+
+    // FIXME: remove this test code
+    // add some components to the graph
+    m_componentGraph->addComponent(new Mux());
   }
 
   MainWindow::~MainWindow()
   {
+    // FIXME: do these menus even need to be deleted?
+    /*
+    delete m_fileMenu;
+    delete m_newSimulationMenu;
+    delete m_openSimulationMenu;
+    */
+    delete m_componentGraphView;
+    delete m_componentGraph;
   }
 
   void MainWindow::newSimulation()

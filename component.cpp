@@ -1,4 +1,5 @@
 #include <QGraphicsSceneDragDropEvent>
+#include <QPainter>
 
 #include "component.h"
 
@@ -52,12 +53,21 @@ namespace CutePathSim
 
   QRectF Component::boundingRect() const
   {
-    // TODO: add up margins and the size of the child connections
-    return QRect(0,0,0,0);
+    // FIXME: properly handle the edge case with no child items or long component names
+    // find the max width and the total height of our child items, because they are interfaces that we will display in a vertical list
+    qreal totalChildHeight = 0;
+    foreach(QGraphicsItem *item, childItems())
+    {
+      totalChildHeight += item->boundingRect().height();
+    }
+    qreal width = LEFT_MARGIN + maxInterfaceWidth() + RIGHT_MARGIN;
+    qreal height = TOP_MARGIN + totalChildHeight + INTERFACE_MARGIN * (childItems().size() - 1) + BOTTOM_MARGIN;
+    return QRect(-width / 2, -height / 2, width, height);
   }
 
   void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
   {
+    painter->drawRect(boundingRect());
   }
 
   void Component::mousePressEvent(QGraphicsSceneMouseEvent *)
@@ -77,7 +87,10 @@ namespace CutePathSim
    */
   void Component::addInput(Component::Input * input)
   {
+    prepareGeometryChange();
+    input->setParentItem(this);
     m_inputs.insert(input->name(), input);
+    repositionInterfaces();
   }
 
   /**
@@ -88,7 +101,10 @@ namespace CutePathSim
    */
   void Component::addOutput(Component::Output *output)
   {
+    prepareGeometryChange();
+    output->setParentItem(this);
     m_outputs.insert(output->name(), output);
+    repositionInterfaces();
   }
 
   /**
@@ -267,4 +283,44 @@ namespace CutePathSim
    *
    * \sa write()
    */
+
+  void Component::repositionInterfaces()
+  {
+    // repositions the interfaces on the scene in alphabetical order
+    qreal currentY = boundingRect().y() + TOP_MARGIN;
+    qreal maxWidth = maxInterfaceWidth();
+    foreach(Interface *interface, m_inputs)
+    {
+      interface->setPos(LEFT_MARGIN + maxWidth / 2 - interface->boundingRect().width() / 2, currentY);
+      currentY += interface->boundingRect().height();
+      currentY += INTERFACE_MARGIN;
+    }
+    foreach(Interface *interface, m_outputs)
+    {
+      interface->setPos(LEFT_MARGIN + maxWidth / 2 - interface->boundingRect().width() / 2, currentY);
+      currentY += interface->boundingRect().height();
+      currentY += INTERFACE_MARGIN;
+    }
+  }
+
+  qreal Component::maxInterfaceWidth() const
+  {
+    // returns the width of the widest interface in the component
+    qreal maxInterfaceWidth = 0;
+    foreach(QGraphicsItem *item, m_inputs)
+    {
+      if(item->boundingRect().width() > maxInterfaceWidth)
+      {
+        maxInterfaceWidth = item->boundingRect().width();
+      }
+    }
+    foreach(QGraphicsItem *item, m_outputs)
+    {
+      if(item->boundingRect().width() > maxInterfaceWidth)
+      {
+        maxInterfaceWidth = item->boundingRect().width();
+      }
+    }
+    return maxInterfaceWidth;
+  }
 }

@@ -15,6 +15,9 @@ namespace CutePathSim
 
     protected:
       void resizeEvent(QResizeEvent *event);
+
+    private:
+      static const qreal FIT_MARGIN = 50;
   };
 }
 

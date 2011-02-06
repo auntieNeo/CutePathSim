@@ -19,10 +19,12 @@ namespace CutePathSim
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
     private:
-      static const qreal BORDER_BRUSH_WIDTH = 1;
+      static const qreal BORDER_PEN_WIDTH = .5;
       static const qreal LEFT_MARGIN = 20, RIGHT_MARGIN = 20, TOP_MARGIN = 10, BOTTOM_MARGIN = 10;
+      static const qreal FONT_SIZE = 10;
 
       QString m_name;
+      qreal m_textWidth;
   };
 }
 

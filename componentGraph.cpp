@@ -1,5 +1,6 @@
 #include "componentGraph.h"
 #include "common.h"
+#include "component.h"
 
 #include <iostream>
 using namespace std;
@@ -23,12 +24,16 @@ namespace CutePathSim
 
   ComponentGraph::~ComponentGraph()
   {
-    // TODO: destroy all the graphics items, because Qt apparently doesn't do that for us
   }
 
   void ComponentGraph::addComponent(Component *component)
   {
-    // TODO
+    if(component == 0)
+      return;
+
+    addItem(component);
+    m_components.insert(component);
+    // TODO: re-layout the graph with graphviz
   }
 
   void ComponentGraph::dragMoveEvent(QGraphicsSceneDragDropEvent * /*event*/)

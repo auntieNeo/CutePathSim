@@ -2,8 +2,7 @@
 #define GRAPH_H_
 
 #include <QGraphicsScene>
-#include <QHash>
-#include <QList>
+#include <QSet>
 
 namespace CutePathSim
 {
@@ -21,6 +20,8 @@ namespace CutePathSim
 
     protected:
       void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
+
+      QSet<Component *> m_components;
   };
 }
 
