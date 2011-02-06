@@ -1,8 +1,8 @@
 #include <QMenuBar>
 #include <QSignalMapper>
 
-#include "board.h"
-#include "boardView.h"
+#include "componentGraph.h"
+#include "componentGraphView.h"
 #include "mainWindow.h"
 
 #define TEST 0

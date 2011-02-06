@@ -1,6 +1,5 @@
 #include <QGraphicsSceneDragDropEvent>
 
-#include "board.h"
 #include "component.h"
 
 namespace CutePathSim
@@ -54,9 +53,10 @@ namespace CutePathSim
   QRectF Component::boundingRect() const
   {
     // TODO: add up margins and the size of the child connections
+    return QRect(0,0,0,0);
   }
 
-  void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0)
+  void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
   {
   }
 

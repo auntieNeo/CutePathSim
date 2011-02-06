@@ -1,4 +1,4 @@
-#include "board.h"
+#include "componentGraph.h"
 #include "common.h"
 
 #include <iostream>

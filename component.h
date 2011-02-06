@@ -10,6 +10,8 @@
 
 namespace CutePathSim
 {
+  class ComponentGraph;
+
   class Component : public QGraphicsItem
   {
     public:

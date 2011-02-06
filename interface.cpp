@@ -17,7 +17,7 @@ namespace CutePathSim
     m_name = name;
   }
 
-  Interface~Interface()
+  Interface::~Interface()
   {
   }
 
@@ -26,11 +26,13 @@ namespace CutePathSim
    * Returns the name of the interface.
    */
 
-  QRectF boundingRect() const
+  QRectF Interface::boundingRect() const
   {
+    // TODO
+    return QRect(0,0,0,0);
   }
 
-  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0)
+  void Interface::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
   {
   }
 }
