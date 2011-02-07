@@ -34,6 +34,9 @@ namespace CutePathSim
       m_font->setPixelSize(FONT_SIZE);
     }
     m_textWidth = QFontMetrics(*m_font).size(Qt::TextSingleLine, m_name).width();
+
+    setAcceptHoverEvents(true);
+    m_drawHover = false;
   }
 
   Interface::~Interface()
@@ -54,7 +57,14 @@ namespace CutePathSim
   {
     // draw a gradient background
     QLinearGradient gradient(0, 0, 0, boundingRect().height());
-    gradient.setColorAt(0, color());
+    if(m_drawHover)
+    {
+      gradient.setColorAt(0, color().lighter(110));
+    }
+    else
+    {
+      gradient.setColorAt(0, color());
+    }
     gradient.setColorAt(1, Qt::white);
     QBrush gradientBrush(gradient);
     painter->setBrush(gradientBrush);
@@ -70,6 +80,18 @@ namespace CutePathSim
     painter->setPen(QPen());
     painter->setFont(*m_font);
     painter->drawText(drawingRect, Qt::AlignCenter, name());
+  }
+
+  void Interface::hoverEnterEvent(QGraphicsSceneHoverEvent *)
+  {
+    m_drawHover = true;
+    update();
+  }
+
+  void Interface::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
+  {
+    m_drawHover = false;
+    update();
   }
 
   const qreal Interface::BORDER_PEN_WIDTH;
