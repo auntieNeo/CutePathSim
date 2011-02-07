@@ -1,3 +1,4 @@
+#include <QGraphicsDropShadowEffect>
 #include <QGraphicsSceneDragDropEvent>
 #include <QPainter>
 
@@ -11,6 +12,11 @@ namespace CutePathSim
    */
   Component::Component(QGraphicsItem *parent) : QGraphicsItem(parent)
   {
+    // add a drop shadow effect
+    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect();
+    shadow->setBlurRadius(5);
+    shadow->setOffset(2, 3);
+    setGraphicsEffect(shadow);
   }
 
   Component::~Component()
@@ -67,7 +73,18 @@ namespace CutePathSim
 
   void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
   {
-    painter->drawRect(boundingRect());
+    // draw a gradient background
+    QLinearGradient gradient(0, 0, 0, boundingRect().height());
+    gradient.setColorAt(0, color());
+    gradient.setColorAt(1, Qt::white);
+    QBrush gradientBrush(gradient);
+    painter->setBrush(gradientBrush);
+//    QPen borderPen;
+//    borderPen.setWidth(BORDER_PEN_WIDTH);
+//    painter->setPen(borderPen);
+    painter->setPen(QPen(Qt::NoPen));
+    QRect drawingRect(boundingRect().x() + BORDER_PEN_WIDTH / 2, boundingRect().y() + BORDER_PEN_WIDTH / 2, boundingRect().width() - BORDER_PEN_WIDTH, boundingRect().height() - BORDER_PEN_WIDTH);
+    painter->drawRoundedRect(drawingRect, 5, 5);
   }
 
   void Component::mousePressEvent(QGraphicsSceneMouseEvent *)
@@ -110,6 +127,11 @@ namespace CutePathSim
   /**
    * \fn run()
    * Pure virtual method that is called from the component's work thread. This is where derived classes should do their processing.
+   */
+
+  /**
+   * \fn color()
+   * Pure virtual method that returns the color of the component. Derived classes should return a suitable color for the component.
    */
 
   /**

@@ -88,6 +88,8 @@ namespace CutePathSim
 
       virtual void run() = 0;
 
+      virtual QColor color() = 0;
+
       QRectF boundingRect() const;
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
@@ -103,7 +105,7 @@ namespace CutePathSim
     private:
       // style options for drawing the components
       // FIXME: I don't know why the following code manages to link without these statics being defined somewhere.
-      static const qreal BORDER_BRUSH_WIDTH = 2;
+      static const qreal BORDER_PEN_WIDTH = 2;
       static const qreal LEFT_MARGIN = 20, RIGHT_MARGIN = 20, TOP_MARGIN = 35, BOTTOM_MARGIN = 20, INTERFACE_MARGIN = 7;
       static const qreal FONT_SIZE = 20;
 

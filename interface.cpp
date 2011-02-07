@@ -52,13 +52,14 @@ namespace CutePathSim
 
   void Interface::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
   {
+    // draw a gradient background
     QLinearGradient gradient(0, 0, 0, boundingRect().height());
     gradient.setColorAt(0, color());
     gradient.setColorAt(1, Qt::white);
     QBrush gradientBrush(gradient);
     painter->setBrush(gradientBrush);
-    QPen borderPen;
-    borderPen.setWidth(BORDER_PEN_WIDTH);
+//    QPen borderPen;
+//    borderPen.setWidth(BORDER_PEN_WIDTH);
 //    painter->setPen(borderPen);
     painter->setPen(QPen(Qt::NoPen));
     QRect drawingRect(boundingRect().x() + BORDER_PEN_WIDTH / 2, boundingRect().y() + BORDER_PEN_WIDTH / 2, boundingRect().width() - BORDER_PEN_WIDTH, boundingRect().height() - BORDER_PEN_WIDTH);
