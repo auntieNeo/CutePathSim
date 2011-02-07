@@ -7,7 +7,7 @@ namespace CutePathSim
    *
    * \todo document what a mux and its inputs/outputs are.
    */
-  Mux::Mux(QGraphicsItem *parent) : Component(parent)
+  Mux::Mux(const QString &name, QGraphicsItem *parent) : Component(name, parent)
   {
     // construct the inputs and add them to the component's list of inputs
     addInput(m_firstInput = new Input("firstInput", 1, 0));

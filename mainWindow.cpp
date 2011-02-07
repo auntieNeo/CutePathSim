@@ -26,7 +26,7 @@ namespace CutePathSim
 
     // FIXME: remove this test code
     // add some components to the graph
-    m_componentGraph->addComponent(new Mux());
+    m_componentGraph->addComponent(new Mux("Mux_01"));
   }
 
   MainWindow::~MainWindow()

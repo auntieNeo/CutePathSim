@@ -10,13 +10,27 @@ namespace CutePathSim
    * \class Component
    * Models a component of a digital system with inputs and outputs.
    */
-  Component::Component(QGraphicsItem *parent) : QGraphicsItem(parent)
+
+  /**
+   * Constructs a component with \a name as the name.
+   */
+  Component::Component(const QString &name, QGraphicsItem *parent) : QGraphicsItem(parent)
   {
+    m_name = name;
+
     // add a drop shadow effect
     QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect();
     shadow->setBlurRadius(5);
     shadow->setOffset(2, 3);
     setGraphicsEffect(shadow);
+
+    // set up the font
+    if(m_font == 0)
+    {
+      m_font = new QFont("Helvetica");
+      m_font->setPixelSize(FONT_SIZE);
+    }
+    m_textWidth = QFontMetrics(*m_font).size(Qt::TextSingleLine, name).width();
   }
 
   Component::~Component()
@@ -24,14 +38,19 @@ namespace CutePathSim
   }
 
   /**
-   * \fn getInputs()
+   * \fn Component::name()
+   * Returns the name of the component.
+   */
+
+  /**
+   * \fn Component::getInputs()
    * Returns a list containing pointers to the inputs owned by the component.
    *
    * \sa getInput() getOutputs()
    */
 
   /**
-   * \fn getOutputs()
+   * \fn Component::getOutputs()
    * Returns a list containing pointers to the outputs owned by the component.
    *
    * \sa getOutput() getInputs()
@@ -71,10 +90,12 @@ namespace CutePathSim
     return QRect(-width / 2, -height / 2, width, height);
   }
 
-  void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+  void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
   {
+    QRect drawingRect(boundingRect().x() + BORDER_PEN_WIDTH / 2, boundingRect().y() + BORDER_PEN_WIDTH / 2, boundingRect().width() - BORDER_PEN_WIDTH, boundingRect().height() - BORDER_PEN_WIDTH);
+
     // draw a gradient background
-    QLinearGradient gradient(0, 0, 0, boundingRect().height());
+    QLinearGradient gradient(0, 0, 0, drawingRect.height());
     gradient.setColorAt(0, color());
     gradient.setColorAt(1, Qt::white);
     QBrush gradientBrush(gradient);
@@ -83,8 +104,13 @@ namespace CutePathSim
 //    borderPen.setWidth(BORDER_PEN_WIDTH);
 //    painter->setPen(borderPen);
     painter->setPen(QPen(Qt::NoPen));
-    QRect drawingRect(boundingRect().x() + BORDER_PEN_WIDTH / 2, boundingRect().y() + BORDER_PEN_WIDTH / 2, boundingRect().width() - BORDER_PEN_WIDTH, boundingRect().height() - BORDER_PEN_WIDTH);
-    painter->drawRoundedRect(drawingRect, 5, 5);
+    painter->drawRect(drawingRect);
+
+    // draw the name
+    // FIXME: figure out how to make the font hinting look optimal
+    painter->setPen(QPen());
+    painter->setFont(*m_font);
+    painter->drawText(QRect(drawingRect.x(), drawingRect.y(), drawingRect.width(), TOP_MARGIN), Qt::AlignCenter, name());
   }
 
   void Component::mousePressEvent(QGraphicsSceneMouseEvent *)
@@ -310,16 +336,15 @@ namespace CutePathSim
   {
     // repositions the interfaces on the scene in alphabetical order
     qreal currentY = boundingRect().y() + TOP_MARGIN;
-    qreal maxWidth = maxInterfaceWidth();
     foreach(Interface *interface, m_inputs)
     {
-      interface->setPos(LEFT_MARGIN + maxWidth / 2 - interface->boundingRect().width() / 2, currentY);
+      interface->setPos(0, currentY + interface->boundingRect().height() / 2);
       currentY += interface->boundingRect().height();
       currentY += INTERFACE_MARGIN;
     }
     foreach(Interface *interface, m_outputs)
     {
-      interface->setPos(LEFT_MARGIN + maxWidth / 2 - interface->boundingRect().width() / 2, currentY);
+      interface->setPos(0, currentY + interface->boundingRect().height() / 2);
       currentY += interface->boundingRect().height();
       currentY += INTERFACE_MARGIN;
     }
@@ -345,4 +370,6 @@ namespace CutePathSim
     }
     return maxInterfaceWidth;
   }
+
+  QFont *Component::m_font = 0;
 }

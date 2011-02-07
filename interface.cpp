@@ -50,7 +50,7 @@ namespace CutePathSim
     return QRect(-LEFT_MARGIN - m_textWidth / 2, -TOP_MARGIN - FONT_SIZE / 2, LEFT_MARGIN + m_textWidth + RIGHT_MARGIN, TOP_MARGIN + FONT_SIZE + BOTTOM_MARGIN);
   }
 
-  void Interface::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+  void Interface::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
   {
     // draw a gradient background
     QLinearGradient gradient(0, 0, 0, boundingRect().height());
@@ -65,9 +65,8 @@ namespace CutePathSim
     QRect drawingRect(boundingRect().x() + BORDER_PEN_WIDTH / 2, boundingRect().y() + BORDER_PEN_WIDTH / 2, boundingRect().width() - BORDER_PEN_WIDTH, boundingRect().height() - BORDER_PEN_WIDTH);
     painter->drawRoundedRect(drawingRect, 5, 5);
 
-    // TODO: move this font stuff somewhere else
- //   font.setStyleStrategy(QFont::PreferAntialias);
-//    QFont font;
+    // draw the name
+    // FIXME: figure out how to make the font hinting look optimal
     painter->setPen(QPen());
     painter->setFont(*m_font);
     painter->drawText(drawingRect, Qt::AlignCenter, name());

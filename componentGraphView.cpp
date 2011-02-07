@@ -24,7 +24,7 @@ namespace CutePathSim
   {
   }
 
-  void ComponentGraphView::resizeEvent(QResizeEvent *event)
+  void ComponentGraphView::resizeEvent(QResizeEvent *)
   {
     QRect fitRect(sceneRect().x() - FIT_MARGIN, sceneRect().y() - FIT_MARGIN, sceneRect().width() + FIT_MARGIN * 2, sceneRect().height() + FIT_MARGIN * 2);
     fitInView(fitRect, Qt::KeepAspectRatio);

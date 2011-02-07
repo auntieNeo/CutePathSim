@@ -8,7 +8,7 @@ namespace CutePathSim
   class Mux : public Component
   {
     public:
-      Mux(QGraphicsItem *parent = 0);
+      Mux(const QString &name, QGraphicsItem *parent = 0);
       ~Mux();
 
       void run();
