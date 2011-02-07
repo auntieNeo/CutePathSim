@@ -20,13 +20,20 @@ namespace CutePathSim
   Interface::Interface(const QString &name, QGraphicsItem *parent) : QGraphicsItem(parent)
   {
     m_name = name;
-    m_textWidth = QApplication::fontMetrics().size(Qt::TextSingleLine, m_name).width();
 
     // add a drop shadow effect
     QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect();
     shadow->setBlurRadius(5);
     shadow->setOffset(2, 3);
     setGraphicsEffect(shadow);
+
+    // set up the font
+    if(m_font == 0)
+    {
+      m_font = new QFont("Helvetica");
+      m_font->setPixelSize(FONT_SIZE);
+    }
+    m_textWidth = QFontMetrics(*m_font).size(Qt::TextSingleLine, m_name).width();
   }
 
   Interface::~Interface()
@@ -58,10 +65,10 @@ namespace CutePathSim
     painter->drawRoundedRect(drawingRect, 5, 5);
 
     // TODO: move this font stuff somewhere else
-    QFont font("Helvetica");
-    font.setStyleStrategy(QFont::PreferAntialias);
+ //   font.setStyleStrategy(QFont::PreferAntialias);
+//    QFont font;
     painter->setPen(QPen());
-    painter->setFont(font);
+    painter->setFont(*m_font);
     painter->drawText(drawingRect, Qt::AlignCenter, name());
   }
 
@@ -71,4 +78,6 @@ namespace CutePathSim
   const qreal Interface::TOP_MARGIN;
   const qreal Interface::BOTTOM_MARGIN;
   const qreal Interface::FONT_SIZE;
+
+  QFont *Interface::m_font = 0;
 }

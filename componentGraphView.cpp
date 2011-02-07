@@ -17,6 +17,7 @@ namespace CutePathSim
   {
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
   }
 
   ComponentGraphView::~ComponentGraphView()

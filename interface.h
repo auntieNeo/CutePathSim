@@ -21,10 +21,11 @@ namespace CutePathSim
     private:
       static const qreal BORDER_PEN_WIDTH = 0;
       static const qreal LEFT_MARGIN = 20, RIGHT_MARGIN = 20, TOP_MARGIN = 10, BOTTOM_MARGIN = 10;
-      static const qreal FONT_SIZE = 10;
+      static const qreal FONT_SIZE = 20;
 
       QString m_name;
       qreal m_textWidth;
+      static QFont *m_font;
   };
 }
 
