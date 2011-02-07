@@ -19,7 +19,7 @@ namespace CutePathSim
    */
   ComponentGraph::ComponentGraph(QObject *parent) : QGraphicsScene(parent)
   {
-    setBackgroundBrush(QBrush(Qt::darkGreen));
+    setBackgroundBrush(QBrush(Qt::white));
   }
 
   ComponentGraph::~ComponentGraph()

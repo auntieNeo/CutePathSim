@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QFontMetrics>
+#include <QGraphicsDropShadowEffect>
 #include <QPainter>
 
 #include "interface.h"
@@ -20,6 +21,12 @@ namespace CutePathSim
   {
     m_name = name;
     m_textWidth = QApplication::fontMetrics().size(Qt::TextSingleLine, m_name).width();
+
+    // add a drop shadow effect
+    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect();
+    shadow->setBlurRadius(5);
+    shadow->setOffset(2, 3);
+    setGraphicsEffect(shadow);
   }
 
   Interface::~Interface()
@@ -39,18 +46,21 @@ namespace CutePathSim
   void Interface::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
   {
     QLinearGradient gradient(0, 0, 0, boundingRect().height());
-    gradient.setColorAt(0, Qt::white);
-    gradient.setColorAt(1, color());
+    gradient.setColorAt(0, color());
+    gradient.setColorAt(1, Qt::white);
     QBrush gradientBrush(gradient);
     painter->setBrush(gradientBrush);
     QPen borderPen;
     borderPen.setWidth(BORDER_PEN_WIDTH);
-    painter->setPen(borderPen);
+//    painter->setPen(borderPen);
+    painter->setPen(QPen(Qt::NoPen));
     QRect drawingRect(boundingRect().x() + BORDER_PEN_WIDTH / 2, boundingRect().y() + BORDER_PEN_WIDTH / 2, boundingRect().width() - BORDER_PEN_WIDTH, boundingRect().height() - BORDER_PEN_WIDTH);
     painter->drawRoundedRect(drawingRect, 5, 5);
+
     // TODO: move this font stuff somewhere else
     QFont font("Helvetica");
     font.setStyleStrategy(QFont::PreferAntialias);
+    painter->setPen(QPen());
     painter->setFont(font);
     painter->drawText(drawingRect, Qt::AlignCenter, name());
   }
