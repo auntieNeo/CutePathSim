@@ -163,12 +163,16 @@ namespace CutePathSim
   /**
    * \class Component::Input
    * The Input class represents an input interface on a Component.
+   *
+   * The input can be connected to one Output object at a time with connect(), and data sent from that output can be read with the read() method.
+   *
+   * \sa Output
    */
 
   /**
-   * Constructs an Input class with the name \a name. 
+   * Constructs an Input object with the name \a name. 
    *
-   * The constructed object represents an input that accepts \a width bits, with the object \a component as the recipient.
+   * The constructed object represents an input that accepts \a width bits, with \a component as the recipient of those bits.
    */
   Component::Input::Input(const QString &name, int width, Component *component) : Interface(name, component)
   {
@@ -226,11 +230,13 @@ namespace CutePathSim
   }
 
   /**
-   * Copies the data stored in the input buffer to \a buffer.
+   * Reads the data that was sent from the output that this input is connected to.
+   *
+   * The data is simply copied from the input buffer into \a buffer.
    *
    * \warning \a buffer should be at least as large as bufferSize().
    *
-   * \sa bufferSize()
+   * \sa bufferSize() Component::Output::write()
    */
   void Component::Input::read(char *buffer)
   {
@@ -239,20 +245,24 @@ namespace CutePathSim
 
   /**
    * \fn Component::Input::bufferSize()
-   * Returns the size of the input buffer used by read().
+   * Returns the size in bytes of the input buffer used by read().
    *
    * \sa read()
    */
 
   /**
    * \class Component::Output
-   * The Output class represents an output interface on a Component.
+   * The Output class represents an output interface on a Component. 
+   *
+   * The output can be connected to any number of Input objects with connect(), and it will send data to those inputs whenever write() is called.
+   *
+   * \sa Input
    */
 
   /**
-   * Constructs an Input class with the name \a name. 
+   * Constructs an Output object with the name \a name. 
    *
-   * The constructed object represents an output that sends out \a width bits, with the object \a component as the sender.
+   * The constructed object represents an output that sends out \a width bits, with \a component as the sender of those bits.
    */
   Component::Output::Output(const QString &name, int width, Component *component) : Interface(name, component)
   {
@@ -307,7 +317,9 @@ namespace CutePathSim
   }
 
   /**
-   * Writes \a data to the input buffer of all of the inputs that this output is connected to.
+   * Writes \a data to all of the inputs that this output is connected to.
+   *
+   * \a data is simply copied to the input buffers of all of the connected inputs.
    *
    * \warning \a data should be at least as large as bufferSize().
    *
@@ -315,7 +327,7 @@ namespace CutePathSim
    *
    * Classes calling write() should politely make sure that any remainder bits in \a data (i.e. bits greater than width() if width() % 8 != 0) are zeroed out.
    *
-   * \sa bufferSize()
+   * \sa bufferSize() Component::Input::read()
    */
   void Component::Output::write(const char *data)
   {
@@ -327,7 +339,7 @@ namespace CutePathSim
 
   /**
    * \fn Component::Output::bufferSize()
-   * Returns the size of the data sent by write().
+   * Returns the size in bytes of the data sent by write().
    *
    * \sa write()
    */
