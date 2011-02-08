@@ -9,6 +9,7 @@ QT += svg
 unix {    
   TARGET = cutepathsim
   target.path = /usr/local/bin
+  LIBS += -lgvc -lgraph -lcgraph
 }
 win32 {
   TARGET = CutePathSim
