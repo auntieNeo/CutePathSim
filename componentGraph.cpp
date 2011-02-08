@@ -176,6 +176,19 @@ namespace CutePathSim
       component->setY(QVariant(splitPoint[1]).toFloat());
     }
 
+    // TODO: set the curves of the edges
+    foreach(Agedge_t *edge, m_edges)
+    {
+      if(agget(edge, "pos") == 0)
+      {
+        cout << "The edge pos is null" << endl;
+      }
+      else
+      {
+        cout << "The pos of the edge: " << agget(edge, "pos") << endl;
+      }
+    }
+
     gvFreeLayout(m_graphvizContext, m_graph);
   }
 
