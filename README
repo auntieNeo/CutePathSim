@@ -1,1 +1,9 @@
-BLAH!
+CutePathSim models the interaction between components in a digital system. It stores these components in a graph structure, and displays the graph using Qt's QGraphicsScene.
+
+The Component class models a generic component in a digital system, and can have any number of digital inputs and outputs. Derived component classes are responsible for declaring these inputs and outputs and defining their behavior. The run() method of the component is called once each cycle, and messages can be sent and received with the Component::Output::write() and Component::Input::read() methods respectively. Messages sent are simply data buffers containing at least as many bits as the width of the respective input/output.
+
+The actual behavior of the digital system depends on how derived components are defined and how they are connected in the graph. So long as the behavior of the Component class is well defined, the derived classes need not worry about how they are connected or used in the graph.
+
+The ComponentGraph class is responsible for determining the order in which the components are to be executed. It uses a topographical sort to determine the input dependencies of each node, and make sure there are no dependency loops.
+
+Graphviz is used to determine the layout of components and their edges on the graph. The components themselves cannot be positioned manually, but they will be re-positioned if the user changes the graph. Connections between components can be added in the GUI by dragging an output to an input, and any number of components can be added using the GUI menu. Whenever changes to the connections or components are made, Graphviz repositions the graph, hopefully taking the user's attention away from positioning the graph themselves and allowing their attention to be focused on the workings of the digital system.
