@@ -4,7 +4,7 @@
 // These Graphviz headers conflict for some reason. 
 //#include <graphviz/graph.h>
 #include <graphviz/gvc.h>
-extern void agdeledge(Agraph_t *g, Agedge_t *e);
+//extern void agdeledge(Agraph_t *g, Agedge_t *e);
 #include <QGraphicsScene>
 #include <QPair>
 #include <QSet>
@@ -17,7 +17,8 @@ namespace CutePathSim
   {
     Q_OBJECT
 
-    friend class Interface;
+    friend class Component::Input;
+    friend class Component::Output;
 
     public:
       ComponentGraph(QObject *parent = 0);
@@ -26,6 +27,8 @@ namespace CutePathSim
       bool addComponent(Component *component);
 
       void prepareLayoutGraph() { m_layoutGraph = true; }
+
+      void layoutGraph();  // TODO: make this private
 
     protected:
       void dragMoveEvent(QGraphicsSceneDragDropEvent *event);

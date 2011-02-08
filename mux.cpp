@@ -10,10 +10,10 @@ namespace CutePathSim
   Mux::Mux(const QString &name, QGraphicsItem *parent) : Component(name, parent)
   {
     // construct the inputs and add them to the component's list of inputs
-    addInput(m_firstInput = new Input("firstInput", 1, 0));
-    addInput(m_secondInput = new Input("secondInput", 1, 0));
+    addInput(m_firstInput = new Input("firstInput", 1, this));
+    addInput(m_secondInput = new Input("secondInput", 1, this));
     // construct the output and add it to the component's list of outputs
-    addOutput(m_output = new Output("output", 1, 0));
+    addOutput(m_output = new Output("output", 1, this));
   }
 
   Mux::~Mux()

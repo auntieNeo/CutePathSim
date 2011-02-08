@@ -3,6 +3,7 @@
 #include <QPainter>
 
 #include "component.h"
+#include "componentGraph.h"
 
 namespace CutePathSim
 {
@@ -31,6 +32,8 @@ namespace CutePathSim
       m_font->setPixelSize(FONT_SIZE);
     }
     m_textWidth = QFontMetrics(*m_font).size(Qt::TextSingleLine, name).width();
+
+    m_componentGraph = 0;
   }
 
   Component::~Component()
@@ -100,9 +103,9 @@ namespace CutePathSim
     gradient.setColorAt(1, Qt::white);
     QBrush gradientBrush(gradient);
     painter->setBrush(gradientBrush);
-//    QPen borderPen;
-//    borderPen.setWidth(BORDER_PEN_WIDTH);
-//    painter->setPen(borderPen);
+    //    QPen borderPen;
+    //    borderPen.setWidth(BORDER_PEN_WIDTH);
+    //    painter->setPen(borderPen);
     painter->setPen(QPen(Qt::NoPen));
     painter->drawRect(drawingRect);
 
@@ -180,6 +183,7 @@ namespace CutePathSim
     m_bufferSize = width / 8 + ((width % 8) ? 1 : 0);
     m_inputBuffer = new char[m_bufferSize];
     m_component = component;
+    m_connection = 0;
   }
 
   Component::Input::~Input()
@@ -215,6 +219,10 @@ namespace CutePathSim
 
     output->m_connect(this);
     m_connect(output);
+
+    // tell the component graph and Graphviz about our new edge
+    component()->m_componentGraph->addEdge(output, this);
+    component()->m_componentGraph->prepareLayoutGraph();
   }
 
   /**
@@ -224,6 +232,10 @@ namespace CutePathSim
   {
     if(m_connection == 0)
       return;
+
+    // tell the component graph and Graphviz to remove the edge
+    component()->m_componentGraph->removeEdge(m_connection, this);
+    component()->m_componentGraph->prepareLayoutGraph();
 
     m_connection->m_disconnect(this);
     m_disconnect();
@@ -290,15 +302,21 @@ namespace CutePathSim
    */
 
   /**
-   * Connects this output to \a input.
+   * Connects this output to \a input. Disconnects \a input from anything if it is already connected.
    */
   void Component::Output::connect(Input *input)
   {
     if(input == 0)
       return;
 
+    input->disconnect();
+
     m_connect(input);
     input->m_connect(this);
+
+    // tell the component graph and Graphviz about our new edge
+    component()->m_componentGraph->addEdge(this, input);
+    component()->m_componentGraph->prepareLayoutGraph();
   }
 
   /**
@@ -311,6 +329,10 @@ namespace CutePathSim
 
     if(m_connections.contains(input))
     {
+      // tell the component graph and Graphviz to remove the edge
+      component()->m_componentGraph->removeEdge(this, input);
+      component()->m_componentGraph->prepareLayoutGraph();
+
       input->m_disconnect();
       m_disconnect(input);
     }
