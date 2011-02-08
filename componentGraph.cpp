@@ -2,6 +2,8 @@
 #include "common.h"
 #include "component.h"
 
+#define POINTS_IN_INCH 72
+
 #include <iostream>
 using namespace std;
 
@@ -90,11 +92,11 @@ namespace CutePathSim
     // initilize graphviz context and graph
     m_graphvizContext = gvContext();
     m_graph = agopen(const_cast<char *>("graph"), AGDIGRAPH);  // non-strict, directed graph
-    agnodeattr(m_graph, const_cast<char*>("fixedsize"), const_cast<char*>("true"));
+//    agnodeattr(m_graph, const_cast<char*>("fixedsize"), const_cast<char*>("true"));
     agnodeattr(m_graph, const_cast<char*>("shape"), const_cast<char*>("box"));
     agnodeattr(m_graph, const_cast<char*>("width"), const_cast<char*>("1"));
     agnodeattr(m_graph, const_cast<char*>("height"), const_cast<char*>("1"));
-    agnodeattr(m_graph, const_cast<char*>("pos"), const_cast<char*>("42"));
+//    agnodeattr(m_graph, const_cast<char*>("pos"), const_cast<char*>("42"));
 
     m_layoutGraph = false;
   }
@@ -146,18 +148,17 @@ namespace CutePathSim
     foreach(Component *component, m_components)
     {
       // FIXME: component's boundingRect() is already inefficient... fix it, or don't call it so much
-      agset(m_nodes.value(component), const_cast<char*>("width"), const_cast<char*>(qPrintable(QVariant(component->boundingRect().width()).toString())));
-      agset(m_nodes.value(component), const_cast<char*>("height"), const_cast<char*>(qPrintable(QVariant(component->boundingRect().height()).toString())));
+      agset(m_nodes.value(component), const_cast<char*>("width"), const_cast<char*>(qPrintable(QVariant(component->boundingRect().width() / POINTS_IN_INCH).toString())));
+      agset(m_nodes.value(component), const_cast<char*>("height"), const_cast<char*>(qPrintable(QVariant(component->boundingRect().height() / POINTS_IN_INCH).toString())));
     }
 
     gvLayout(m_graphvizContext, m_graph, "dot");
+    gvRender(m_graphvizContext, m_graph, "dot", 0);
 
     // set the positions of the components with the new layout information
     foreach(Component *component, m_components)
     {
       // FIXME: change this to use agxget
-      cout << "The width of " << component->name().toStdString() << ": " << agget(m_nodes.value(component), "width") << endl;
-      cout << "The height of " << component->name().toStdString() << ": " << agget(m_nodes.value(component), "height") << endl;
       if(agget(m_nodes.value(component), "pos") == 0)
       {
         cout << "the pos is null" << endl;
@@ -166,8 +167,13 @@ namespace CutePathSim
       {
         cout << "The pos of " << component->name().toStdString() << ": " << agget(m_nodes.value(component), "pos") << endl;
       }
-//      component->setX();
+      cout << "The width of " << component->name().toStdString() << ": " << agget(m_nodes.value(component), "width") << endl;
+      cout << "The height of " << component->name().toStdString() << ": " << agget(m_nodes.value(component), "height") << endl;
       cout << "m_components.size(): " << m_components.size() << endl;
+      QString point;
+      QList<QString> splitPoint = QString(agget(m_nodes.value(component), "pos")).split(",");
+      component->setX(QVariant(splitPoint[0]).toFloat());
+      component->setY(QVariant(splitPoint[1]).toFloat());
     }
 
     gvFreeLayout(m_graphvizContext, m_graph);
@@ -189,6 +195,7 @@ namespace CutePathSim
 
     Q_ASSERT(!m_edges.contains(key));
 
+    cout << "adding an edge from " << from->component()->name().toStdString() << " to " << to->component()->name().toStdString() << endl;
     m_edges.insert(key, agedge(m_graph, m_nodes[from->component()], m_nodes[to->component()]));
   }
 
