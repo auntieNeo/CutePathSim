@@ -4,6 +4,6 @@ The Component class models a generic component in a digital system, and can have
 
 The actual behavior of the digital system depends on how derived components are defined and how they are connected in the graph. So long as the behavior of the Component class is well defined, the derived classes need not worry about how they are connected or used in the graph.
 
-The ComponentGraph class is responsible for determining the order in which the components are to be executed. It uses a topographical sort to determine the input dependencies of each node, and make sure there are no dependency loops.
+The ComponentGraph class is responsible for determining the order in which the components are to be executed. It uses a topological sort to determine the input dependencies of each node, and make sure there are no dependency loops.
 
 Graphviz is used to determine the layout of components and their edges on the graph. The components themselves cannot be positioned manually, but they will be re-positioned if the user changes the graph. Connections between components can be added in the GUI by dragging an output to an input, and any number of components can be added using the GUI menu. Whenever changes to the connections or components are made, Graphviz repositions the graph, hopefully taking the user's attention away from positioning the graph themselves and allowing their attention to be focused on the workings of the digital system.
