@@ -184,10 +184,13 @@ namespace CutePathSim
     cout << "inside ComponentGraph::dragMoveEvent()" << endl;
   }
 
+  /**
+   * Adds an edge to the list of edges so that Graphviz knows about it.
+   *
+   * This is called from either Component::Output or Component::Input when they create new connections.
+   */
   void ComponentGraph::addEdge(Component::Output *from, Component::Input *to)
   {
-    // Adds an edge to the list of edges so that Graphviz knows about it.
-    // This is called from either Component::Output or Component::Input when they are connected.
     Q_ASSERT(m_nodes.contains(from->component()));
     Q_ASSERT(m_nodes.contains(to->component()));
 
@@ -199,10 +202,13 @@ namespace CutePathSim
     m_edges.insert(key, agedge(m_graph, m_nodes[from->component()], m_nodes[to->component()]));
   }
 
+  /**
+   * Remove an edge to the list of edges.
+   *
+   * This is called from either Component::Output or Component::Input when they disconnect.
+   */
   void ComponentGraph::removeEdge(Component::Output *from, Component::Input *to)
   {
-    // Remove an edge to the list of edges.
-    // This is called from either Component::Output or Component::Input when they are disconnected.
     Q_ASSERT(m_nodes.contains(from->component()));
     Q_ASSERT(m_nodes.contains(to->component()));
 
