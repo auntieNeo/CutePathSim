@@ -36,6 +36,8 @@ namespace CutePathSim
       void addEdge(Component::Output *from, Component::Input *to);
       void removeEdge(Component::Output *from, Component::Input *to);
 
+    private:
+
       QHash<QString, Component *> m_components;
 
       // Graphviz objects
