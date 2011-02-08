@@ -47,6 +47,11 @@ namespace CutePathSim
       QHash<QPair<Component::Output *, Component::Input *>, Agedge_t *> m_edges;
 
       bool m_layoutGraph;
+
+      static inline int m_agset(void *object, QString attr, QString value)
+      {
+        return agset(object, const_cast<char *>(qPrintable(attr)), const_cast<char *>(qPrintable(value)));
+      }
   };
 }
 

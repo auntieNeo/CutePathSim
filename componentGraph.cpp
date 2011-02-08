@@ -92,7 +92,7 @@ namespace CutePathSim
     // initilize graphviz context and graph
     m_graphvizContext = gvContext();
     m_graph = agopen(const_cast<char *>("graph"), AGDIGRAPH);  // non-strict, directed graph
-//    agnodeattr(m_graph, const_cast<char*>("fixedsize"), const_cast<char*>("true"));
+    agnodeattr(m_graph, const_cast<char*>("fixedsize"), const_cast<char*>("true"));
     agnodeattr(m_graph, const_cast<char*>("shape"), const_cast<char*>("box"));
     agnodeattr(m_graph, const_cast<char*>("width"), const_cast<char*>("1"));
     agnodeattr(m_graph, const_cast<char*>("height"), const_cast<char*>("1"));
@@ -148,8 +148,8 @@ namespace CutePathSim
     foreach(Component *component, m_components)
     {
       // FIXME: component's boundingRect() is already inefficient... fix it, or don't call it so much
-      agset(m_nodes.value(component), const_cast<char*>("width"), const_cast<char*>(qPrintable(QVariant(component->boundingRect().width() / POINTS_IN_INCH).toString())));
-      agset(m_nodes.value(component), const_cast<char*>("height"), const_cast<char*>(qPrintable(QVariant(component->boundingRect().height() / POINTS_IN_INCH).toString())));
+      m_agset(m_nodes.value(component), "width", QVariant(component->boundingRect().width() / POINTS_IN_INCH).toString());
+      m_agset(m_nodes.value(component), "height", QVariant(component->boundingRect().height() / POINTS_IN_INCH).toString());
     }
 
     gvLayout(m_graphvizContext, m_graph, "dot");
