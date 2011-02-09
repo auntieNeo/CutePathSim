@@ -186,6 +186,38 @@ namespace CutePathSim
       else
       {
         cout << "The pos of the edge: " << agget(edge, "pos") << endl;
+        // parse the points from the spline string representation of the edge
+        QList<QPointF> splinePoints;
+        QPointF endPoint;  // FIXME: also get a start point, and determine when they're used
+        foreach(QString pointString, QString(agget(edge, "pos")).split(" "))
+        {
+          QList<QString>values = pointString.split(",");
+          if(values[0] == "e")
+          {
+            endPoint = QPointF(QVariant(values[1]).toFloat(), QVariant(values[2]).toFloat());
+          }
+          else
+          {
+            splinePoints.append(QPointF(QVariant(values[0]).toFloat(), QVariant(values[1]).toFloat()));
+          }
+        }
+        // convert the spline points into a bezier path
+        QPainterPath path;
+        path.moveTo(splinePoints[0]);
+        /*
+        for(int i = 1; i < splinePoints.size(); i += 3)
+        {
+          path.cubicTo(splinePoints[i], splinePoints[(i + 1) % splinePoints.size()], splinePoints[(i + 2) % splinePoints.size()]);
+        }
+        */
+        // draw curve points
+        for(int i = 1; i < splinePoints.size(); i += 3)
+        {
+          path.cubicTo(splinePoints[i], splinePoints[i + 1], splinePoints[i + 2]);
+        }
+        // draw end point
+        path.lineTo(endPoint);
+        addItem(new QGraphicsPathItem(path));
       }
     }
 

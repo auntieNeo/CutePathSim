@@ -34,7 +34,9 @@ namespace CutePathSim
     m_componentGraph->addComponent(mux02);
     m_componentGraph->addComponent(mux03);
     mux01->getOutput("output")->connect(mux01->getInput("firstInput"));
+    mux01->getOutput("output")->connect(mux03->getInput("secondInput"));
     mux01->getOutput("output")->connect(mux02->getInput("secondInput"));
+    mux02->getOutput("output")->connect(mux03->getInput("firstInput"));
     mux03->getOutput("output")->connect(mux02->getInput("firstInput"));
     m_componentGraph->layoutGraph();
   }
