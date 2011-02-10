@@ -1,6 +1,7 @@
 #include "componentGraph.h"
 #include "common.h"
 #include "component.h"
+#include "edge.h"
 
 #define POINTS_IN_INCH 72
 
@@ -176,9 +177,12 @@ namespace CutePathSim
       component->setY(QVariant(splitPoint[1]).toFloat());
     }
 
-    // TODO: set the curves of the edges
-    foreach(Agedge_t *edge, m_edges)
+    // set the curves of the edges
+    QHashIterator<QPair<Component::Output *, Component::Input *>, Agedge_t *> edgesIterator(m_edges);
+    while(edgesIterator.hasNext())
     {
+      edgesIterator.next();
+      Agedge_t *edge = edgesIterator.value();
       if(agget(edge, "pos") == 0)
       {
         cout << "The edge pos is null" << endl;
@@ -217,7 +221,8 @@ namespace CutePathSim
         }
         // draw end point
         path.lineTo(endPoint);
-        addItem(new QGraphicsPathItem(path));
+        // set the edge item's path
+        m_edgeItems.value(edgesIterator.key())->setPath(path);
       }
     }
 
@@ -244,7 +249,11 @@ namespace CutePathSim
     Q_ASSERT(!m_edges.contains(key));
 
     cout << "adding an edge from " << from->component()->name().toStdString() << " to " << to->component()->name().toStdString() << endl;
+
     m_edges.insert(key, agedge(m_graph, m_nodes[from->component()], m_nodes[to->component()]));
+    Edge *edgeItem = new Edge(from, to);
+    m_edgeItems.insert(key, edgeItem);
+    addItem(edgeItem);
   }
 
   /**
@@ -260,6 +269,10 @@ namespace CutePathSim
     QPair<Component::Output *, Component::Input *> key(from, to);
 
     Q_ASSERT(m_edges.contains(key));
+
+    Edge *edgeItem = m_edgeItems.take(key);
+    removeItem(edgeItem);
+    delete edgeItem;
 
     agDELedge(m_graph, m_edges.take(key));
   }

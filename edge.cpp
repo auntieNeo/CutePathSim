@@ -1,7 +1,12 @@
 #include <QBrush>
+#include <QGraphicsScene>
 #include <QPen>
+#include <QDebug>
 
 #include "edge.h"
+
+#include <iostream>
+using namespace std;
 
 namespace CutePathSim
 {
@@ -31,8 +36,15 @@ namespace CutePathSim
    */
   void Edge::setPath(const QPainterPath &path)
   {
+    if(m_path->scene() == scene())
+    {
+      cout << "The scenes are the same." << endl;
+    }
     prepareGeometryChange();
+    delete m_path;
+    m_path = new EdgePathItem(this);
     m_path->setPath(path);;
+    setPos(m_path->pos());
     update();
     m_path->update();
   }
@@ -44,6 +56,7 @@ namespace CutePathSim
     {
       result |= child->boundingRect();
     }
+    qDebug() << "Bounding rect:" << result;
     return result;
   }
 
@@ -54,7 +67,7 @@ namespace CutePathSim
   Edge::EdgePathItem::EdgePathItem(Edge *parent) : QGraphicsPathItem(parent)
   {
     m_edge = parent;
-    setPen(QPen(QBrush(), 3));
+    setPen(QPen(QBrush(), 10));
   }
 
   Edge::EdgePathItem::~EdgePathItem()

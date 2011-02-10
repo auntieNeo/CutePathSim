@@ -13,6 +13,8 @@
 
 namespace CutePathSim
 {
+  class Edge;
+
   class ComponentGraph : public QGraphicsScene
   {
     Q_OBJECT
@@ -39,6 +41,7 @@ namespace CutePathSim
     private:
 
       QHash<QString, Component *> m_components;
+      QHash<QPair<Component::Output *, Component::Input *>, Edge *> m_edgeItems;
 
       // Graphviz objects
       GVC_t *m_graphvizContext;
