@@ -223,6 +223,8 @@ namespace CutePathSim
         path.lineTo(endPoint);
         // set the edge item's path
         m_edgeItems.value(edgesIterator.key())->setPath(path);
+        // adding the following line works
+//        addItem(new QGraphicsPathItem(path));
       }
     }
 

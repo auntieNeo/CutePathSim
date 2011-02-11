@@ -1,7 +1,7 @@
 CONFIG += debug
 message($$CONFIG)
 VERSION = 0.0.1
-HEADERS += component.h componentGraph.h componentGraphView.h edge.h interface.h mainWindow.h mux.h
+HEADERS += common.h component.h componentGraph.h componentGraphView.h edge.h interface.h mainWindow.h mux.h
 SOURCES += component.cpp componentGraph.cpp componentGraphView.cpp edge.cpp interface.cpp main.cpp mainWindow.cpp mux.cpp
 #FORMS += mainWindow.ui
 #TRANSLATIONS += cutePathSim_ja.ts

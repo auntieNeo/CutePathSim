@@ -3,6 +3,7 @@
 #include <QPen>
 #include <QDebug>
 
+#include "common.h"
 #include "edge.h"
 
 #include <iostream>
@@ -24,6 +25,7 @@ namespace CutePathSim
     m_path = 0;
     m_drawHover = false;
     m_path = new EdgePathItem(this);
+    setZValue(EDGE_Z_VALUE);
   }
 
   Edge::~Edge()
@@ -36,15 +38,16 @@ namespace CutePathSim
    */
   void Edge::setPath(const QPainterPath &path)
   {
+    qDebug() << "entering Edge::setPath()";
+    qDebug() << "pos() of the edge" << pos();
+    qDebug() << "pos() of the path" << m_path->pos();
+    qDebug() << "path: " << path;
     if(m_path->scene() == scene())
     {
-      cout << "The scenes are the same." << endl;
+      cout << "The scenes are the same.";
     }
     prepareGeometryChange();
-    delete m_path;
-    m_path = new EdgePathItem(this);
     m_path->setPath(path);;
-    setPos(m_path->pos());
     update();
     m_path->update();
   }
@@ -56,7 +59,6 @@ namespace CutePathSim
     {
       result |= child->boundingRect();
     }
-    qDebug() << "Bounding rect:" << result;
     return result;
   }
 
@@ -67,7 +69,7 @@ namespace CutePathSim
   Edge::EdgePathItem::EdgePathItem(Edge *parent) : QGraphicsPathItem(parent)
   {
     m_edge = parent;
-    setPen(QPen(QBrush(), 10));
+    setPen(QPen(QBrush(Qt::SolidPattern), 3));
   }
 
   Edge::EdgePathItem::~EdgePathItem()
@@ -76,13 +78,13 @@ namespace CutePathSim
 
   void Edge::EdgePathItem::hoverEnterEvent(QGraphicsSceneHoverEvent *)
   {
-    setPen(QPen(QBrush(), 5));
+    setPen(QPen(QBrush(Qt::SolidPattern), 5));
     update();
   }
 
   void Edge::EdgePathItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
   {
-    setPen(QPen(QBrush(), 3));
+    setPen(QPen(QBrush(Qt::SolidPattern), 3));
     update();
   }
 }
