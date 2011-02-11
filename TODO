@@ -1,4 +1,9 @@
 Key - [ ] brackets denote required features
       ( ) brackets denote desired features
+Simulation Requirements:
+[ ] GET operator
+[ ] ADD operator
+Assembler Requirements:
 GUI Reqirements:
 [ ] Display components on a QGraphicsScene
+
