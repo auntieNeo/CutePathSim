@@ -70,6 +70,7 @@ namespace CutePathSim
   {
     m_edge = parent;
     setPen(QPen(QBrush(Qt::SolidPattern), 3));
+    setAcceptHoverEvents(true);
   }
 
   Edge::EdgePathItem::~EdgePathItem()
@@ -78,8 +79,9 @@ namespace CutePathSim
 
   void Edge::EdgePathItem::hoverEnterEvent(QGraphicsSceneHoverEvent *)
   {
-    setPen(QPen(QBrush(Qt::SolidPattern), 5));
+    setPen(QPen(QBrush(Qt::SolidPattern), 8));
     update();
+    // FIXME: make a hover threashold so that it doesn't blink as much
   }
 
   void Edge::EdgePathItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
