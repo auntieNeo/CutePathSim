@@ -1,4 +1,4 @@
-namespace Kanagram
+namespace CutePathSim
 {
-  const int BOARD_MARGIN = 20, TILE_MARGIN = 10, TILE_WIDTH = 100, TILE_HEIGHT = 100, TILE_HOLDER_HEIGHT = 0;
+  const int EDGE_Z_VALUE = -1;
 }
