@@ -467,7 +467,7 @@ namespace CutePathSim
   void Component::Output::writeInt(unsigned int integer, bool bigEndian)
   {
     Q_ASSERT(width() == 32);
-    unsigned char *buffer = new unsigned char[sizeof(unsigned int)];
+    unsigned char buffer[sizeof(unsigned int)];
     if(bigEndian)
     {
       qToBigEndian(integer, buffer);
@@ -477,7 +477,6 @@ namespace CutePathSim
       qToLittleEndian(integer, buffer);
     }
     write(buffer);
-    delete buffer;
   }
 
   /**
