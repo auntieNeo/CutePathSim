@@ -1,5 +1,3 @@
-#include <QDebug>
-
 #include "testComponent.h"
 
 namespace CutePathSim
@@ -37,12 +35,10 @@ namespace CutePathSim
     // write to the output
     if(multiplyFlag)
     {
-      qDebug() << "Result in TestComponent:" << first << "*" << second << "=" << first * second;
       m_output->writeInt(first * second);
     }
     else
     {
-      qDebug() << "Result in TestComponent:" << first << "+" << second << "=" << first + second;
       m_output->writeInt(first + second);
     }
   }

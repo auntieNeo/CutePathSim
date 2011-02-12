@@ -9,6 +9,7 @@
 #include "testComponent.h"
 #include "intGeneratorComponent.h"
 #include "boolGeneratorComponent.h"
+#include "printIntComponent.h"
 
 namespace CutePathSim
 {
@@ -45,20 +46,24 @@ namespace CutePathSim
     mux03->getOutput("output")->connect(mux02->getInput("firstInput"));
     */
 
+    // construct all the components and add them to the graph scene
     TestComponent *test01 = new TestComponent("Test_01");
     IntGeneratorComponent *outputs42 = new IntGeneratorComponent("Outputs_42", 42);
     IntGeneratorComponent *outputs5 = new IntGeneratorComponent("Outputs_5", 5);
     BoolGeneratorComponent *outputsTrue = new BoolGeneratorComponent("Outputs_True", true);
+    PrintIntComponent *printInt = new PrintIntComponent("Print_Int");
     m_componentGraphScene->addComponent(test01);
     m_componentGraphScene->addComponent(outputs42);
     m_componentGraphScene->addComponent(outputs5);
     m_componentGraphScene->addComponent(outputsTrue);
+    m_componentGraphScene->addComponent(printInt);
 
 
     // manually feed data into the test component, to test it
     outputs42->getOutput("output")->connect(test01->getInput("input_01"));
     outputs5->getOutput("output")->connect(test01->getInput("input_02"));
     outputsTrue->getOutput("output")->connect(test01->getInput("multiplyFlag"));
+    test01->getOutput("output")->connect(printInt->getInput("input"));
 
     m_componentGraphScene->layoutGraph();
 
@@ -67,6 +72,7 @@ namespace CutePathSim
     outputs5->run();
     outputsTrue->run();
     test01->run();
+    printInt->run();
   }
 
   MainWindow::~MainWindow()
