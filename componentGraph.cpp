@@ -236,12 +236,7 @@ namespace CutePathSim
 
   QRectF ComponentGraph::boundingRect() const
   {
-    QRectF result;
-    foreach(QGraphicsItem *child, childItems())
-    {
-      result |= child->boundingRect();
-    }
-    return result;
+    return childrenBoundingRect();
   }
 
   void ComponentGraph::paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *)
