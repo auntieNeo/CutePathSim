@@ -31,7 +31,7 @@ namespace CutePathSim
     m_secondInput->read(&m_secondInputBuffer);
 
     // write to the output
-    char result = m_firstInputBuffer ^ m_secondInputBuffer;  // FIXME: I don't know how a mux works, so this is just xor. Someone should implement this properly. :P
+    unsigned char result = m_firstInputBuffer ^ m_secondInputBuffer;  // FIXME: I don't know how a mux works, so this is just xor. Someone should implement this properly. :P
     m_output->write(&result);
   }
 }

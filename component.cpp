@@ -1,6 +1,8 @@
 #include <QGraphicsDropShadowEffect>
+#include <QGraphicsScene>
 #include <QGraphicsSceneDragDropEvent>
 #include <QPainter>
+#include <QtEndian>
 
 #include "component.h"
 #include "componentGraph.h"
@@ -33,11 +35,33 @@ namespace CutePathSim
     }
     m_textWidth = QFontMetrics(*m_font).size(Qt::TextSingleLine, name).width();
 
-    m_componentGraph = 0;
+    m_parentGraph = 0;
+    m_subGraph = 0;
+
+    m_layout = LABELED;
   }
 
   Component::~Component()
   {
+    // delete the items that aren't currently in any scene
+    foreach(Input *input, m_inputs)
+    {
+      if(input->scene() == 0)
+      {
+        delete input;
+      }
+    }
+    foreach(Output *output, m_outputs)
+    {
+      if(output->scene() == 0)
+      {
+        delete output;
+      }
+    }
+    if(m_subGraph != 0 && m_subGraph->scene() == 0)
+    {
+      delete m_subGraph;
+    }
   }
 
   /**
@@ -83,14 +107,41 @@ namespace CutePathSim
   {
     // FIXME: properly handle the edge case with no child items or long component names
     // find the max width and the total height of our child items, because they are interfaces that we will display in a vertical list
-    qreal totalChildHeight = 0;
-    foreach(QGraphicsItem *item, childItems())
+    switch(m_layout)
     {
-      totalChildHeight += item->boundingRect().height();
+      case LABELED:
+        {
+          qreal totalInterfaceHeight = 0;
+          foreach(QGraphicsItem *item, m_inputs)
+          {
+            totalInterfaceHeight += item->boundingRect().height();
+          }
+          foreach(QGraphicsItem *item, m_outputs)
+          {
+            totalInterfaceHeight += item->boundingRect().height();
+          }
+          qreal width = LEFT_MARGIN + maxInterfaceWidth() + RIGHT_MARGIN;
+          qreal height = TOP_MARGIN + totalInterfaceHeight + INTERFACE_MARGIN * (m_inputs.size() + m_outputs.size() - 1) + BOTTOM_MARGIN;
+          return QRect(-width / 2, -height / 2, width, height);
+        }
+      case EXPANDED:
+        {
+          qreal totalInterfaceWidth = 0;
+          foreach(QGraphicsItem *item, m_inputs)
+          {
+            totalInterfaceWidth += item->boundingRect().width();
+          }
+          foreach(QGraphicsItem *item, m_outputs)
+          {
+            totalInterfaceWidth += item->boundingRect().width();
+          }
+          qreal graphDimensions = totalInterfaceWidth + INTERFACE_MARGIN * (m_inputs.size() + m_outputs.size() - 1);
+          qreal width = LEFT_MARGIN + totalInterfaceWidth + INTERFACE_MARGIN * (m_inputs.size() + m_outputs.size() - 1) + RIGHT_MARGIN;
+          qreal height = TOP_MARGIN + maxInterfaceHeight() + BOTTOM_MARGIN + graphDimensions + BOTTOM_MARGIN;
+          return QRect(-width / 2, -height / 2, width, height);
+        }
     }
-    qreal width = LEFT_MARGIN + maxInterfaceWidth() + RIGHT_MARGIN;
-    qreal height = TOP_MARGIN + totalChildHeight + INTERFACE_MARGIN * (childItems().size() - 1) + BOTTOM_MARGIN;
-    return QRect(-width / 2, -height / 2, width, height);
+    return QRect();
   }
 
   void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
@@ -181,7 +232,7 @@ namespace CutePathSim
   {
     m_width = width;
     m_bufferSize = width / 8 + ((width % 8) ? 1 : 0);
-    m_inputBuffer = new char[m_bufferSize];
+    m_inputBuffer = new unsigned char[m_bufferSize];
     m_component = component;
     m_connection = 0;
   }
@@ -221,8 +272,8 @@ namespace CutePathSim
     m_connect(output);
 
     // tell the component graph and Graphviz about our new edge
-    component()->m_componentGraph->addEdge(output, this);
-    component()->m_componentGraph->prepareLayoutGraph();
+    component()->parentGraph()->addEdge(output, this);
+    component()->parentGraph()->prepareLayoutGraph();
   }
 
   /**
@@ -234,8 +285,8 @@ namespace CutePathSim
       return;
 
     // tell the component graph and Graphviz to remove the edge
-    component()->m_componentGraph->removeEdge(m_connection, this);
-    component()->m_componentGraph->prepareLayoutGraph();
+    component()->parentGraph()->removeEdge(m_connection, this);
+    component()->parentGraph()->prepareLayoutGraph();
 
     m_connection->m_disconnect(this);
     m_disconnect();
@@ -248,11 +299,43 @@ namespace CutePathSim
    *
    * \warning \a buffer should be at least as large as bufferSize().
    *
-   * \sa bufferSize() Component::Output::write()
+   * \sa bufferSize() readBool() readInt() Component::Output::write()
    */
-  void Component::Input::read(char *buffer)
+  void Component::Input::read(unsigned char *buffer)
   {
     memcpy(buffer, m_inputBuffer, m_bufferSize);
+  }
+
+  /**
+   * Convenience method that reads a boolean value from the input buffer.
+   *
+   * \warning This should not be used unless width() == 1.
+   *
+   * \sa read() readInt() Output::writeBool()
+   */
+  bool Component::Input::readBool()
+  {
+    Q_ASSERT(width() == 1);
+    return bool(*m_inputBuffer);  // FIXME: check if this code only uses the first byte, or if it reads four bytes
+  }
+
+  /**
+   * Convenience method that returns an unsigned int value from the input buffer.
+   *
+   * One can specify whether or not to interpret the integer stored in the buffer as big endian or little endian by changing the \a bigEndian flag. If true, the first byte in the input buffer will be used as the most significant byte in the integer, and the last byte as the least significant. If false, the first byte will be used as the least significant, and the last byte as the most significant. Endianness of the returned integer depends on the system.
+   *
+   * \warning This should not be used unless width() == 32.
+   *
+   * \sa read() readBool()
+   */
+  unsigned int Component::Input::readInt(bool bigEndian)
+  {
+    Q_ASSERT(width() == 32);
+    if(bigEndian)
+    {
+      return qFromBigEndian<qint32>(m_inputBuffer);
+    }
+    return qFromLittleEndian<qint32>(m_inputBuffer);
   }
 
   /**
@@ -278,7 +361,7 @@ namespace CutePathSim
    */
   Component::Output::Output(const QString &name, int width, Component *component) : Interface(name, component)
   {
-    m_width = 1;
+    m_width = width;
     m_bufferSize = width / 8 + ((width % 8) ? 1 : 0);
     m_component = component;
   }
@@ -315,8 +398,8 @@ namespace CutePathSim
     input->m_connect(this);
 
     // tell the component graph and Graphviz about our new edge
-    component()->m_componentGraph->addEdge(this, input);
-    component()->m_componentGraph->prepareLayoutGraph();
+    component()->parentGraph()->addEdge(this, input);
+    component()->parentGraph()->prepareLayoutGraph();
   }
 
   /**
@@ -330,8 +413,8 @@ namespace CutePathSim
     if(m_connections.contains(input))
     {
       // tell the component graph and Graphviz to remove the edge
-      component()->m_componentGraph->removeEdge(this, input);
-      component()->m_componentGraph->prepareLayoutGraph();
+      component()->parentGraph()->removeEdge(this, input);
+      component()->parentGraph()->prepareLayoutGraph();
 
       input->m_disconnect();
       m_disconnect(input);
@@ -351,12 +434,49 @@ namespace CutePathSim
    *
    * \sa bufferSize() Component::Input::read()
    */
-  void Component::Output::write(const char *data)
+  void Component::Output::write(const unsigned char *data)
   {
     foreach(Input *input, m_connections)
     {
       input->writeToInput(data);
     }
+  }
+
+  /**
+   * Convenience method that writes a boolean value to all of the inputs connected to this output.
+   *
+   * \warning This should not be used unless width() == 1.
+   *
+   * \sa write() writeInt() Input::readBool()
+   */
+  void Component::Output::writeBool(bool boolean)
+  {
+    Q_ASSERT(width() == 1);
+    write(reinterpret_cast<unsigned char *>(&boolean));
+  }
+
+  /**
+   * Convenience method that writes an integer value to all of the inputs connected to this output.
+   *
+   * One can specify whether or not to write the integer to the inputs in big endian or little endian byte order by changing the \a bigEndian flag. If true, the most significant byte will be written first, and the least significant byte last. If false, the least significant byte will be written first, and the most significant byte last. Endianness of \a integer should be in the system's native byte order.
+   *
+   * \warning This should not be used unless width() == 32.
+   *
+   * \sa write() writeBool() Input::readInt()
+   */
+  void Component::Output::writeInt(unsigned int integer, bool bigEndian)
+  {
+    Q_ASSERT(width() == 32);
+    unsigned char buffer[sizeof(unsigned int)];
+    if(bigEndian)
+    {
+      qToBigEndian(integer, buffer);
+    }
+    else
+    {
+      qToLittleEndian(integer, buffer);
+    }
+    write(buffer);
   }
 
   /**
@@ -368,19 +488,74 @@ namespace CutePathSim
 
   void Component::repositionInterfaces()
   {
-    // repositions the interfaces on the scene in alphabetical order
-    qreal currentY = boundingRect().y() + TOP_MARGIN;
-    foreach(Interface *interface, m_inputs)
+    switch(m_layout)
     {
-      interface->setPos(0, currentY + interface->boundingRect().height() / 2);
-      currentY += interface->boundingRect().height();
-      currentY += INTERFACE_MARGIN;
-    }
-    foreach(Interface *interface, m_outputs)
-    {
-      interface->setPos(0, currentY + interface->boundingRect().height() / 2);
-      currentY += interface->boundingRect().height();
-      currentY += INTERFACE_MARGIN;
+      case LABELED:
+        {
+          // repositions the interfaces into a vertical list in alphabetical order
+          qreal currentY = boundingRect().y() + TOP_MARGIN;
+          foreach(Interface *interface, m_inputs)
+          {
+            if(interface->scene() != scene())
+            {
+              scene()->addItem(interface);  // add the item back into the scene
+            }
+            interface->setPos(0, currentY + interface->boundingRect().height() / 2);
+            currentY += interface->boundingRect().height();
+            currentY += INTERFACE_MARGIN;
+          }
+          foreach(Interface *interface, m_outputs)
+          {
+            if(interface->scene() != scene())
+            {
+              scene()->addItem(interface);  // add the item back into the scene
+            }
+            interface->setPos(0, currentY + interface->boundingRect().height() / 2);
+            currentY += interface->boundingRect().height();
+            currentY += INTERFACE_MARGIN;
+          }
+          // remove the graph from the scene as we're not displaying it
+          if(m_subGraph != 0 && m_subGraph->scene() != 0)
+          {
+            m_subGraph->scene()->removeItem(m_subGraph);
+          }
+        }
+        break;
+      case EXPANDED:
+        {
+          // repositions the interfaces into a horizontal list at the top, with the sub-graph underneath them
+          QRectF boundingRect = this->boundingRect();
+          qreal currentX = boundingRect.x() + LEFT_MARGIN;
+          qreal maxInterfaceHeight = this->maxInterfaceHeight();
+          foreach(Interface *interface, m_inputs)
+          {
+            if(interface->scene() != scene())
+            {
+              scene()->addItem(interface);  // add the item back into the scene
+            }
+            interface->setPos(currentX + interface->boundingRect().width() / 2, boundingRect.y() + TOP_MARGIN + maxInterfaceHeight / 2);
+            currentX += interface->boundingRect().width();
+            currentX += INTERFACE_MARGIN;
+          }
+          foreach(Interface *interface, m_outputs)
+          {
+            if(interface->scene() != scene())
+            {
+              scene()->addItem(interface);  // add the item back into the scene
+            }
+            interface->setPos(currentX + interface->boundingRect().width() / 2, boundingRect.y() + TOP_MARGIN + maxInterfaceHeight / 2);
+            currentX += interface->boundingRect().width();
+            currentX += INTERFACE_MARGIN;
+          }
+          // add the graph back to the scene so it can be displayed
+          if(m_subGraph != 0 && m_subGraph->scene() != 0)
+          {
+            scene()->addItem(m_subGraph);
+          }
+        }
+        break;
+      default:
+        ;
     }
   }
 
@@ -403,6 +578,27 @@ namespace CutePathSim
       }
     }
     return maxInterfaceWidth;
+  }
+
+  qreal Component::maxInterfaceHeight() const
+  {
+    // returns the height of the tallest interface in the component
+    qreal maxInterfaceHeight = 0;
+    foreach(QGraphicsItem *item, m_inputs)
+    {
+      if(item->boundingRect().height() > maxInterfaceHeight)
+      {
+        maxInterfaceHeight = item->boundingRect().height();
+      }
+    }
+    foreach(QGraphicsItem *item, m_outputs)
+    {
+      if(item->boundingRect().height() > maxInterfaceHeight)
+      {
+        maxInterfaceHeight = item->boundingRect().height();
+      }
+    }
+    return maxInterfaceHeight;
   }
 
   QFont *Component::m_font = 0;

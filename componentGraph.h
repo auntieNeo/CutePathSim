@@ -1,11 +1,11 @@
-#ifndef GRAPH_H_
-#define GRAPH_H_
+#ifndef COMPONENT_GRAPH_H_
+#define COMPONENT_GRAPH_H_
 
 // These Graphviz headers conflict for some reason. 
 //#include <graphviz/graph.h>
 #include <graphviz/gvc.h>
 //extern void agdeledge(Agraph_t *g, Agedge_t *e);
-#include <QGraphicsScene>
+#include <QGraphicsItem>
 #include <QPair>
 #include <QSet>
 
@@ -15,15 +15,13 @@ namespace CutePathSim
 {
   class Edge;
 
-  class ComponentGraph : public QGraphicsScene
+  class ComponentGraph : public QGraphicsItem
   {
-    Q_OBJECT
-
     friend class Component::Input;
     friend class Component::Output;
 
     public:
-      ComponentGraph(QObject *parent = 0);
+      ComponentGraph(QGraphicsItem *parent = 0);
       ~ComponentGraph();
 
       bool addComponent(Component *component);
@@ -31,6 +29,11 @@ namespace CutePathSim
       void prepareLayoutGraph() { m_layoutGraph = true; }
 
       void layoutGraph();  // TODO: make this private
+
+      void run();
+
+      QRectF boundingRect() const;
+      void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
     protected:
       void dragMoveEvent(QGraphicsSceneDragDropEvent *event);

@@ -6,7 +6,7 @@
 
 namespace CutePathSim
 {
-  class ComponentGraph;
+  class ComponentGraphScene;
   class ComponentGraphView;
 
   class MainWindow : public QMainWindow
@@ -23,7 +23,7 @@ namespace CutePathSim
 
     private:
       QMenu *m_fileMenu, *m_newSimulationMenu, *m_openSimulationMenu;
-      ComponentGraph *m_componentGraph;
+      ComponentGraphScene *m_componentGraphScene;
       ComponentGraphView *m_componentGraphView;
   };
 }

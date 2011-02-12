@@ -1,3 +1,5 @@
+#include <QGraphicsScene>
+
 #include "componentGraph.h"
 #include "common.h"
 #include "component.h"
@@ -80,16 +82,12 @@ namespace CutePathSim
    * \class ComponentGraph
    * The ComponentGraph class stores, arranges, and executes the components in a digital system.
    *
-   * ComponentGraph inherits from QGraphicsScene. The graph can be displayed using a ComponentGraphView object.
-   *
-   * Components are arranged on the graph automatically using Graphviz.
+   * Components are arranged on the graph automatically using Graphviz. ComponentGraph manages the graph's representation in Graphviz' library, and positions its items with the dot graphing algorithm. Items are positioned within an approximately square aspect ratio.
    *
    * Execution of the graph is determined using a topological sorting algorithm. The result of the sorting is then executed sequentially.
    */
-  ComponentGraph::ComponentGraph(QObject *parent) : QGraphicsScene(parent)
+  ComponentGraph::ComponentGraph(QGraphicsItem *parent) : QGraphicsItem(parent)
   {
-    setBackgroundBrush(QBrush(Qt::white));
-
     // initilize graphviz context and graph
     m_graphvizContext = gvContext();
     m_graph = agopen(const_cast<char *>("graph"), AGDIGRAPH);  // non-strict, directed graph
@@ -123,9 +121,9 @@ namespace CutePathSim
     {
       return false;
     }
-    addItem(component);
+    component->setParentItem(this);
     m_components.insert(component->name(), component);
-    component->m_componentGraph = this;
+    component->setParentGraph(this);
 
     // make a Graphviz node
     m_nodes.insert(component, agnode(m_graph, const_cast<char *>(qPrintable(component->name()))));
@@ -144,6 +142,7 @@ namespace CutePathSim
   // FIXME: find some hook with which to actually layout the graph <_<
   void ComponentGraph::layoutGraph()  // TODO: make this private
   {
+    prepareGeometryChange();
     // set the size of all of the components
     // FIXME: figure out how to do this only when the component size changes
     foreach(Component *component, m_components)
@@ -231,6 +230,20 @@ namespace CutePathSim
     gvFreeLayout(m_graphvizContext, m_graph);
   }
 
+  QRectF ComponentGraph::boundingRect() const
+  {
+    QRectF result;
+    foreach(QGraphicsItem *child, childItems())
+    {
+      result |= child->boundingRect();
+    }
+    return result;
+  }
+
+  void ComponentGraph::paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *)
+  {
+  }
+
   void ComponentGraph::dragMoveEvent(QGraphicsSceneDragDropEvent * /*event*/)
   {
     cout << "inside ComponentGraph::dragMoveEvent()" << endl;
@@ -253,9 +266,9 @@ namespace CutePathSim
     cout << "adding an edge from " << from->component()->name().toStdString() << " to " << to->component()->name().toStdString() << endl;
 
     m_edges.insert(key, agedge(m_graph, m_nodes[from->component()], m_nodes[to->component()]));
-    Edge *edgeItem = new Edge(from, to);
+    Edge *edgeItem = new Edge(from, to, this);
     m_edgeItems.insert(key, edgeItem);
-    addItem(edgeItem);
+    // TODO: layout graph
   }
 
   /**
@@ -273,9 +286,10 @@ namespace CutePathSim
     Q_ASSERT(m_edges.contains(key));
 
     Edge *edgeItem = m_edgeItems.take(key);
-    removeItem(edgeItem);
+    scene()->removeItem(edgeItem);
     delete edgeItem;
 
     agDELedge(m_graph, m_edges.take(key));
+    // TODO: layout graph
   }
 }

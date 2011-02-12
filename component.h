@@ -30,7 +30,9 @@ namespace CutePathSim
           Output *connection() { return m_connection; }
           void connect(Output *output);
           void disconnect();
-          void read(char *buffer);
+          void read(unsigned char *buffer);
+          bool readBool();
+          unsigned int readInt(bool bigEndian = false);
           int bufferSize() { return m_bufferSize; }
 
         protected:
@@ -38,12 +40,12 @@ namespace CutePathSim
           void m_disconnect() { m_connection = 0; }
           // to avoid recursions with Output::connect()
           void m_connect(Output *output) { m_connection = output; }
-          void writeToInput(const char *data) { memcpy(m_inputBuffer, data, m_bufferSize); }
+          void writeToInput(const unsigned char *data) { memcpy(m_inputBuffer, data, m_bufferSize); }
           QColor color() const { return QColor(0xA6, 0xD6, 0xA6); }  // light green
 
         private:
           int m_width, m_bufferSize;
-          char *m_inputBuffer;
+          unsigned char *m_inputBuffer;
           Component *m_component;
           Output *m_connection;
       };
@@ -61,7 +63,9 @@ namespace CutePathSim
           QSet<Input *> connections() { return m_connections; }
           void connect(Input *input);
           void disconnect(Input *input);
-          void write(const char *data);
+          void write(const unsigned char *data);
+          void writeBool(bool boolean);
+          void writeInt(unsigned int integer, bool bigEndian = false);
           int bufferSize() { return m_bufferSize; }
 
         protected:
@@ -76,6 +80,8 @@ namespace CutePathSim
           Component *m_component;
           QSet<Input *> m_connections;
       };
+
+      enum Layout { MINIMIZED = 0, LABELED, EXPANDED };
 
       Component(const QString &name, QGraphicsItem *parent = 0);
       virtual ~Component();
@@ -95,8 +101,11 @@ namespace CutePathSim
       QRectF boundingRect() const;
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
+      ComponentGraph *parentGraph() { return m_parentGraph; }
+      ComponentGraph *subGraph() { return m_subGraph; }
+
     protected:
-      ComponentGraph *m_componentGraph;
+      void setParentGraph(ComponentGraph *graph) { m_parentGraph = graph; }
 
       void mousePressEvent(QGraphicsSceneMouseEvent *event);
       void mouseDragEvent(QGraphicsSceneDragDropEvent *event);
@@ -119,7 +128,15 @@ namespace CutePathSim
       QMap<QString, Output *> m_outputs;
 
       void repositionInterfaces();
+
+    private:
+      ComponentGraph *m_parentGraph;
+      ComponentGraph *m_subGraph;
+
+      Layout m_layout;
+
       qreal maxInterfaceWidth() const;
+      qreal maxInterfaceHeight() const;
   };
 }
 

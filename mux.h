@@ -18,7 +18,7 @@ namespace CutePathSim
     private:
       Input *m_firstInput, *m_secondInput;
       Output *m_output;
-      char m_firstInputBuffer, m_secondInputBuffer;
+      unsigned char m_firstInputBuffer, m_secondInputBuffer;
   };
 }
 
