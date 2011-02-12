@@ -1,4 +1,5 @@
 #include <QGraphicsDropShadowEffect>
+#include <QGraphicsScene>
 #include <QGraphicsSceneDragDropEvent>
 #include <QPainter>
 
@@ -33,11 +34,33 @@ namespace CutePathSim
     }
     m_textWidth = QFontMetrics(*m_font).size(Qt::TextSingleLine, name).width();
 
-    m_componentGraph = 0;
+    m_parentGraph = 0;
+    m_subGraph = 0;
+
+    m_layout = LABELED;
   }
 
   Component::~Component()
   {
+    // delete the items that aren't currently in any scene
+    foreach(Input *input, m_inputs)
+    {
+      if(input->scene() == 0)
+      {
+        delete input;
+      }
+    }
+    foreach(Output *output, m_outputs)
+    {
+      if(output->scene() == 0)
+      {
+        delete output;
+      }
+    }
+    if(m_subGraph != 0 && m_subGraph->scene() == 0)
+    {
+      delete m_subGraph;
+    }
   }
 
   /**
@@ -83,14 +106,24 @@ namespace CutePathSim
   {
     // FIXME: properly handle the edge case with no child items or long component names
     // find the max width and the total height of our child items, because they are interfaces that we will display in a vertical list
-    qreal totalChildHeight = 0;
-    foreach(QGraphicsItem *item, childItems())
+    switch(m_layout)
     {
-      totalChildHeight += item->boundingRect().height();
+      case LABELED:
+        {
+          qreal totalInterfaceHeight = 0;
+          foreach(QGraphicsItem *item, m_inputs)
+          {
+            totalInterfaceHeight += item->boundingRect().height();
+          }
+          foreach(QGraphicsItem *item, m_outputs)
+          {
+            totalInterfaceHeight += item->boundingRect().height();
+          }
+          qreal width = LEFT_MARGIN + maxInterfaceWidth() + RIGHT_MARGIN;
+          qreal height = TOP_MARGIN + totalInterfaceHeight + INTERFACE_MARGIN * (childItems().size() - 1) + BOTTOM_MARGIN;
+          return QRect(-width / 2, -height / 2, width, height);
+        }
     }
-    qreal width = LEFT_MARGIN + maxInterfaceWidth() + RIGHT_MARGIN;
-    qreal height = TOP_MARGIN + totalChildHeight + INTERFACE_MARGIN * (childItems().size() - 1) + BOTTOM_MARGIN;
-    return QRect(-width / 2, -height / 2, width, height);
   }
 
   void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
@@ -221,8 +254,8 @@ namespace CutePathSim
     m_connect(output);
 
     // tell the component graph and Graphviz about our new edge
-    component()->m_componentGraph->addEdge(output, this);
-    component()->m_componentGraph->prepareLayoutGraph();
+    component()->parentGraph()->addEdge(output, this);
+    component()->parentGraph()->prepareLayoutGraph();
   }
 
   /**
@@ -234,8 +267,8 @@ namespace CutePathSim
       return;
 
     // tell the component graph and Graphviz to remove the edge
-    component()->m_componentGraph->removeEdge(m_connection, this);
-    component()->m_componentGraph->prepareLayoutGraph();
+    component()->parentGraph()->removeEdge(m_connection, this);
+    component()->parentGraph()->prepareLayoutGraph();
 
     m_connection->m_disconnect(this);
     m_disconnect();
@@ -315,8 +348,8 @@ namespace CutePathSim
     input->m_connect(this);
 
     // tell the component graph and Graphviz about our new edge
-    component()->m_componentGraph->addEdge(this, input);
-    component()->m_componentGraph->prepareLayoutGraph();
+    component()->parentGraph()->addEdge(this, input);
+    component()->parentGraph()->prepareLayoutGraph();
   }
 
   /**
@@ -330,8 +363,8 @@ namespace CutePathSim
     if(m_connections.contains(input))
     {
       // tell the component graph and Graphviz to remove the edge
-      component()->m_componentGraph->removeEdge(this, input);
-      component()->m_componentGraph->prepareLayoutGraph();
+      component()->parentGraph()->removeEdge(this, input);
+      component()->parentGraph()->prepareLayoutGraph();
 
       input->m_disconnect();
       m_disconnect(input);
@@ -368,19 +401,36 @@ namespace CutePathSim
 
   void Component::repositionInterfaces()
   {
-    // repositions the interfaces on the scene in alphabetical order
-    qreal currentY = boundingRect().y() + TOP_MARGIN;
-    foreach(Interface *interface, m_inputs)
+    switch(m_layout)
     {
-      interface->setPos(0, currentY + interface->boundingRect().height() / 2);
-      currentY += interface->boundingRect().height();
-      currentY += INTERFACE_MARGIN;
-    }
-    foreach(Interface *interface, m_outputs)
-    {
-      interface->setPos(0, currentY + interface->boundingRect().height() / 2);
-      currentY += interface->boundingRect().height();
-      currentY += INTERFACE_MARGIN;
+      case LABELED:
+        {
+          // repositions the interfaces on the scene in alphabetical order
+          qreal currentY = boundingRect().y() + TOP_MARGIN;
+          foreach(Interface *interface, m_inputs)
+          {
+            if(interface->scene() != scene())
+            {
+              scene()->addItem(interface);  // add the item back into the scene
+            }
+            interface->setPos(0, currentY + interface->boundingRect().height() / 2);
+            currentY += interface->boundingRect().height();
+            currentY += INTERFACE_MARGIN;
+          }
+          foreach(Interface *interface, m_outputs)
+          {
+            if(interface->scene() != scene())
+            {
+              scene()->addItem(interface);  // add the item back into the scene
+            }
+            interface->setPos(0, currentY + interface->boundingRect().height() / 2);
+            currentY += interface->boundingRect().height();
+            currentY += INTERFACE_MARGIN;
+          }
+        }
+        break;
+      default:
+        ;
     }
   }
 

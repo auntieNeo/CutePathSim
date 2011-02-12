@@ -77,6 +77,8 @@ namespace CutePathSim
           QSet<Input *> m_connections;
       };
 
+      enum Layout { MINIMIZED = 0, LABELED, EXPANDED };
+
       Component(const QString &name, QGraphicsItem *parent = 0);
       virtual ~Component();
 
@@ -95,8 +97,11 @@ namespace CutePathSim
       QRectF boundingRect() const;
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
+      ComponentGraph *parentGraph() { return m_parentGraph; }
+      ComponentGraph *subGraph() { return m_subGraph; }
+
     protected:
-      ComponentGraph *m_componentGraph;
+      void setParentGraph(ComponentGraph *graph) { m_parentGraph = graph; }
 
       void mousePressEvent(QGraphicsSceneMouseEvent *event);
       void mouseDragEvent(QGraphicsSceneDragDropEvent *event);
@@ -120,6 +125,12 @@ namespace CutePathSim
 
       void repositionInterfaces();
       qreal maxInterfaceWidth() const;
+
+    private:
+      ComponentGraph *m_parentGraph;
+      ComponentGraph *m_subGraph;
+
+      Layout m_layout;
   };
 }
 

@@ -123,7 +123,7 @@ namespace CutePathSim
     }
     component->setParentItem(this);
     m_components.insert(component->name(), component);
-    component->m_componentGraph = this;
+    component->setParentGraph(this);
 
     // make a Graphviz node
     m_nodes.insert(component, agnode(m_graph, const_cast<char *>(qPrintable(component->name()))));
