@@ -1,7 +1,7 @@
 #include <QMenuBar>
 #include <QSignalMapper>
 
-#include "componentGraph.h"
+#include "componentGraphScene.h"
 #include "componentGraphView.h"
 #include "mainWindow.h"
 #include "mux.h"
@@ -20,8 +20,8 @@ namespace CutePathSim
 
     // add the graph view
     m_componentGraphView = new ComponentGraphView(this);
-    m_componentGraph = new ComponentGraph();
-    m_componentGraphView->setScene(m_componentGraph);
+    m_componentGraphScene = new ComponentGraphScene();
+    m_componentGraphView->setScene(m_componentGraphScene);
     setCentralWidget(m_componentGraphView);
 
     // FIXME: remove this test code
@@ -30,15 +30,15 @@ namespace CutePathSim
     mux01 = new Mux("Mux_01");
     mux02 = new Mux("Mux_02");
     mux03 = new Mux("Mux_03");
-    m_componentGraph->addComponent(mux01);
-    m_componentGraph->addComponent(mux02);
-    m_componentGraph->addComponent(mux03);
+    m_componentGraphScene->addComponent(mux01);
+    m_componentGraphScene->addComponent(mux02);
+    m_componentGraphScene->addComponent(mux03);
     mux01->getOutput("output")->connect(mux01->getInput("firstInput"));
     mux01->getOutput("output")->connect(mux03->getInput("secondInput"));
     mux01->getOutput("output")->connect(mux02->getInput("secondInput"));
     mux02->getOutput("output")->connect(mux03->getInput("firstInput"));
     mux03->getOutput("output")->connect(mux02->getInput("firstInput"));
-    m_componentGraph->layoutGraph();
+    m_componentGraphScene->layoutGraph();
   }
 
   MainWindow::~MainWindow()
@@ -50,7 +50,7 @@ namespace CutePathSim
     delete m_openSimulationMenu;
     */
     delete m_componentGraphView;
-    delete m_componentGraph;
+    delete m_componentGraphScene;
   }
 
   void MainWindow::newSimulation()
