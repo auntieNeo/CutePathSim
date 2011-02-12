@@ -4,14 +4,17 @@ namespace CutePathSim
 {
   /**
    * Constructs a component used for demonstrating and testing the features of Component.
+   *
+   * This component happens to add if the multiply flag is false, and multiply if multiplyFlag is true.
    */
   TestComponent::TestComponent(const QString &name, QGraphicsItem *parent) : Component(name, parent)
   {
     // construct the inputs and add them to the component's list of inputs
-    addInput(m_firstInput = new Input("firstInput", 1, this));
-    addInput(m_secondInput = new Input("secondInput", 1, this));
+    addInput(m_firstInput = new Input("firstInput", 32, this));
+    addInput(m_secondInput = new Input("secondInput", 32, this));
+    addInput(m_multiplyFlag = new Input("multiplyFlag", 1, this));
     // construct the output and add it to the component's list of outputs
-    addOutput(m_output = new Output("output", 1, this));
+    addOutput(m_output = new Output("output", 32, this));
   }
 
   TestComponent::~TestComponent()
@@ -25,11 +28,18 @@ namespace CutePathSim
   void TestComponent::run()
   {
     // read from the inputs
-    m_firstInput->read(&m_firstInputBuffer);
-    m_secondInput->read(&m_secondInputBuffer);
+    unsigned int first = m_firstInput->readInt();
+    unsigned int second = m_secondInput->readInt();
+    bool multiplyFlag = m_multiplyFlag->readBool();
 
     // write to the output
-    char result = m_firstInputBuffer ^ m_secondInputBuffer;  // FIXME: I don't know how a mux works, so this is just xor. Someone should implement this properly. :P
-    m_output->write(&result);
+    if(multiplyFlag)
+    {
+      m_output->writeInt(first * second);
+    }
+    else
+    {
+      m_output->writeInt(first + second);
+    }
   }
 }

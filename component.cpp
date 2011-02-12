@@ -307,11 +307,11 @@ namespace CutePathSim
   }
 
   /**
-   * Convenience method that a boolean value from the input buffer.
+   * Convenience method that reads a boolean value from the input buffer.
    *
    * This should not be used unless width() == 1.
    *
-   * \sa read() readInt()
+   * \sa read() readInt() Output::writeBool()
    */
   bool Component::Input::readBool()
   {
@@ -440,6 +440,44 @@ namespace CutePathSim
     {
       input->writeToInput(data);
     }
+  }
+
+  /**
+   * Convenience method that writes a boolean value to all of the inputs connected to this output.
+   *
+   * This should not be used unless width() == 1.
+   *
+   * \sa write() writeInt() Input::readBool()
+   */
+  void Component::Output::writeBool(bool boolean)
+  {
+    Q_ASSERT(width() == 1);
+    write(reinterpret_cast<unsigned char *>(&boolean));
+  }
+
+  /**
+   * Convenience method that writes an integer value to all of the inputs connected to this output.
+   *
+   * One can specify whether or not to write the integer to the inputs in big endian or little endian byte order by changing the \a bigEndian flag. If true, the most significant byte will be written first, and the least significant byte last. If false, the least significant byte will be written first, and the most significant byte last. Endianness of \a integer should be in the system's native byte order.
+   *
+   * This should not be used unless width() == 32.
+   *
+   * \sa write() writeBool() Input::readInt()
+   */
+  void Component::Output::writeInt(unsigned int integer, bool bigEndian)
+  {
+    Q_ASSERT(width() == 32);
+    unsigned char *buffer = new unsigned char[sizeof(unsigned int)];
+    if(bigEndian)
+    {
+      qToBigEndian(integer, buffer);
+    }
+    else
+    {
+      qToLittleEndian(integer, buffer);
+    }
+    write(buffer);
+    delete buffer;
   }
 
   /**

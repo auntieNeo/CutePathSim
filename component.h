@@ -64,6 +64,8 @@ namespace CutePathSim
           void connect(Input *input);
           void disconnect(Input *input);
           void write(const unsigned char *data);
+          void writeBool(bool boolean);
+          void writeInt(unsigned int integer, bool bigEndian = false);
           int bufferSize() { return m_bufferSize; }
 
         protected:
