@@ -3,9 +3,14 @@
 namespace CutePathSim
 {
   /**
-   * Constructs a component used for demonstrating and testing the features of Component.
+   * \class TestComponent
+   * TestComponent is a component used for demonstrating and testing the features of Component.
    *
    * This component happens to add if the multiply flag is false, and multiply if the multiply flag is true.
+   */
+
+  /**
+   * Constructs a TestComponent.
    */
   TestComponent::TestComponent(const QString &name, QGraphicsItem *parent) : Component(name, parent)
   {
