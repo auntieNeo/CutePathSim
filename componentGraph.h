@@ -21,7 +21,7 @@ namespace CutePathSim
     friend class Component::Output;
 
     public:
-      ComponentGraph(QGraphicsItem *parent = 0);
+      ComponentGraph(Component *parent = 0);
       ~ComponentGraph();
 
       bool addComponent(Component *component);
@@ -42,6 +42,7 @@ namespace CutePathSim
       void removeEdge(Component::Output *from, Component::Input *to);
 
     private:
+      Component *m_parentComponent;
 
       QHash<QString, Component *> m_components;
       QHash<QPair<Component::Output *, Component::Input *>, Edge *> m_edgeItems;

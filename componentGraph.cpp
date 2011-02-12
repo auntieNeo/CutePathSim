@@ -86,7 +86,7 @@ namespace CutePathSim
    *
    * Execution of the graph is determined using a topological sorting algorithm. The result of the sorting is then executed sequentially.
    */
-  ComponentGraph::ComponentGraph(QGraphicsItem *parent) : QGraphicsItem(parent)
+  ComponentGraph::ComponentGraph(Component *parent) : QGraphicsItem(parent)
   {
     // initilize graphviz context and graph
     m_graphvizContext = gvContext();
@@ -98,6 +98,8 @@ namespace CutePathSim
 //    agnodeattr(m_graph, const_cast<char*>("pos"), const_cast<char*>("42"));
 
     m_layoutGraph = false;
+
+    m_parentComponent = parent;
   }
 
   ComponentGraph::~ComponentGraph()
@@ -105,6 +107,8 @@ namespace CutePathSim
     // free graphviz graph and context
     agclose(m_graph);
     gvFreeContext(m_graphvizContext);
+
+    // FIXME: If the component graph isn't currently in a scene, delete all of the child components here. See Component::~Component().
   }
 
   /**

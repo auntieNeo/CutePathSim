@@ -167,6 +167,34 @@ namespace CutePathSim
     painter->drawText(QRect(drawingRect.x(), drawingRect.y(), drawingRect.width(), TOP_MARGIN), Qt::AlignCenter, name());
   }
 
+  /**
+   * \fn parentGraph()
+   * Returns a pointer to the ComponentGraph that this component belongs to.
+   */
+
+  /**
+   * \fn subGraph()
+   * Returns a pointer to the ComponentGraph that is contained within this component.
+   *
+   * If no components have been added to the sub-graph, then this pointer will be null.
+   *
+   * \sa addSubComponent()
+   */
+
+  /**
+   * \fn layout()
+   * Returns the layout used to display the component, either minimized, labeled, or expanded.
+   *
+   * \sa setLayout() Layout
+   */
+
+  /**
+   * \fn setLayout()
+   * Sets the layout used to display the component, either minimized, labeled, or expanded.
+   *
+   * \sa layout() Layout
+   */
+
   void Component::mousePressEvent(QGraphicsSceneMouseEvent *)
   {
   }
@@ -202,6 +230,24 @@ namespace CutePathSim
     output->setParentItem(this);
     m_outputs.insert(output->name(), output);
     repositionInterfaces();
+  }
+
+  /**
+   * Adds a sub-component to the component's sub-graph.
+   *
+   * If a sub-graph does not yet exist, it is created.
+   *
+   * Component (the sub-graph, really) assumes ownership of \a component. Derived classes should \b not destroy \a component.
+   * \sa subGraph()
+   */
+  void Component::addSubComponent(Component *component)
+  {
+    if(m_subGraph == 0)
+    {
+      m_subGraph = new ComponentGraph(this);
+    }
+
+    m_subGraph->addComponent(component);
   }
 
   /**
@@ -488,6 +534,7 @@ namespace CutePathSim
 
   void Component::repositionInterfaces()
   {
+    // TODO: rename this routine to something more appropriate
     switch(m_layout)
     {
       case LABELED:
@@ -548,7 +595,7 @@ namespace CutePathSim
             currentX += INTERFACE_MARGIN;
           }
           // add the graph back to the scene so it can be displayed
-          if(m_subGraph != 0 && m_subGraph->scene() != 0)
+          if(m_subGraph != 0 && m_subGraph->scene() != scene())
           {
             scene()->addItem(m_subGraph);
           }
