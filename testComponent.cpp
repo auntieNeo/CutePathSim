@@ -1,4 +1,6 @@
-#include "mux.h"
+#include <QDebug>
+
+#include "testComponent.h"
 
 namespace CutePathSim
 {
@@ -10,8 +12,8 @@ namespace CutePathSim
   TestComponent::TestComponent(const QString &name, QGraphicsItem *parent) : Component(name, parent)
   {
     // construct the inputs and add them to the component's list of inputs
-    addInput(m_firstInput = new Input("firstInput", 32, this));
-    addInput(m_secondInput = new Input("secondInput", 32, this));
+    addInput(m_input_01 = new Input("input_01", 32, this));
+    addInput(m_input_02 = new Input("input_02", 32, this));
     addInput(m_multiplyFlag = new Input("multiplyFlag", 1, this));
     // construct the output and add it to the component's list of outputs
     addOutput(m_output = new Output("output", 32, this));
@@ -20,25 +22,27 @@ namespace CutePathSim
   TestComponent::~TestComponent()
   {
     // it's important to destroy all of the inputs/outputs that we created with the new operator
-    delete m_firstInput;
-    delete m_secondInput;
+    delete m_input_01;
+    delete m_input_02;
     delete m_output;
   }
 
   void TestComponent::run()
   {
     // read from the inputs
-    unsigned int first = m_firstInput->readInt();
-    unsigned int second = m_secondInput->readInt();
+    unsigned int first = m_input_01->readInt();
+    unsigned int second = m_input_02->readInt();
     bool multiplyFlag = m_multiplyFlag->readBool();
 
     // write to the output
     if(multiplyFlag)
     {
+      qDebug() << "Result in TestComponent:" << first << "*" << second << "=" << first * second;
       m_output->writeInt(first * second);
     }
     else
     {
+      qDebug() << "Result in TestComponent:" << first << "+" << second << "=" << first + second;
       m_output->writeInt(first + second);
     }
   }

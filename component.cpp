@@ -38,7 +38,7 @@ namespace CutePathSim
     m_parentGraph = 0;
     m_subGraph = 0;
 
-    m_layout = EXPANDED;
+    m_layout = LABELED;
   }
 
   Component::~Component()
@@ -361,7 +361,7 @@ namespace CutePathSim
    */
   Component::Output::Output(const QString &name, int width, Component *component) : Interface(name, component)
   {
-    m_width = 1;
+    m_width = width;
     m_bufferSize = width / 8 + ((width % 8) ? 1 : 0);
     m_component = component;
   }

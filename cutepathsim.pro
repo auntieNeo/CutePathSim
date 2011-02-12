@@ -1,8 +1,8 @@
 CONFIG += debug
 message($$CONFIG)
 VERSION = 0.0.1
-HEADERS += common.h component.h componentGraph.h componentGraphScene.h componentGraphView.h edge.h interface.h mainWindow.h mux.h
-SOURCES += component.cpp componentGraph.cpp componentGraphScene.cpp componentGraphView.cpp edge.cpp interface.cpp main.cpp mainWindow.cpp mux.cpp
+HEADERS += boolGeneratorComponent.h common.h component.h componentGraph.h componentGraphScene.h componentGraphView.h edge.h interface.h intGeneratorComponent.h mainWindow.h mux.h testComponent.h
+SOURCES += boolGeneratorComponent.cpp component.cpp componentGraph.cpp componentGraphScene.cpp componentGraphView.cpp edge.cpp interface.cpp intGeneratorComponent.cpp main.cpp mainWindow.cpp mux.cpp testComponent.cpp
 #FORMS += mainWindow.ui
 #TRANSLATIONS += cutePathSim_ja.ts
 QT += svg

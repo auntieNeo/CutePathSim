@@ -1,10 +1,14 @@
+#include <QDebug>
 #include <QMenuBar>
 #include <QSignalMapper>
 
 #include "componentGraphScene.h"
 #include "componentGraphView.h"
 #include "mainWindow.h"
-#include "mux.h"
+//#include "mux.h"
+#include "testComponent.h"
+#include "intGeneratorComponent.h"
+#include "boolGeneratorComponent.h"
 
 namespace CutePathSim
 {
@@ -25,6 +29,7 @@ namespace CutePathSim
     setCentralWidget(m_componentGraphView);
 
     // FIXME: remove this test code
+    /*
     // add some components to the graph
     Mux *mux01, *mux02, *mux03;
     mux01 = new Mux("Mux_01");
@@ -38,7 +43,30 @@ namespace CutePathSim
     mux01->getOutput("output")->connect(mux02->getInput("secondInput"));
     mux02->getOutput("output")->connect(mux03->getInput("firstInput"));
     mux03->getOutput("output")->connect(mux02->getInput("firstInput"));
+    */
+
+    TestComponent *test01 = new TestComponent("Test_01");
+    IntGeneratorComponent *outputs42 = new IntGeneratorComponent("Outputs_42", 42);
+    IntGeneratorComponent *outputs5 = new IntGeneratorComponent("Outputs_5", 5);
+    BoolGeneratorComponent *outputsTrue = new BoolGeneratorComponent("Outputs_True", true);
+    m_componentGraphScene->addComponent(test01);
+    m_componentGraphScene->addComponent(outputs42);
+    m_componentGraphScene->addComponent(outputs5);
+    m_componentGraphScene->addComponent(outputsTrue);
+
+
+    // manually feed data into the test component, to test it
+    outputs42->getOutput("output")->connect(test01->getInput("input_01"));
+    outputs5->getOutput("output")->connect(test01->getInput("input_02"));
+    outputsTrue->getOutput("output")->connect(test01->getInput("multiplyFlag"));
+
     m_componentGraphScene->layoutGraph();
+
+    // call run() manually... the order in which these are run will be determined by a sorting algorithm in the future
+    outputs42->run();
+    outputs5->run();
+    outputsTrue->run();
+    test01->run();
   }
 
   MainWindow::~MainWindow()
