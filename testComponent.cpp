@@ -5,7 +5,7 @@ namespace CutePathSim
   /**
    * Constructs a component used for demonstrating and testing the features of Component.
    *
-   * This component happens to add if the multiply flag is false, and multiply if multiplyFlag is true.
+   * This component happens to add if the multiply flag is false, and multiply if the multiply flag is true.
    */
   TestComponent::TestComponent(const QString &name, QGraphicsItem *parent) : Component(name, parent)
   {
@@ -22,6 +22,7 @@ namespace CutePathSim
     // it's important to destroy all of the inputs/outputs that we created with the new operator
     delete m_input_01;
     delete m_input_02;
+    delete m_multiplyFlag;
     delete m_output;
   }
 
