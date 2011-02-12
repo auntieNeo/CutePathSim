@@ -37,7 +37,7 @@ namespace CutePathSim
     m_parentGraph = 0;
     m_subGraph = 0;
 
-    m_layout = LABELED;
+    m_layout = EXPANDED;
   }
 
   Component::~Component()
@@ -120,10 +120,27 @@ namespace CutePathSim
             totalInterfaceHeight += item->boundingRect().height();
           }
           qreal width = LEFT_MARGIN + maxInterfaceWidth() + RIGHT_MARGIN;
-          qreal height = TOP_MARGIN + totalInterfaceHeight + INTERFACE_MARGIN * (childItems().size() - 1) + BOTTOM_MARGIN;
+          qreal height = TOP_MARGIN + totalInterfaceHeight + INTERFACE_MARGIN * (m_inputs.size() + m_outputs.size() - 1) + BOTTOM_MARGIN;
+          return QRect(-width / 2, -height / 2, width, height);
+        }
+      case EXPANDED:
+        {
+          qreal totalInterfaceWidth = 0;
+          foreach(QGraphicsItem *item, m_inputs)
+          {
+            totalInterfaceWidth += item->boundingRect().width();
+          }
+          foreach(QGraphicsItem *item, m_outputs)
+          {
+            totalInterfaceWidth += item->boundingRect().width();
+          }
+          qreal graphDimensions = totalInterfaceWidth + INTERFACE_MARGIN * (m_inputs.size() + m_outputs.size() - 1);
+          qreal width = LEFT_MARGIN + totalInterfaceWidth + INTERFACE_MARGIN * (m_inputs.size() + m_outputs.size() - 1) + RIGHT_MARGIN;
+          qreal height = TOP_MARGIN + maxInterfaceHeight() + BOTTOM_MARGIN + graphDimensions + BOTTOM_MARGIN;
           return QRect(-width / 2, -height / 2, width, height);
         }
     }
+    return QRect();
   }
 
   void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
@@ -405,7 +422,7 @@ namespace CutePathSim
     {
       case LABELED:
         {
-          // repositions the interfaces on the scene in alphabetical order
+          // repositions the interfaces into a vertical list in alphabetical order
           qreal currentY = boundingRect().y() + TOP_MARGIN;
           foreach(Interface *interface, m_inputs)
           {
@@ -426,6 +443,44 @@ namespace CutePathSim
             interface->setPos(0, currentY + interface->boundingRect().height() / 2);
             currentY += interface->boundingRect().height();
             currentY += INTERFACE_MARGIN;
+          }
+          // remove the graph from the scene as we're not displaying it
+          if(m_subGraph != 0 && m_subGraph->scene() != 0)
+          {
+            m_subGraph->scene()->removeItem(m_subGraph);
+          }
+        }
+        break;
+      case EXPANDED:
+        {
+          // repositions the interfaces into a horizontal list at the top, with the sub-graph underneath them
+          QRectF boundingRect = this->boundingRect();
+          qreal currentX = boundingRect.x() + LEFT_MARGIN;
+          qreal maxInterfaceHeight = this->maxInterfaceHeight();
+          foreach(Interface *interface, m_inputs)
+          {
+            if(interface->scene() != scene())
+            {
+              scene()->addItem(interface);  // add the item back into the scene
+            }
+            interface->setPos(currentX + interface->boundingRect().width() / 2, boundingRect.y() + TOP_MARGIN + maxInterfaceHeight / 2);
+            currentX += interface->boundingRect().width();
+            currentX += INTERFACE_MARGIN;
+          }
+          foreach(Interface *interface, m_outputs)
+          {
+            if(interface->scene() != scene())
+            {
+              scene()->addItem(interface);  // add the item back into the scene
+            }
+            interface->setPos(currentX + interface->boundingRect().width() / 2, boundingRect.y() + TOP_MARGIN + maxInterfaceHeight / 2);
+            currentX += interface->boundingRect().width();
+            currentX += INTERFACE_MARGIN;
+          }
+          // add the graph back to the scene so it can be displayed
+          if(m_subGraph != 0 && m_subGraph->scene() != 0)
+          {
+            scene()->addItem(m_subGraph);
           }
         }
         break;
@@ -453,6 +508,27 @@ namespace CutePathSim
       }
     }
     return maxInterfaceWidth;
+  }
+
+  qreal Component::maxInterfaceHeight() const
+  {
+    // returns the height of the tallest interface in the component
+    qreal maxInterfaceHeight = 0;
+    foreach(QGraphicsItem *item, m_inputs)
+    {
+      if(item->boundingRect().height() > maxInterfaceHeight)
+      {
+        maxInterfaceHeight = item->boundingRect().height();
+      }
+    }
+    foreach(QGraphicsItem *item, m_outputs)
+    {
+      if(item->boundingRect().height() > maxInterfaceHeight)
+      {
+        maxInterfaceHeight = item->boundingRect().height();
+      }
+    }
+    return maxInterfaceHeight;
   }
 
   QFont *Component::m_font = 0;

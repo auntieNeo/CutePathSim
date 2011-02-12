@@ -124,13 +124,15 @@ namespace CutePathSim
       QMap<QString, Output *> m_outputs;
 
       void repositionInterfaces();
-      qreal maxInterfaceWidth() const;
 
     private:
       ComponentGraph *m_parentGraph;
       ComponentGraph *m_subGraph;
 
       Layout m_layout;
+
+      qreal maxInterfaceWidth() const;
+      qreal maxInterfaceHeight() const;
   };
 }
 
