@@ -95,6 +95,7 @@ namespace CutePathSim
     agnodeattr(m_graph, const_cast<char*>("shape"), const_cast<char*>("box"));
     agnodeattr(m_graph, const_cast<char*>("width"), const_cast<char*>("1"));
     agnodeattr(m_graph, const_cast<char*>("height"), const_cast<char*>("1"));
+    agset(m_graph, const_cast<char*>("aspect"), const_cast<char*>("1"));
 //    agnodeattr(m_graph, const_cast<char*>("pos"), const_cast<char*>("42"));
 
     m_layoutGraph = false;

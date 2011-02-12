@@ -599,6 +599,10 @@ namespace CutePathSim
           {
             scene()->addItem(m_subGraph);
           }
+          // scale the graph so that it fits on the component
+          qreal graphDimensions = boundingRect.width() - LEFT_MARGIN - RIGHT_MARGIN;
+          m_subGraph->setScale(graphDimensions / qMax(m_subGraph->boundingRect().width(), m_subGraph->boundingRect().height()));
+          m_subGraph->setPos(LEFT_MARGIN - boundingRect.width() / 2, TOP_MARGIN + maxInterfaceHeight + BOTTOM_MARGIN - boundingRect.height() / 2);
         }
         break;
       default:
