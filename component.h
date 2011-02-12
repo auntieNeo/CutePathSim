@@ -22,7 +22,7 @@ namespace CutePathSim
         public:
           friend class Output;
 
-          Input(const QString &name, int width, Component *m_component);
+          Input(const QString &name, int width, Component *component = 0);
           ~Input();
 
           int width() { return m_width; }
@@ -34,6 +34,7 @@ namespace CutePathSim
           bool readBool();
           unsigned int readInt(bool bigEndian = false);
           int bufferSize() { return m_bufferSize; }
+          Output *from();
 
         protected:
           // to avoid recursions with Output::disconnect()
@@ -48,6 +49,7 @@ namespace CutePathSim
           unsigned char *m_inputBuffer;
           Component *m_component;
           Output *m_connection;
+          Output *m_from;
       };
 
       class Output : public Interface
@@ -55,7 +57,7 @@ namespace CutePathSim
         public:
           friend class Input;
 
-          Output(const QString &name, int width, Component *m_component);
+          Output(const QString &name, int width, Component *component = 0);
           ~Output();
 
           int width() { return m_width; }
@@ -67,6 +69,7 @@ namespace CutePathSim
           void writeBool(bool boolean);
           void writeInt(unsigned int integer, bool bigEndian = false);
           int bufferSize() { return m_bufferSize; }
+          Input *to();
 
         protected:
           // to avoid recursions with Input::connect()
@@ -79,6 +82,7 @@ namespace CutePathSim
           int m_width, m_bufferSize;
           Component *m_component;
           QSet<Input *> m_connections;
+          Input *m_to;
       };
 
       enum Layout { MINIMIZED = 0, LABELED, EXPANDED };
@@ -102,7 +106,7 @@ namespace CutePathSim
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
       ComponentGraph *parentGraph() { return m_parentGraph; }
-      ComponentGraph *subGraph() { return m_subGraph; }
+      ComponentGraph *subGraph();
 
       Layout layout() { return m_layout; }
       void setLayout(Layout layout) { m_layout = layout; repositionInterfaces(); }

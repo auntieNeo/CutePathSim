@@ -180,6 +180,14 @@ namespace CutePathSim
    *
    * \sa addSubComponent()
    */
+  ComponentGraph *Component::subGraph()
+  {
+    if(m_subGraph == 0)
+    {
+      m_subGraph = new ComponentGraph(this);
+    }
+    return m_subGraph;
+  }
 
   /**
    * \fn layout()
@@ -242,12 +250,7 @@ namespace CutePathSim
    */
   void Component::addSubComponent(Component *component)
   {
-    if(m_subGraph == 0)
-    {
-      m_subGraph = new ComponentGraph(this);
-    }
-
-    m_subGraph->addComponent(component);
+    subGraph()->addComponent(component);
   }
 
   /**
@@ -281,6 +284,7 @@ namespace CutePathSim
     m_inputBuffer = new unsigned char[m_bufferSize];
     m_component = component;
     m_connection = 0;
+    m_from = 0;
   }
 
   Component::Input::~Input()
@@ -392,6 +396,20 @@ namespace CutePathSim
    */
 
   /**
+   * Returns a pointer to the Output object used allow sub-components access to the input data.
+   */
+  Component::Output *Component::Input::from()
+  {
+    if(m_from == 0)
+    {
+      m_from = new Output("from " + name(), width(), component());  // TODO: figure out how to translate this
+      m_from->setParentItem(component()->subGraph());
+    }
+
+    return m_from;
+  }
+
+  /**
    * \class Component::Output
    * The Output class represents an output interface on a Component. 
    *
@@ -410,6 +428,7 @@ namespace CutePathSim
     m_width = width;
     m_bufferSize = width / 8 + ((width % 8) ? 1 : 0);
     m_component = component;
+    m_to = 0;
   }
 
   Component::Output::~Output()
@@ -531,6 +550,20 @@ namespace CutePathSim
    *
    * \sa write()
    */
+
+  /**
+   * Returns a pointer to the Input object used allow sub-components to access the output.
+   */
+  Component::Input *Component::Output::to()
+  {
+    if(m_to == 0)
+    {
+      m_to = new Input("to " + name(), width(), component());  // TODO: figure out how to translate this
+      m_to->setParentItem(component()->subGraph());
+    }
+
+    return m_to;
+  }
 
   void Component::repositionInterfaces()
   {
