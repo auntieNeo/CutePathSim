@@ -3,11 +3,9 @@
 namespace CutePathSim
 {
   /**
-   * Constructs a component that represents a mux.
-   *
-   * \todo document what a mux and its inputs/outputs are.
+   * Constructs a component used for demonstrating and testing the features of Component.
    */
-  Mux::Mux(const QString &name, QGraphicsItem *parent) : Component(name, parent)
+  TestComponent::TestComponent(const QString &name, QGraphicsItem *parent) : Component(name, parent)
   {
     // construct the inputs and add them to the component's list of inputs
     addInput(m_firstInput = new Input("firstInput", 1, this));
@@ -16,7 +14,7 @@ namespace CutePathSim
     addOutput(m_output = new Output("output", 1, this));
   }
 
-  Mux::~Mux()
+  TestComponent::~TestComponent()
   {
     // it's important to destroy all of the inputs/outputs that we created with the new operator
     delete m_firstInput;
@@ -24,14 +22,14 @@ namespace CutePathSim
     delete m_output;
   }
 
-  void Mux::run()
+  void TestComponent::run()
   {
     // read from the inputs
     m_firstInput->read(&m_firstInputBuffer);
     m_secondInput->read(&m_secondInputBuffer);
 
     // write to the output
-    unsigned char result = m_firstInputBuffer ^ m_secondInputBuffer;  // FIXME: I don't know how a mux works, so this is just xor. Someone should implement this properly. :P
+    char result = m_firstInputBuffer ^ m_secondInputBuffer;  // FIXME: I don't know how a mux works, so this is just xor. Someone should implement this properly. :P
     m_output->write(&result);
   }
 }

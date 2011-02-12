@@ -1,15 +1,15 @@
-#ifndef MUX_H_
-#define MUX_H_
+#ifndef TEST_COMPONENT_H_
+#define TEST_COMPONENT_H_
 
 #include "component.h"
 
 namespace CutePathSim
 {
-  class Mux : public Component
+  class TestComponent : public Component
   {
     public:
-      Mux(const QString &name, QGraphicsItem *parent = 0);
-      ~Mux();
+      TestComponent(const QString &name, QGraphicsItem *parent = 0);
+      ~TestComponent();
 
       void run();
 
@@ -18,7 +18,7 @@ namespace CutePathSim
     private:
       Input *m_firstInput, *m_secondInput;
       Output *m_output;
-      unsigned char m_firstInputBuffer, m_secondInputBuffer;
+      char m_firstInputBuffer, m_secondInputBuffer;
   };
 }
 

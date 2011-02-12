@@ -2,6 +2,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsSceneDragDropEvent>
 #include <QPainter>
+#include <QtEndian>
 
 #include "component.h"
 #include "componentGraph.h"
@@ -231,7 +232,7 @@ namespace CutePathSim
   {
     m_width = width;
     m_bufferSize = width / 8 + ((width % 8) ? 1 : 0);
-    m_inputBuffer = new char[m_bufferSize];
+    m_inputBuffer = new unsigned char[m_bufferSize];
     m_component = component;
     m_connection = 0;
   }
@@ -298,11 +299,43 @@ namespace CutePathSim
    *
    * \warning \a buffer should be at least as large as bufferSize().
    *
-   * \sa bufferSize() Component::Output::write()
+   * \sa bufferSize() readBool() readInt() Component::Output::write()
    */
-  void Component::Input::read(char *buffer)
+  void Component::Input::read(unsigned char *buffer)
   {
     memcpy(buffer, m_inputBuffer, m_bufferSize);
+  }
+
+  /**
+   * Convenience method that a boolean value from the input buffer.
+   *
+   * This should not be used unless width() == 1.
+   *
+   * \sa read() readInt()
+   */
+  bool Component::Input::readBool()
+  {
+    Q_ASSERT(width() == 1);
+    return bool(*m_inputBuffer);  // FIXME: check if this code only uses the first byte, or if it reads four bytes
+  }
+
+  /**
+   * Convenience method that returns an unsigned int value from the input buffer.
+   *
+   * One can specify whether or not to interpret the integer stored in the buffer as big endian or little endian by changing the \a bigEndian flag. If true, the first byte in the input buffer will be used as the most significant byte in the integer, and the last byte as the least significant. If false, the first byte will be used as the least significant, and the last byte as the most significant. Endianness of the returned integer depends on the system.
+   *
+   * This should not be used unless width() == 32.
+   *
+   * \sa read() readBool()
+   */
+  unsigned int Component::Input::readInt(bool bigEndian)
+  {
+    Q_ASSERT(width() == 32);
+    if(bigEndian)
+    {
+      return qFromBigEndian<qint32>(m_inputBuffer);
+    }
+    return qFromLittleEndian<qint32>(m_inputBuffer);
   }
 
   /**
@@ -401,7 +434,7 @@ namespace CutePathSim
    *
    * \sa bufferSize() Component::Input::read()
    */
-  void Component::Output::write(const char *data)
+  void Component::Output::write(const unsigned char *data)
   {
     foreach(Input *input, m_connections)
     {
