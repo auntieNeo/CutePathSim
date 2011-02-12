@@ -5,7 +5,6 @@
 #include "componentGraphScene.h"
 #include "componentGraphView.h"
 #include "mainWindow.h"
-//#include "mux.h"
 #include "testComponent.h"
 #include "intGeneratorComponent.h"
 #include "boolGeneratorComponent.h"
@@ -30,22 +29,6 @@ namespace CutePathSim
     setCentralWidget(m_componentGraphView);
 
     // FIXME: remove this test code
-    /*
-    // add some components to the graph
-    Mux *mux01, *mux02, *mux03;
-    mux01 = new Mux("Mux_01");
-    mux02 = new Mux("Mux_02");
-    mux03 = new Mux("Mux_03");
-    m_componentGraphScene->addComponent(mux01);
-    m_componentGraphScene->addComponent(mux02);
-    m_componentGraphScene->addComponent(mux03);
-    mux01->getOutput("output")->connect(mux01->getInput("firstInput"));
-    mux01->getOutput("output")->connect(mux03->getInput("secondInput"));
-    mux01->getOutput("output")->connect(mux02->getInput("secondInput"));
-    mux02->getOutput("output")->connect(mux03->getInput("firstInput"));
-    mux03->getOutput("output")->connect(mux02->getInput("firstInput"));
-    */
-
     // construct all the components and add them to the graph scene
     TestComponent *test01 = new TestComponent("Test_01");
     IntGeneratorComponent *outputs42 = new IntGeneratorComponent("Outputs_42", 42);
