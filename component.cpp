@@ -309,7 +309,7 @@ namespace CutePathSim
   /**
    * Convenience method that reads a boolean value from the input buffer.
    *
-   * This should not be used unless width() == 1.
+   * \warning This should not be used unless width() == 1.
    *
    * \sa read() readInt() Output::writeBool()
    */
@@ -324,7 +324,7 @@ namespace CutePathSim
    *
    * One can specify whether or not to interpret the integer stored in the buffer as big endian or little endian by changing the \a bigEndian flag. If true, the first byte in the input buffer will be used as the most significant byte in the integer, and the last byte as the least significant. If false, the first byte will be used as the least significant, and the last byte as the most significant. Endianness of the returned integer depends on the system.
    *
-   * This should not be used unless width() == 32.
+   * \warning This should not be used unless width() == 32.
    *
    * \sa read() readBool()
    */
@@ -445,7 +445,7 @@ namespace CutePathSim
   /**
    * Convenience method that writes a boolean value to all of the inputs connected to this output.
    *
-   * This should not be used unless width() == 1.
+   * \warning This should not be used unless width() == 1.
    *
    * \sa write() writeInt() Input::readBool()
    */
@@ -460,7 +460,7 @@ namespace CutePathSim
    *
    * One can specify whether or not to write the integer to the inputs in big endian or little endian byte order by changing the \a bigEndian flag. If true, the most significant byte will be written first, and the least significant byte last. If false, the least significant byte will be written first, and the most significant byte last. Endianness of \a integer should be in the system's native byte order.
    *
-   * This should not be used unless width() == 32.
+   * \warning This should not be used unless width() == 32.
    *
    * \sa write() writeBool() Input::readInt()
    */
