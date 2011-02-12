@@ -3,7 +3,20 @@ Key - [ ] brackets denote required features
 Simulation Requirements:
 [ ] GET operator
 [ ] ADD operator
-Assembler Requirements:
+[ ] Instruction Fetcher (basically reads instructions in from a file)
 GUI Reqirements:
-[ ] Display components on a QGraphicsScene
-
+[ ] Zoom functionality
+[ ] Drag and drop of interfaces
+[ ] Display nested component graphs
+  [ ] Minimize/maximize buttons for nested graphs
+[ ] Hover information
+  [ ] Highlight connected inputs/outputs
+( ) Step by step execution GUI
+( ) Log of graph activity GUI
+( ) Interface for changing component parameters via GUI
+Internal Requirements:
+[ ] Nested component graphs
+[ ] Topological sort and execute graph
+( ) Store component graph in XML
+Assembler Requirements:
+[ ] Define the instruction set
