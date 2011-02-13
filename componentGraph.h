@@ -50,7 +50,7 @@ namespace CutePathSim
       // Graphviz objects
       GVC_t *m_graphvizContext;
       Agraph_t *m_graph;
-      QHash<Component *, Agnode_t *> m_nodes;
+      QHash<QGraphicsItem *, Agnode_t *> m_nodes;
       QHash<QPair<Component::Output *, Component::Input *>, Agedge_t *> m_edges;
 
       bool m_layoutGraph;

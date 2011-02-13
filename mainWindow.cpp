@@ -56,6 +56,8 @@ namespace CutePathSim
     outputsTrue->run();
     test01->run();
     printInt->run();
+
+    test01->setLayout(Component::EXPANDED);
   }
 
   MainWindow::~MainWindow()

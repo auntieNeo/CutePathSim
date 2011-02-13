@@ -403,7 +403,7 @@ namespace CutePathSim
     if(m_from == 0)
     {
       m_from = new Output("from " + name(), width(), component());  // TODO: figure out how to translate this
-      m_from->setParentItem(component()->subGraph());
+//      m_from->setParentItem(component()->subGraph());  // FIXME: this doesn't work for some reason
     }
 
     return m_from;
@@ -559,7 +559,7 @@ namespace CutePathSim
     if(m_to == 0)
     {
       m_to = new Input("to " + name(), width(), component());  // TODO: figure out how to translate this
-      m_to->setParentItem(component()->subGraph());
+//      m_to->setParentItem(component()->subGraph());  // FIXME: this doesn't work for some reason
     }
 
     return m_to;
@@ -633,8 +633,10 @@ namespace CutePathSim
             scene()->addItem(m_subGraph);
           }
           // scale the graph so that it fits on the component
+          // FIXME: scale this whenever the graph changes
           qreal graphDimensions = boundingRect.width() - LEFT_MARGIN - RIGHT_MARGIN;
           m_subGraph->setScale(graphDimensions / qMax(m_subGraph->boundingRect().width(), m_subGraph->boundingRect().height()));
+//          m_subGraph->setScale(0.25);
           m_subGraph->setPos(LEFT_MARGIN - boundingRect.width() / 2, TOP_MARGIN + maxInterfaceHeight + BOTTOM_MARGIN - boundingRect.height() / 2);
         }
         break;

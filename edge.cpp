@@ -38,18 +38,9 @@ namespace CutePathSim
    */
   void Edge::setPath(const QPainterPath &path)
   {
-    qDebug() << "entering Edge::setPath()";
-    qDebug() << "pos() of the edge" << pos();
-    qDebug() << "pos() of the path" << m_path->pos();
-    qDebug() << "path: " << path;
-    if(m_path->scene() == scene())
-    {
-      cout << "The scenes are the same.";
-    }
     prepareGeometryChange();
     m_path->setPath(path);;
     update();
-    m_path->update();
   }
 
   QRectF Edge::boundingRect() const

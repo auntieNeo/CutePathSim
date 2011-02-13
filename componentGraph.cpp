@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QGraphicsScene>
 
 #include "componentGraph.h"
@@ -96,11 +97,28 @@ namespace CutePathSim
     agnodeattr(m_graph, const_cast<char*>("width"), const_cast<char*>("1"));
     agnodeattr(m_graph, const_cast<char*>("height"), const_cast<char*>("1"));
     agset(m_graph, const_cast<char*>("aspect"), const_cast<char*>("1"));
+    agset(m_graph, const_cast<char*>("overlap"), const_cast<char*>("prism"));
+    agset(m_graph, const_cast<char*>("overlap_scaling"), const_cast<char*>("0"));
 //    agnodeattr(m_graph, const_cast<char*>("pos"), const_cast<char*>("42"));
 
     m_layoutGraph = false;
 
     m_parentComponent = parent;
+
+    if(m_parentComponent != 0)
+    {
+      // make Graphviz nodes for the internal inputs/outputs
+      foreach(Component::Input *input, m_parentComponent->getInputs())
+      {
+        m_nodes.insert(input->from(), agnode(m_graph, const_cast<char *>(qPrintable(input->from()->name()))));
+        input->from()->setParentItem(this);
+      }
+      foreach(Component::Output *output, m_parentComponent->getOutputs())
+      {
+        m_nodes.insert(output->to(), agnode(m_graph, const_cast<char *>(qPrintable(output->to()->name()))));
+        output->to()->setParentItem(this);
+      }
+    }
   }
 
   ComponentGraph::~ComponentGraph()
@@ -148,37 +166,41 @@ namespace CutePathSim
   void ComponentGraph::layoutGraph()  // TODO: make this private
   {
     prepareGeometryChange();
-    // set the size of all of the components
-    // FIXME: figure out how to do this only when the component size changes
-    foreach(Component *component, m_components)
+    // set the size of all of the nodes
+    // FIXME: figure out how to do this only when the items change size
+    foreach(QGraphicsItem *item, m_nodes.keys())
     {
-      // FIXME: component's boundingRect() is already inefficient... fix it, or don't call it so much
-      m_agset(m_nodes.value(component), "width", QVariant(component->boundingRect().width() / POINTS_IN_INCH).toString());
-      m_agset(m_nodes.value(component), "height", QVariant(component->boundingRect().height() / POINTS_IN_INCH).toString());
+      // FIXME: stop calling these bounding rects so much
+      m_agset(m_nodes.value(item), "width", QVariant(item->boundingRect().width() / POINTS_IN_INCH).toString());
+      m_agset(m_nodes.value(item), "height", QVariant(item->boundingRect().height() / POINTS_IN_INCH).toString());
     }
 
-    gvLayout(m_graphvizContext, m_graph, "dot");
-    gvRender(m_graphvizContext, m_graph, "dot", 0);
-
-    // set the positions of the components with the new layout information
-    foreach(Component *component, m_components)
+    if(m_parentComponent)
     {
-      // FIXME: change this to use agxget
-      if(agget(m_nodes.value(component), "pos") == 0)
+      gvLayout(m_graphvizContext, m_graph, "dot");
+      gvRenderFilename(m_graphvizContext, m_graph, "png", "dotTest.png");
+      gvRender(m_graphvizContext, m_graph, "dot", 0);
+    }
+    else
+    {
+      gvLayout(m_graphvizContext, m_graph, "dot");
+      gvRender(m_graphvizContext, m_graph, "dot", 0);
+    }
+
+    // set the positions of the nodes with the new layout information
+    foreach(QGraphicsItem *item, m_nodes.keys())
+    {
+      if(agget(m_nodes.value(item), "pos") == 0)
       {
-        cout << "the pos is null" << endl;
+//        cout << "the pos is null" << endl;
       }
       else
       {
-        cout << "The pos of " << component->name().toStdString() << ": " << agget(m_nodes.value(component), "pos") << endl;
+        QString point;
+        QList<QString> splitPoint = QString(agget(m_nodes.value(item), "pos")).split(",");  // FIXME: change this to use agxget
+        item->setX(QVariant(splitPoint[0]).toFloat());
+        item->setY(QVariant(splitPoint[1]).toFloat());
       }
-      cout << "The width of " << component->name().toStdString() << ": " << agget(m_nodes.value(component), "width") << endl;
-      cout << "The height of " << component->name().toStdString() << ": " << agget(m_nodes.value(component), "height") << endl;
-      cout << "m_components.size(): " << m_components.size() << endl;
-      QString point;
-      QList<QString> splitPoint = QString(agget(m_nodes.value(component), "pos")).split(",");
-      component->setX(QVariant(splitPoint[0]).toFloat());
-      component->setY(QVariant(splitPoint[1]).toFloat());
     }
 
     // set the curves of the edges
@@ -189,11 +211,10 @@ namespace CutePathSim
       Agedge_t *edge = edgesIterator.value();
       if(agget(edge, "pos") == 0)
       {
-        cout << "The edge pos is null" << endl;
+//        cout << "The edge pos is null" << endl;
       }
       else
       {
-        cout << "The pos of the edge: " << agget(edge, "pos") << endl;
         // parse the points from the spline string representation of the edge
         QList<QPointF> splinePoints;
         QPointF endPoint;  // FIXME: also get a start point, and determine when they're used
@@ -212,12 +233,6 @@ namespace CutePathSim
         // convert the spline points into a bezier path
         QPainterPath path;
         path.moveTo(splinePoints[0]);
-        /*
-        for(int i = 1; i < splinePoints.size(); i += 3)
-        {
-          path.cubicTo(splinePoints[i], splinePoints[(i + 1) % splinePoints.size()], splinePoints[(i + 2) % splinePoints.size()]);
-        }
-        */
         // draw curve points
         for(int i = 1; i < splinePoints.size(); i += 3)
         {
@@ -233,6 +248,8 @@ namespace CutePathSim
     }
 
     gvFreeLayout(m_graphvizContext, m_graph);
+
+    qDebug() << "m_nodes.keys().size():" << m_nodes.keys().size();
   }
 
   QRectF ComponentGraph::boundingRect() const
