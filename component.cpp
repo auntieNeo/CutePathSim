@@ -412,7 +412,7 @@ namespace CutePathSim
     {
       m_from = new Output("from " + name(), width(), component());  // TODO: figure out how to translate this
 //      m_from->setParentItem(component()->subGraph());  // FIXME: this doesn't work for some reason
-      m_from.m_internal = true;
+      m_from->m_internal = true;
     }
 
     return m_from;
@@ -584,7 +584,7 @@ namespace CutePathSim
     {
       m_to = new Input("to " + name(), width(), component());  // TODO: figure out how to translate this
 //      m_to->setParentItem(component()->subGraph());  // FIXME: this doesn't work for some reason
-      m_to.m_internal = true;
+      m_to->m_internal = true;
     }
 
     return m_to;
