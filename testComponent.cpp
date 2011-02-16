@@ -25,7 +25,10 @@ namespace CutePathSim
     // add the sub-components that will do our computation work
     addSubComponent(m_adder = new AdderComponent("adder"));
     addSubComponent(m_multiplier = new MultiplierComponent("multiplier"));
-    m_adder->getOutput("output")->connect(m_multiplier->getInput("input_01"));
+    // TODO: add a mux to select between addition and multiplication
+    m_input_01->from()->connect(m_multiplier->getInput("input_01"));
+    m_input_02->from()->connect(m_multiplier->getInput("input_02"));
+    m_multiplier->getOutput("output")->connect(m_output->to());
 
     subGraph()->layoutGraph();  // FIXME: this shouldn't be needed in the future
     setLayout(Component::EXPANDED);  // FIXME: this shouldn't be needed in the future

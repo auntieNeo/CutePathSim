@@ -118,6 +118,7 @@ namespace CutePathSim
         m_nodes.insert(output->to(), agnode(m_graph, const_cast<char *>(qPrintable(output->to()->name()))));
         output->to()->setParentItem(this);
       }
+      // TODO: add/remove the internal input/output nodes whenever the inputs/outputs are changed
     }
   }
 

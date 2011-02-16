@@ -176,7 +176,7 @@ namespace CutePathSim
    * \fn subGraph()
    * Returns a pointer to the ComponentGraph that is contained within this component.
    *
-   * If no components have been added to the sub-graph, then this pointer will be null.
+   * If there is no sub-graph yet, it is constructed.
    *
    * \sa addSubComponent()
    */
@@ -322,9 +322,12 @@ namespace CutePathSim
     output->m_connect(this);
     m_connect(output);
 
+    // FIXME: check for connections between different graphs
+    ComponentGraph *graph = internal() ? component()->subGraph() : component()->parentGraph();
+
     // tell the component graph and Graphviz about our new edge
-    component()->parentGraph()->addEdge(output, this);
-    component()->parentGraph()->prepareLayoutGraph();
+    graph->addEdge(output, this);
+    graph->prepareLayoutGraph();
   }
 
   /**
@@ -479,9 +482,12 @@ namespace CutePathSim
     m_connect(input);
     input->m_connect(this);
 
+    // FIXME: check for connections between different graphs
+    ComponentGraph *graph = internal() ? component()->subGraph() : component()->parentGraph();
+
     // tell the component graph and Graphviz about our new edge
-    component()->parentGraph()->addEdge(this, input);
-    component()->parentGraph()->prepareLayoutGraph();
+    graph->addEdge(this, input);
+    graph->prepareLayoutGraph();
   }
 
   /**
