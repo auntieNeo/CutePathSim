@@ -285,6 +285,7 @@ namespace CutePathSim
     m_component = component;
     m_connection = 0;
     m_from = 0;
+    m_internal = false;
   }
 
   Component::Input::~Input()
@@ -396,18 +397,33 @@ namespace CutePathSim
    */
 
   /**
-   * Returns a pointer to the Output object used allow sub-components access to the input data.
+   * Returns a pointer to the internal Output object which allows sub-components on the sub-graph to utilize this input.
+   *
+   * Returns null if this input is an internal input on a component's sub-graph.
+   *
+   * \sa internal() Component::addSubComponent()
    */
   Component::Output *Component::Input::from()
   {
+    if(m_internal)
+      return 0;
+
     if(m_from == 0)
     {
       m_from = new Output("from " + name(), width(), component());  // TODO: figure out how to translate this
 //      m_from->setParentItem(component()->subGraph());  // FIXME: this doesn't work for some reason
+      m_from.m_internal = true;
     }
 
     return m_from;
   }
+
+  /**
+   * \fn Component::Input::internal()
+   * Returns true if this input is an internal input on a component's sub-graph. Otherwise, returns false.
+   *
+   * \sa from() Component::Output::internal()
+   */
 
   /**
    * \class Component::Output
@@ -429,6 +445,7 @@ namespace CutePathSim
     m_bufferSize = width / 8 + ((width % 8) ? 1 : 0);
     m_component = component;
     m_to = 0;
+    m_internal = false;
   }
 
   Component::Output::~Output()
@@ -552,18 +569,33 @@ namespace CutePathSim
    */
 
   /**
-   * Returns a pointer to the Input object used allow sub-components to access the output.
+   * Returns a pointer to the internal Input object which allows sub-components on the sub-graph to utilize this output.
+   *
+   * Returns null if this output is an internal output on a component's sub-graph.
+   *
+   * \sa internal() Component::addSubComponent()
    */
   Component::Input *Component::Output::to()
   {
+    if(m_internal)
+      return 0;
+
     if(m_to == 0)
     {
       m_to = new Input("to " + name(), width(), component());  // TODO: figure out how to translate this
 //      m_to->setParentItem(component()->subGraph());  // FIXME: this doesn't work for some reason
+      m_to.m_internal = true;
     }
 
     return m_to;
   }
+
+  /**
+   * \fn Component::Output::internal()
+   * Returns true if this output is an internal output on a component's sub-graph. Otherwise, returns false.
+   *
+   * \sa to() Component::Input::internal()
+   */
 
   void Component::repositionInterfaces()
   {

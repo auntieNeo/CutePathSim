@@ -35,6 +35,7 @@ namespace CutePathSim
           unsigned int readInt(bool bigEndian = false);
           int bufferSize() { return m_bufferSize; }
           Output *from();
+          bool internal() { return m_internal; }
 
         protected:
           // to avoid recursions with Output::disconnect()
@@ -50,6 +51,7 @@ namespace CutePathSim
           Component *m_component;
           Output *m_connection;
           Output *m_from;
+          bool m_internal;
       };
 
       class Output : public Interface
@@ -70,6 +72,7 @@ namespace CutePathSim
           void writeInt(unsigned int integer, bool bigEndian = false);
           int bufferSize() { return m_bufferSize; }
           Input *to();
+          bool internal() { return m_internal; }
 
         protected:
           // to avoid recursions with Input::connect()
@@ -83,6 +86,7 @@ namespace CutePathSim
           Component *m_component;
           QSet<Input *> m_connections;
           Input *m_to;
+          bool m_internal;
       };
 
       enum Layout { MINIMIZED = 0, LABELED, EXPANDED };
