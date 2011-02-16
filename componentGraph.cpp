@@ -273,16 +273,20 @@ namespace CutePathSim
    */
   void ComponentGraph::addEdge(Component::Output *from, Component::Input *to)
   {
-    Q_ASSERT(m_nodes.contains(from->component()));
-    Q_ASSERT(m_nodes.contains(to->component()));
+    QString fromNodeName = from->internal() ? from->name() : from->component()->name();
+    QString toNodeName = to->internal() ? to->name() : to->component()->name();
+    QGraphicsItem *fromNode = from->internal() ? reinterpret_cast<QGraphicsItem *>(from) : from->component();
+    QGraphicsItem *toNode = to->internal() ? reinterpret_cast<QGraphicsItem *>(to) : to->component();
+    Q_ASSERT(m_nodes.contains(fromNode));
+    Q_ASSERT(m_nodes.contains(toNode));
 
     QPair<Component::Output *, Component::Input *> key(from, to);
 
     Q_ASSERT(!m_edges.contains(key));
 
-    cout << "adding an edge from " << from->component()->name().toStdString() << " to " << to->component()->name().toStdString() << endl;
+    cout << "adding an edge from " << fromNodeName.toStdString() << " to " << toNodeName.toStdString() << endl;
 
-    m_edges.insert(key, agedge(m_graph, m_nodes[from->component()], m_nodes[to->component()]));
+    m_edges.insert(key, agedge(m_graph, m_nodes[fromNode], m_nodes[toNode]));
     Edge *edgeItem = new Edge(from, to, this);
     m_edgeItems.insert(key, edgeItem);
     // TODO: layout graph
@@ -295,6 +299,7 @@ namespace CutePathSim
    */
   void ComponentGraph::removeEdge(Component::Output *from, Component::Input *to)
   {
+    // FIXME: update this to be aware of internal inputs/outputs
     Q_ASSERT(m_nodes.contains(from->component()));
     Q_ASSERT(m_nodes.contains(to->component()));
 
