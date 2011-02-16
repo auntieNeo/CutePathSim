@@ -286,6 +286,7 @@ namespace CutePathSim
     m_connection = 0;
     m_from = 0;
     m_internal = false;
+    m_externalOutput = 0;
   }
 
   Component::Input::~Input()
@@ -427,6 +428,22 @@ namespace CutePathSim
    *
    * \sa from() Component::Output::internal()
    */
+
+  void Component::Input::writeToInput(const unsigned char *data)
+  {
+    memcpy(m_inputBuffer, data, m_bufferSize);
+
+    // forward the data to the internal output, if we have one
+    if(m_from != 0)
+    {
+      m_from->write(data);
+    }
+    // forward the data to the external output, if we're an internal input
+    if(m_internal)
+    {
+      m_externalOutput->write(data);
+    }
+  }
 
   /**
    * \class Component::Output
@@ -591,6 +608,7 @@ namespace CutePathSim
       m_to = new Input("to " + name(), width(), component());  // TODO: figure out how to translate this
 //      m_to->setParentItem(component()->subGraph());  // FIXME: this doesn't work for some reason
       m_to->m_internal = true;
+      m_to->m_externalOutput = this;
     }
 
     return m_to;

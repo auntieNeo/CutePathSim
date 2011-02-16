@@ -42,7 +42,7 @@ namespace CutePathSim
           void m_disconnect() { m_connection = 0; }
           // to avoid recursions with Output::connect()
           void m_connect(Output *output) { m_connection = output; }
-          void writeToInput(const unsigned char *data) { memcpy(m_inputBuffer, data, m_bufferSize); }
+          void writeToInput(const unsigned char *data);
           QColor color() const { return QColor(0xA6, 0xD6, 0xA6); }  // light green
 
         private:
@@ -52,6 +52,7 @@ namespace CutePathSim
           Output *m_connection;
           Output *m_from;
           bool m_internal;
+          Output *m_externalOutput;
       };
 
       class Output : public Interface
