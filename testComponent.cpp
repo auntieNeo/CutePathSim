@@ -50,15 +50,9 @@ namespace CutePathSim
     unsigned int second = m_input_02->readInt();
     bool multiplyFlag = m_multiplyFlag->readBool();
 
-    // write to the output
-    if(multiplyFlag)
-    {
-      m_output->writeInt(first * second);
-    }
-    else
-    {
-      m_output->writeInt(first + second);
-    }
+    // FIXME: remove this test code when the topological sort is implemented
+    m_adder->run();
+    m_multiplier->run();
   }
 
   /**
