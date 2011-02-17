@@ -94,7 +94,7 @@ namespace CutePathSim
    * A test component that simply multiplies its two inputs and outputs the result.
    */
   /**
-   * Constructs an multiplier.
+   * Constructs a multiplier.
    */
   TestComponent::MultiplierComponent::MultiplierComponent(const QString &name, QGraphicsItem *parent) : Component(name, parent)
   {
