@@ -6,7 +6,7 @@ SOURCES += boolGeneratorComponent.cpp component.cpp componentGraph.cpp component
 #FORMS += mainWindow.ui
 #TRANSLATIONS += cutePathSim_ja.ts
 QT += svg
-unix {    
+unix {
   TARGET = cutepathsim
   target.path = /usr/local/bin
   LIBS += -lgvc -lgraph -lcgraph
