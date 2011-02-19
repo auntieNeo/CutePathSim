@@ -31,7 +31,11 @@ namespace CutePathSim
           void connect(Output *output);
           void disconnect();
           void read(unsigned char *buffer);
-          bool readBool();
+          bool readBool()
+          {
+            Q_ASSERT(width() == 1);
+            return bool(*m_inputBuffer);  // FIXME: check if this code only uses the first byte, or if it reads four bytes
+          }
           unsigned int readInt(bool bigEndian = false);
           int bufferSize() { return m_bufferSize; }
           Output *from();

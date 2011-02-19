@@ -9,6 +9,7 @@
 #include "components/intGeneratorComponent.h"
 #include "components/boolGeneratorComponent.h"
 #include "components/printIntComponent.h"
+#include "components/rippleCarryAdder.h"
 
 namespace CutePathSim
 {
@@ -28,6 +29,7 @@ namespace CutePathSim
     m_componentGraphView->setScene(m_componentGraphScene);
     setCentralWidget(m_componentGraphView);
 
+    /*
     // FIXME: remove this test code
     // construct all the components and add them to the graph scene
     TestComponent *test01 = new TestComponent("Test_01");
@@ -47,9 +49,14 @@ namespace CutePathSim
     outputs5->getOutput("output")->connect(test01->getInput("input_02"));
     outputsTrue->getOutput("output")->connect(test01->getInput("multiplyFlag"));
     test01->getOutput("output")->connect(printInt->getInput("input"));
+    */
+
+    RippleCarryAdder *adder = new RippleCarryAdder("RippleCarryAdder", 64);
+    m_componentGraphScene->addComponent(adder);
 
     m_componentGraphScene->layoutGraph();
 
+    /*
     // call run() manually... the order in which these are run will be determined by a sorting algorithm in the future
     outputs42->run();
     outputs5->run();
@@ -58,6 +65,8 @@ namespace CutePathSim
     printInt->run();
 
     test01->setLayout(Component::EXPANDED);
+    */
+    adder->setLayout(Component::EXPANDED);
   }
 
   MainWindow::~MainWindow()

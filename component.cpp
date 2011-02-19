@@ -362,17 +362,13 @@ namespace CutePathSim
   }
 
   /**
+   * \fn Component::Input::readBool()
    * Convenience method that reads a boolean value from the input buffer.
    *
    * \warning This should not be used unless width() == 1.
    *
    * \sa read() readInt() Output::writeBool()
    */
-  bool Component::Input::readBool()
-  {
-    Q_ASSERT(width() == 1);
-    return bool(*m_inputBuffer);  // FIXME: check if this code only uses the first byte, or if it reads four bytes
-  }
 
   /**
    * Convenience method that returns an unsigned int value from the input buffer.
