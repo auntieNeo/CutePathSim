@@ -5,10 +5,10 @@
 #include "componentGraphScene.h"
 #include "componentGraphView.h"
 #include "mainWindow.h"
-#include "testComponent.h"
-#include "intGeneratorComponent.h"
-#include "boolGeneratorComponent.h"
-#include "printIntComponent.h"
+#include "components/testComponent.h"
+#include "components/intGeneratorComponent.h"
+#include "components/boolGeneratorComponent.h"
+#include "components/printIntComponent.h"
 
 namespace CutePathSim
 {
