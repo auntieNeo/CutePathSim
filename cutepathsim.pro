@@ -4,7 +4,7 @@ VERSION = 0.0.1
 HEADERS += common.h component.h componentGraph.h componentGraphScene.h componentGraphView.h edge.h interface.h mainWindow.h
 SOURCES += component.cpp componentGraph.cpp componentGraphScene.cpp componentGraphView.cpp edge.cpp interface.cpp main.cpp mainWindow.cpp
 include(components/components.pri)
-#FORMS += mainWindow.ui
+FORMS += mainWindow.ui
 #TRANSLATIONS += cutePathSim_ja.ts
 #QT += svg
 unix {

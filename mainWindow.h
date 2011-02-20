@@ -4,12 +4,14 @@
 #include <QGraphicsView>
 #include <QMainWindow>
 
+#include "ui_mainWindow.h"
+
 namespace CutePathSim
 {
   class ComponentGraphScene;
   class ComponentGraphView;
 
-  class MainWindow : public QMainWindow
+  class MainWindow : public QMainWindow, private Ui_MainWindow
   {
     Q_OBJECT
 
@@ -22,7 +24,6 @@ namespace CutePathSim
       void openSimulation();
 
     private:
-      QMenu *m_fileMenu, *m_newSimulationMenu, *m_openSimulationMenu;
       ComponentGraphScene *m_componentGraphScene;
       ComponentGraphView *m_componentGraphView;
   };

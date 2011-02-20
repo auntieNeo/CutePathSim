@@ -15,13 +15,7 @@ namespace CutePathSim
 {
   MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(parent, flags)
   {
-    m_fileMenu = menuBar()->addMenu(tr("&File"));
-
-    // populate the menu bar
-    m_newSimulationMenu = m_fileMenu->addMenu(tr("&New Simulation"));
-    m_openSimulationMenu = m_fileMenu->addMenu(tr("&Open Simulation..."));
-    connect(m_newSimulationMenu, SIGNAL(triggered()), this, SLOT(newSimulation()));
-    connect(m_openSimulationMenu, SIGNAL(triggered()), this, SLOT(openSimulation()));
+    setupUi(this);
 
     // add the graph view
     m_componentGraphView = new ComponentGraphView(this);
@@ -51,7 +45,7 @@ namespace CutePathSim
     test01->getOutput("output")->connect(printInt->getInput("input"));
     */
 
-    RippleCarryAdder *adder = new RippleCarryAdder("RippleCarryAdder", 64);
+    RippleCarryAdder *adder = new RippleCarryAdder("RippleCarryAdder", 8);
     m_componentGraphScene->addComponent(adder);
 
     m_componentGraphScene->layoutGraph();
@@ -71,12 +65,6 @@ namespace CutePathSim
 
   MainWindow::~MainWindow()
   {
-    // FIXME: do these menus even need to be deleted?
-    /*
-    delete m_fileMenu;
-    delete m_newSimulationMenu;
-    delete m_openSimulationMenu;
-    */
     delete m_componentGraphView;
     delete m_componentGraphScene;
   }
