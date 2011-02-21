@@ -22,9 +22,9 @@ namespace CutePathSim
   {
     m_from = from;
     m_to = to;
-    m_path = 0;
     m_drawHover = false;
-    m_path = new EdgePathItem(this);
+    m_path = new Path(this);
+    m_arrow = new Arrow(this);
     setZValue(EDGE_Z_VALUE);
   }
 
@@ -40,6 +40,17 @@ namespace CutePathSim
   {
     prepareGeometryChange();
     m_path->setPath(path);;
+
+    // make the arrow
+    QPainterPath arrowPath;
+    arrowPath.moveTo(path.currentPosition());
+    arrowPath.lineTo(path.currentPosition() - QPointF(-15, -5));
+    arrowPath.lineTo(path.currentPosition() - QPointF(-15, 5));
+    arrowPath.lineTo(path.currentPosition());
+    m_arrow->setPath(arrowPath);
+    m_arrow->setTransformOriginPoint(path.currentPosition());
+    m_arrow->setRotation(path.angleAtPercent(1));
+
     update();
   }
 
@@ -57,27 +68,50 @@ namespace CutePathSim
   {
   }
 
-  Edge::EdgePathItem::EdgePathItem(Edge *parent) : QGraphicsPathItem(parent)
+  Edge::Path::Path(Edge *parent) : QGraphicsPathItem(parent)
   {
     m_edge = parent;
-    setPen(QPen(QBrush(Qt::SolidPattern), 3));
+    setPen(QPen(QBrush(Qt::SolidPattern), 2));
     setAcceptHoverEvents(true);
   }
 
-  Edge::EdgePathItem::~EdgePathItem()
+  Edge::Path::~Path()
   {
   }
 
-  void Edge::EdgePathItem::hoverEnterEvent(QGraphicsSceneHoverEvent *)
+  void Edge::Path::hoverEnterEvent(QGraphicsSceneHoverEvent *)
   {
-    setPen(QPen(QBrush(Qt::SolidPattern), 8));
+    setPen(QPen(QBrush(Qt::SolidPattern), 4));
     update();
     // FIXME: make a hover threashold so that it doesn't blink as much
   }
 
-  void Edge::EdgePathItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
+  void Edge::Path::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
   {
-    setPen(QPen(QBrush(Qt::SolidPattern), 3));
+    setPen(QPen(QBrush(Qt::SolidPattern), 2));
+    update();
+  }
+
+  Edge::Arrow::Arrow(Edge *parent) : QGraphicsPathItem(parent)
+  {
+    m_edge = parent;
+    setBrush(QBrush(Qt::SolidPattern));
+    setAcceptHoverEvents(true);
+  }
+
+  Edge::Arrow::~Arrow()
+  {
+  }
+
+  void Edge::Arrow::hoverEnterEvent(QGraphicsSceneHoverEvent *)
+  {
+    // TODO: add something for the arrow hover
+    update();
+    // FIXME: make a hover threashold so that it doesn't blink as much
+  }
+
+  void Edge::Arrow::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
+  {
     update();
   }
 }

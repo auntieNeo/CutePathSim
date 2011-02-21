@@ -2,6 +2,7 @@
 #include <QFontMetrics>
 #include <QGraphicsDropShadowEffect>
 #include <QPainter>
+#include <QPixmapCache>
 
 #include "interface.h"
 
@@ -68,9 +69,6 @@ namespace CutePathSim
     gradient.setColorAt(1, Qt::white);
     QBrush gradientBrush(gradient);
     painter->setBrush(gradientBrush);
-//    QPen borderPen;
-//    borderPen.setWidth(BORDER_PEN_WIDTH);
-//    painter->setPen(borderPen);
     painter->setPen(QPen(Qt::NoPen));
     QRect drawingRect(boundingRect().x() + BORDER_PEN_WIDTH / 2, boundingRect().y() + BORDER_PEN_WIDTH / 2, boundingRect().width() - BORDER_PEN_WIDTH, boundingRect().height() - BORDER_PEN_WIDTH);
     painter->drawRoundedRect(drawingRect, 5, 5);

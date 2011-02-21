@@ -18,10 +18,14 @@ namespace CutePathSim
    */
   ComponentGraphView::ComponentGraphView(QWidget *parent) : QGraphicsView(parent)
   {
+    /*
+    QGLFormat fmt;
+    fmt.setSampleBuffers(true);
+    fmt.setSamples(2);
+    setViewport(new QGLWidget(fmt));
+    */
     setFocusPolicy(Qt::StrongFocus);
     setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
-    setCacheMode(CacheBackground);
-    setViewport(new QGLWidget);
 
     m_zoomInAction = new QAction(tr("Zoom &In"), this);
     m_zoomInAction->setShortcut(QKeySequence("+"));

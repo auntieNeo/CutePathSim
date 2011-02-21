@@ -162,9 +162,6 @@ namespace CutePathSim
     gradient.setColorAt(1, Qt::white);
     QBrush gradientBrush(gradient);
     painter->setBrush(gradientBrush);
-    //    QPen borderPen;
-    //    borderPen.setWidth(BORDER_PEN_WIDTH);
-    //    painter->setPen(borderPen);
     painter->setPen(QPen(Qt::NoPen));
     painter->drawRect(drawingRect);
 

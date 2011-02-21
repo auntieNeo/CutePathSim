@@ -20,11 +20,11 @@ namespace CutePathSim
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
     private:
-      class EdgePathItem : public QGraphicsPathItem
+      class Path : public QGraphicsPathItem
       {
         public:
-          EdgePathItem(Edge *parent);
-          ~EdgePathItem();
+          Path(Edge *parent);
+          ~Path();
 
         protected:
           void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
@@ -34,7 +34,22 @@ namespace CutePathSim
           Edge *m_edge;
       };
 
-      EdgePathItem *m_path;
+      class Arrow : public QGraphicsPathItem
+      {
+        public:
+          Arrow(Edge *parent);
+          ~Arrow();
+
+        protected:
+          void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+          void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+
+        private:
+          Edge *m_edge;
+      };
+
+      Path *m_path;
+      Arrow *m_arrow;
       Component::Output *m_from;
       Component::Input *m_to;
 
