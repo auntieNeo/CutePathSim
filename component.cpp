@@ -3,6 +3,7 @@
 #include <QGraphicsSceneDragDropEvent>
 #include <QPainter>
 #include <QtEndian>
+#include <QDebug>
 
 #include "component.h"
 #include "componentGraph.h"
@@ -109,6 +110,12 @@ namespace CutePathSim
     // find the max width and the total height of our child items, because they are interfaces that we will display in a vertical list
     switch(m_layout)
     {
+      case MINIMIZED:
+        {
+          qreal width = LEFT_MARGIN + m_textWidth + RIGHT_MARGIN;
+          qreal height = TOP_MARGIN;
+          return QRect(-width / 2, -height / 2, width, height);
+        }
       case LABELED:
         {
           qreal totalInterfaceHeight = 0;
@@ -120,7 +127,7 @@ namespace CutePathSim
           {
             totalInterfaceHeight += item->boundingRect().height();
           }
-          qreal width = LEFT_MARGIN + maxInterfaceWidth() + RIGHT_MARGIN;
+          qreal width = LEFT_MARGIN + qMax(maxInterfaceWidth(), m_textWidth) + RIGHT_MARGIN;
           qreal height = TOP_MARGIN + totalInterfaceHeight + INTERFACE_MARGIN * (m_inputs.size() + m_outputs.size() - 1) + BOTTOM_MARGIN;
           return QRect(-width / 2, -height / 2, width, height);
         }
@@ -135,8 +142,9 @@ namespace CutePathSim
           {
             totalInterfaceWidth += item->boundingRect().width();
           }
-          qreal graphDimensions = totalInterfaceWidth + INTERFACE_MARGIN * (m_inputs.size() + m_outputs.size() - 1);
-          qreal width = LEFT_MARGIN + totalInterfaceWidth + INTERFACE_MARGIN * (m_inputs.size() + m_outputs.size() - 1) + RIGHT_MARGIN;
+          // TODO: make the graph not fixed to a square, and handle the cascading graph changes associated with this feature
+          qreal width = LEFT_MARGIN + qMax(qMax(totalInterfaceWidth + INTERFACE_MARGIN * (m_inputs.size() + m_outputs.size() - 1), m_textWidth), MIN_GRAPH_SIZE) + RIGHT_MARGIN;
+          qreal graphDimensions = width - LEFT_MARGIN - RIGHT_MARGIN;
           qreal height = TOP_MARGIN + maxInterfaceHeight() + BOTTOM_MARGIN + graphDimensions + BOTTOM_MARGIN;
           return QRect(-width / 2, -height / 2, width, height);
         }
@@ -622,8 +630,49 @@ namespace CutePathSim
     // TODO: rename this routine to something more appropriate
     switch(m_layout)
     {
+      case MINIMIZED:
+        {
+          qDebug() << "made it to here";
+          // remove the interfaces from the scene as we're not displaying them
+          foreach(Input *input, m_inputs)
+          {
+            qDebug() << "scene():" << scene();
+            input->setParentItem(0);
+            if(input->scene() != 0)
+            {
+              input->scene()->removeItem(input);
+            }
+          }
+          foreach(Output *output, m_outputs)
+          {
+            output->setParentItem(0);
+            if(output->scene() != 0)
+            {
+              output->scene()->removeItem(output);
+            }
+          }
+          // remove the graph from the scene as we're not displaying it
+          if(m_subGraph != 0)
+          {
+            m_subGraph->setParentItem(0);
+            if(m_subGraph->scene() != 0)
+            {
+              m_subGraph->scene()->removeItem(m_subGraph);
+            }
+          }
+        }
+        break;
       case LABELED:
         {
+          // add the interfaces back to the scene
+          foreach(Input *input, m_inputs)
+          {
+            input->setParentItem(this);
+          }
+          foreach(Output *output, m_outputs)
+          {
+            output->setParentItem(this);
+          }
           // repositions the interfaces into a vertical list in alphabetical order
           qreal currentY = boundingRect().y() + TOP_MARGIN;
           foreach(Interface *interface, m_inputs)
@@ -647,15 +696,29 @@ namespace CutePathSim
             currentY += INTERFACE_MARGIN;
           }
           // remove the graph from the scene as we're not displaying it
-          if(m_subGraph != 0 && m_subGraph->scene() != 0)
+          if(m_subGraph != 0)
           {
-            m_subGraph->scene()->removeItem(m_subGraph);
+            m_subGraph->setParentItem(0);
+            if(m_subGraph->scene() != 0)
+            {
+              m_subGraph->scene()->removeItem(m_subGraph);
+            }
           }
         }
         break;
       case EXPANDED:
         {
+          // add the interfaces back to the scene
+          foreach(Input *input, m_inputs)
+          {
+            input->setParentItem(this);
+          }
+          foreach(Output *output, m_outputs)
+          {
+            output->setParentItem(this);
+          }
           // repositions the interfaces into a horizontal list at the top, with the sub-graph underneath them
+          // FIXME: center the interfaces
           QRectF boundingRect = this->boundingRect();
           qreal currentX = boundingRect.x() + LEFT_MARGIN;
           qreal maxInterfaceHeight = this->maxInterfaceHeight();
@@ -680,9 +743,9 @@ namespace CutePathSim
             currentX += INTERFACE_MARGIN;
           }
           // add the graph back to the scene so it can be displayed
-          if(m_subGraph != 0 && m_subGraph->scene() != scene())
+          if(m_subGraph != 0)
           {
-            scene()->addItem(m_subGraph);
+            m_subGraph->setParentItem(this);
           }
           // scale the graph so that it fits on the component
           // FIXME: scale this whenever the graph changes
@@ -738,6 +801,8 @@ namespace CutePathSim
     }
     return maxInterfaceHeight;
   }
+
+  const qreal Component::MIN_GRAPH_SIZE;  // FIXME: why does this need a definition and the others don't?
 
   QFont *Component::m_font = 0;
 }

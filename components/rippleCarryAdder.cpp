@@ -10,6 +10,7 @@ namespace CutePathSim
     addInput(m_cin = new Input("cin", 1, this));
     addOutput(m_cout = new Output("cout", 1, this));
     addOutput(m_s = new Output("s", 1, this));
+    setLayout(Component::MINIMIZED);
   }
 
   RippleCarryAdder::FullAdder::~FullAdder()
@@ -51,7 +52,7 @@ namespace CutePathSim
     // TODO: combine the output of the adders with some sort of multiplexer
 
     subGraph()->layoutGraph();  // FIXME: this shouldn't be needed in the future
-    setLayout(Component::EXPANDED);  // FIXME: this shouldn't be needed in the future
+    setLayout(Component::LABELED);  // FIXME: this shouldn't be needed in the future
   }
 
   RippleCarryAdder::~RippleCarryAdder()

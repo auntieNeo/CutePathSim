@@ -6,7 +6,7 @@ SOURCES += component.cpp componentGraph.cpp componentGraphScene.cpp componentGra
 include(components/components.pri)
 FORMS += mainWindow.ui
 #TRANSLATIONS += cutePathSim_ja.ts
-#QT += svg
+QT += opengl
 unix {
   TARGET = cutepathsim
   target.path = /usr/local/bin

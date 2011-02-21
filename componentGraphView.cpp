@@ -1,3 +1,4 @@
+#include <QGLWidget>
 #include <QKeyEvent>
 
 #include "componentGraphView.h"
@@ -19,6 +20,8 @@ namespace CutePathSim
   {
     setFocusPolicy(Qt::StrongFocus);
     setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
+    setCacheMode(CacheBackground);
+    setViewport(new QGLWidget);
 
     m_zoomInAction = new QAction(tr("Zoom &In"), this);
     m_zoomInAction->setShortcut(QKeySequence("+"));
