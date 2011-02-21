@@ -61,6 +61,13 @@ namespace CutePathSim
     test01->setLayout(Component::EXPANDED);
     */
     adder->setLayout(Component::EXPANDED);
+
+    // populate the menus
+    m_viewMenu->addAction(m_componentGraphView->zoomInAction());
+    m_viewMenu->addAction(m_componentGraphView->zoomOutAction());
+    m_viewMenu->addAction(m_componentGraphView->fitViewAction());
+
+    // connect the signals
   }
 
   MainWindow::~MainWindow()
