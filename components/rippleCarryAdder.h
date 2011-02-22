@@ -2,6 +2,8 @@
 #define RIPPLE_CARRY_ADDER_H_
 
 #include "component.h"
+#include "components/boolsToIntComponent.h"
+#include "components/intToBoolsComponent.h"
 
 namespace CutePathSim
 {
@@ -34,6 +36,8 @@ namespace CutePathSim
       Input *m_a, *m_b;
       Output *m_sum;
       QList<FullAdder *> adders;
+      IntToBoolsComponent *m_intToBoolsA, *m_intToBoolsB;
+      BoolsToIntComponent *m_boolsToInt;
   };
 }
 

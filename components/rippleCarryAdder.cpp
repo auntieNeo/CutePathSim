@@ -39,6 +39,7 @@ namespace CutePathSim
     addOutput(m_sum = new Output("sum", width, this));
 
     // TODO: feed the first adder a false carry bit
+    // make the adders
     adders.append(new FullAdder("Adder_" + QVariant(0).toString()));
     addSubComponent(adders.last());
     FullAdder *previousAdder = adders.last();
@@ -50,6 +51,21 @@ namespace CutePathSim
       previousAdder = adders.last();
     }
     // TODO: combine the output of the adders with some sort of multiplexer
+
+    // convert the ints and bools
+    addSubComponent(m_intToBoolsA = new IntToBoolsComponent("IntToBoolsA", width));
+    addSubComponent(m_intToBoolsB = new IntToBoolsComponent("IntToBoolsB", width));
+    addSubComponent(m_boolsToInt = new BoolsToIntComponent("BoolsToInt", width));
+    // connect int/bool conversions to the adders
+    m_a->from()->connect(m_intToBoolsA->getInput("input"));
+    m_b->from()->connect(m_intToBoolsB->getInput("input"));
+    for(int i = 0; i < width; i++)
+    {
+      m_intToBoolsA->getOutput(QVariant(i).toString())->connect(adders[i]->getInput("a"));
+      m_intToBoolsB->getOutput(QVariant(i).toString())->connect(adders[i]->getInput("b"));
+      adders[i]->getOutput("s")->connect(m_boolsToInt->getInput(QVariant(i).toString()));
+    }
+    m_boolsToInt->getOutput("output")->connect(m_sum->to());
 
     subGraph()->layoutGraph();  // FIXME: this shouldn't be needed in the future
     setLayout(Component::LABELED);  // FIXME: this shouldn't be needed in the future

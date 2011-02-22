@@ -1,0 +1,41 @@
+#include "components/intToBoolsComponent.h"
+
+namespace CutePathSim
+{
+  IntToBoolsComponent::IntToBoolsComponent(const QString &name, int width, bool bigEndian, QGraphicsItem *parent) : Component(name, parent)
+  {
+    m_width = width;
+    m_bigEndian = bigEndian;
+
+    addInput(m_input = new Input("input", width, this));
+
+    for(int i = 0; i < width; i++)
+    {
+      m_outputBools.append(new Output(QVariant(i).toString(), 1, this));
+      addOutput(m_outputBools.last());
+    }
+
+    setLayout(MINIMIZED);
+  }
+
+  IntToBoolsComponent::~IntToBoolsComponent()
+  {
+    foreach(Output *output, m_outputBools)
+    {
+      delete output;
+    }
+    delete m_input;
+  }
+
+  void IntToBoolsComponent::run()
+  {
+    int inputSize = m_width / 8 + ((m_width % 8) ? 1 : 0);
+    unsigned char *input = new unsigned char[inputSize];
+    m_input->read(input);
+    for(int i = 0; i < m_width; i++)
+    {
+      m_outputBools[i]->writeBool(input[i/8] & (0x01 << (i % 8)));
+    }
+    delete input;
+  }
+}

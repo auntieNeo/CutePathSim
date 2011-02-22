@@ -1,2 +1,2 @@
-HEADERS += components/boolGeneratorComponent.h components/intGeneratorComponent.h components/printIntComponent.h components/rippleCarryAdder.h components/testComponent.h
-SOURCES += components/boolGeneratorComponent.cpp components/intGeneratorComponent.cpp components/printIntComponent.cpp components/rippleCarryAdder.cpp components/testComponent.cpp
+HEADERS += components/boolsToIntComponent.h components/boolGeneratorComponent.h components/intToBoolsComponent.h components/intGeneratorComponent.h components/printIntComponent.h components/rippleCarryAdder.h components/testComponent.h
+SOURCES += components/boolsToIntComponent.cpp components/boolGeneratorComponent.cpp components/intToBoolsComponent.cpp components/intGeneratorComponent.cpp components/printIntComponent.cpp components/rippleCarryAdder.cpp components/testComponent.cpp
