@@ -2,6 +2,7 @@
 #include <QGraphicsScene>
 #include <QPen>
 #include <QDebug>
+#include <cmath>
 
 #include "common.h"
 #include "edge.h"
@@ -49,7 +50,7 @@ namespace CutePathSim
     arrowPath.lineTo(path.currentPosition());
     m_arrow->setPath(arrowPath);
     m_arrow->setTransformOriginPoint(path.currentPosition());
-    m_arrow->setRotation(path.angleAtPercent(1));
+    m_arrow->setRotation(path.angleAtPercent(0) + 180);
 
     update();
   }

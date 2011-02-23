@@ -81,5 +81,13 @@ namespace CutePathSim
 
   void RippleCarryAdder::run()
   {
+    // FIXME: get rid of this manual run code
+    m_intToBoolsA->run();
+    m_intToBoolsB->run();
+    foreach(FullAdder *adder, adders)
+    {
+      adder->run();
+    }
+    m_boolsToInt->run();
   }
 }

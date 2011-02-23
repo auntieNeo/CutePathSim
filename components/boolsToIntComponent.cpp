@@ -31,7 +31,7 @@ namespace CutePathSim
     int resultSize = m_width / 8 + ((m_width % 8) ? 1 : 0);
     unsigned char *result = new unsigned char[resultSize];
     memset(result, 0, resultSize);
-    for(int i = 0; i < m_width; i++)
+    for(int i = 0; i < resultSize; i++)
     {
       for(int j = 0; j < 8; j++)
       {
