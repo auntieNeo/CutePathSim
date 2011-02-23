@@ -1,4 +1,9 @@
+#include <QDebug>
+
+#include "boolGeneratorComponent.h"
+#include "boolsToIntComponent.h"
 #include "componentGraph.h"
+#include "intToBoolsComponent.h"
 #include "rippleCarryAdder.h"
 
 namespace CutePathSim
@@ -27,6 +32,7 @@ namespace CutePathSim
     unsigned char a = m_a->readBool() ? 0x01 : 0x00;
     unsigned char b = m_b->readBool() ? 0x01 : 0x00;
     unsigned char cin = m_cin->readBool() ? 0x01 : 0x00;
+    qDebug() << "adder:" << name() << "a:" << bool(a) << "b:" << bool(b) << "cin:" << bool(cin) << "cout:" << bool((a & b) | (cin & (a ^ b))) << "s:" << bool(a ^ b ^ cin);
 
     m_cout->writeBool((a & b) | (cin & (a ^ b)));
     m_s->writeBool(a ^ b ^ cin);
@@ -50,7 +56,10 @@ namespace CutePathSim
       previousAdder->getOutput("cout")->connect(adders.last()->getInput("cin"));
       previousAdder = adders.last();
     }
-    // TODO: combine the output of the adders with some sort of multiplexer
+
+    // feed the first adder a false carry bit
+    addSubComponent(m_false = new BoolGeneratorComponent("false", false, this));
+    m_false->getOutput("output")->connect(adders[0]->getInput("cin"));
 
     // convert the ints and bools
     addSubComponent(m_intToBoolsA = new IntToBoolsComponent("IntToBoolsA", width));
@@ -84,6 +93,7 @@ namespace CutePathSim
     // FIXME: get rid of this manual run code
     m_intToBoolsA->run();
     m_intToBoolsB->run();
+    m_false->run();
     foreach(FullAdder *adder, adders)
     {
       adder->run();

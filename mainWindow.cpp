@@ -27,7 +27,7 @@ namespace CutePathSim
     IntGeneratorComponent *outputs42 = new IntGeneratorComponent("Outputs_42", 42);
     IntGeneratorComponent *outputs5 = new IntGeneratorComponent("Outputs_5", 5);
     PrintIntComponent *printInt = new PrintIntComponent("Print_Int");
-    RippleCarryAdder *adder = new RippleCarryAdder("RippleCarryAdder", 8);
+    RippleCarryAdder *adder = new RippleCarryAdder("RippleCarryAdder", 32);
     m_componentGraphScene->addComponent(outputs42);
     m_componentGraphScene->addComponent(outputs5);
     m_componentGraphScene->addComponent(printInt);

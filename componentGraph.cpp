@@ -285,8 +285,6 @@ namespace CutePathSim
 
     Q_ASSERT(!m_edges.contains(key));
 
-    cout << "adding an edge from " << fromNodeName.toStdString() << " to " << toNodeName.toStdString() << endl;
-
     m_edges.insert(key, agedge(m_graph, m_nodes[fromNode], m_nodes[toNode]));
     Edge *edgeItem = new Edge(from, to, this);
     m_edgeItems.insert(key, edgeItem);

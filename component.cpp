@@ -629,11 +629,9 @@ namespace CutePathSim
     {
       case MINIMIZED:
         {
-          qDebug() << "made it to here";
           // remove the interfaces from the scene as we're not displaying them
           foreach(Input *input, m_inputs)
           {
-            qDebug() << "scene():" << scene();
             input->setParentItem(0);
             if(input->scene() != 0)
             {
