@@ -10,6 +10,7 @@
 #include "components/boolGeneratorComponent.h"
 #include "components/printIntComponent.h"
 #include "components/rippleCarryAdder.h"
+#include "components/binaryMultiplier.h"
 
 namespace CutePathSim
 {
@@ -27,25 +28,24 @@ namespace CutePathSim
     IntGeneratorComponent *outputs42 = new IntGeneratorComponent("Outputs_42", 42);
     IntGeneratorComponent *outputs5 = new IntGeneratorComponent("Outputs_5", 5);
     PrintIntComponent *printInt = new PrintIntComponent("Print_Int");
-    RippleCarryAdder *adder = new RippleCarryAdder("RippleCarryAdder", 8);
+    BinaryMultiplier *multiplier = new BinaryMultiplier("BinaryMultiplier", 8);
     m_componentGraphScene->addComponent(outputs42);
     m_componentGraphScene->addComponent(outputs5);
     m_componentGraphScene->addComponent(printInt);
-    m_componentGraphScene->addComponent(adder);
+    m_componentGraphScene->addComponent(multiplier);
 
-    outputs42->getOutput("output")->connect(adder->getInput("a"));
-    outputs5->getOutput("output")->connect(adder->getInput("b"));
-    adder->getOutput("sum")->connect(printInt->getInput("input"));
-    adder->setLayout(Component::EXPANDED);
-
-    m_componentGraphScene->layoutGraph();
+    outputs42->getOutput("output")->connect(multiplier->getInput("a"));
+    outputs5->getOutput("output")->connect(multiplier->getInput("b"));
+    multiplier->getOutput("product")->connect(printInt->getInput("input"));
+    multiplier->setLayout(Component::EXPANDED);
 
     // call run() manually... the order in which these are run will be determined by a sorting algorithm in the future
     outputs42->run();
     outputs5->run();
-    adder->run();
+    multiplier->run();
     printInt->run();
 
+    m_componentGraphScene->layoutGraph();
 
     // populate the menus
     m_viewMenu->addAction(m_componentGraphView->zoomInAction());

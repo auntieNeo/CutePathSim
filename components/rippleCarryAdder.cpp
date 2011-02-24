@@ -77,7 +77,6 @@ namespace CutePathSim
     m_boolsToInt->getOutput("output")->connect(m_sum->to());
 
     subGraph()->layoutGraph();  // FIXME: this shouldn't be needed in the future
-    setLayout(Component::LABELED);  // FIXME: this shouldn't be needed in the future
   }
 
   RippleCarryAdder::~RippleCarryAdder()
