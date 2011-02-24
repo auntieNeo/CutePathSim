@@ -4,6 +4,7 @@
 #include "boolsToIntComponent.h"
 #include "componentGraph.h"
 #include "intToBoolsComponent.h"
+#include "logicGates.h"
 #include "rippleCarryAdder.h"
 
 namespace CutePathSim
@@ -16,6 +17,33 @@ namespace CutePathSim
     addOutput(m_cout = new Output("cout", 1, this));
     addOutput(m_s = new Output("s", 1, this));
     setLayout(Component::MINIMIZED);
+
+    addSubComponent(m_and0 = new AndGate("and_0"));
+    addSubComponent(m_and1 = new AndGate("and_1"));
+    addSubComponent(m_xor0 = new XOrGate("xor_0"));
+    addSubComponent(m_xor1 = new XOrGate("xor_1"));
+    addSubComponent(m_or = new OrGate("or"));
+
+    m_a->from()->connect(m_and0->getInput("a"));
+    m_b->from()->connect(m_and0->getInput("b"));
+
+    m_a->from()->connect(m_xor0->getInput("a"));
+    m_b->from()->connect(m_xor0->getInput("b"));
+
+    m_cin->from()->connect(m_and1->getInput("a"));
+    m_xor0->getOutput("output")->connect(m_and1->getInput("b"));
+
+    m_and0->getOutput("output")->connect(m_or->getInput("a"));
+    m_and1->getOutput("output")->connect(m_or->getInput("b"));
+
+    m_or->getOutput("output")->connect(m_cout->to());
+
+    m_xor0->getOutput("output")->connect(m_xor1->getInput("a"));
+    m_cin->from()->connect(m_xor1->getInput("b"));
+
+    m_xor1->getOutput("output")->connect(m_s->to());
+
+    subGraph()->layoutGraph();  // FIXME: this shouldn't be needed in the future
   }
 
   RippleCarryAdder::FullAdder::~FullAdder()
@@ -34,8 +62,15 @@ namespace CutePathSim
     unsigned char cin = m_cin->readBool() ? 0x01 : 0x00;
     qDebug() << "adder:" << name() << "a:" << bool(a) << "b:" << bool(b) << "cin:" << bool(cin) << "cout:" << bool((a & b) | (cin & (a ^ b))) << "s:" << bool(a ^ b ^ cin);
 
-    m_cout->writeBool((a & b) | (cin & (a ^ b)));
-    m_s->writeBool(a ^ b ^ cin);
+//    m_cout->writeBool((a & b) | (cin & (a ^ b)));
+//    m_s->writeBool(a ^ b ^ cin);
+
+    // FIXME: get rid of this manual run code
+    m_and0->run();
+    m_xor0->run();
+    m_and1->run();
+    m_or->run();
+    m_xor1->run();
   }
 
   RippleCarryAdder::RippleCarryAdder(const QString &name, int width, QGraphicsItem *parent) : Component(name, parent)
@@ -48,6 +83,7 @@ namespace CutePathSim
     // make the adders
     adders.append(new FullAdder("Adder_" + QVariant(0).toString()));
     addSubComponent(adders.last());
+    adders.last()->setLayout(EXPANDED);  // FIXME: this shouldn't be needed
     FullAdder *previousAdder = adders.last();
     for(int i = 1; i < width; i++)
     {
@@ -55,6 +91,7 @@ namespace CutePathSim
       addSubComponent(adders.last());
       previousAdder->getOutput("cout")->connect(adders.last()->getInput("cin"));
       previousAdder = adders.last();
+      adders.last()->setLayout(MINIMIZED);  // FIXME: this shouldn't be needed
     }
 
     // feed the first adder a false carry bit

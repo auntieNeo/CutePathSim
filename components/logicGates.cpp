@@ -7,6 +7,8 @@ namespace CutePathSim
     addInput(m_a = new Input("a", 1, this));
     addInput(m_b = new Input("b", 1, this));
     addOutput(m_output = new Output("output", 1, this));
+
+    setLayout(MINIMIZED);
   }
 
   AndGate::~AndGate()
@@ -28,6 +30,8 @@ namespace CutePathSim
     addInput(m_a = new Input("a", 1, this));
     addInput(m_b = new Input("b", 1, this));
     addOutput(m_output = new Output("output", 1, this));
+
+    setLayout(MINIMIZED);
   }
 
   OrGate::~OrGate()
@@ -49,6 +53,8 @@ namespace CutePathSim
     addInput(m_a = new Input("a", 1, this));
     addInput(m_b = new Input("b", 1, this));
     addOutput(m_output = new Output("output", 1, this));
+
+    setLayout(MINIMIZED);
   }
 
   XOrGate::~XOrGate()

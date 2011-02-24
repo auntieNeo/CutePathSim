@@ -5,9 +5,12 @@
 
 namespace CutePathSim
 {
+  class AndGate;
   class BoolGeneratorComponent;
-  class IntToBoolsComponent;
   class BoolsToIntComponent;
+  class IntToBoolsComponent;
+  class OrGate;
+  class XOrGate;
 
   class RippleCarryAdder : public Component
   {
@@ -25,6 +28,10 @@ namespace CutePathSim
         private:
           Input *m_a, *m_b, *m_cin;
           Output *m_cout, *m_s;
+
+          AndGate *m_and0, *m_and1;
+          XOrGate *m_xor0, *m_xor1;
+          OrGate *m_or;
       };
 
       RippleCarryAdder(const QString &name, int width, QGraphicsItem *parent = 0);
