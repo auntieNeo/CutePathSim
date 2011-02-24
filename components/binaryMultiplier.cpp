@@ -125,6 +125,19 @@ namespace CutePathSim
 
   void BinaryMultiplier::run()
   {
-    // FIXME: this code won't be needed in the future
+    // FIXME: this manual run code won't be needed in the future
+    m_bToBools->run();
+    foreach(Component *c, m_anders)
+    {
+      c->run();
+    }
+    foreach(Component *c, m_shifters)
+    {
+      c->run();
+    }
+    foreach(Component *c, m_adders)
+    {
+      c->run();
+    }
   }
 }
