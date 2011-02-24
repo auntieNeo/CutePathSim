@@ -27,6 +27,6 @@ namespace CutePathSim
   void PrintIntComponent::run()
   {
     // write the input to stdout
-    qDebug() << name() << "received:" << m_input->readInt();
+    qDebug() << name() << "received:" << (0x000000FF & m_input->readInt());  // FIXME: There should be a PrintCharComponent or something... This is bad and you should feel bad.
   }
 }
