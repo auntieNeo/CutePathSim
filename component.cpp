@@ -44,25 +44,29 @@ namespace CutePathSim
 
   Component::~Component()
   {
-    // delete the items that aren't currently in any scene
+    qDebug() << "destroying component:" << name();
+    // remove all of the items from the scene and delete them
     foreach(Input *input, m_inputs)
     {
-      if(input->scene() == 0)
+      if(input->scene() != 0)
       {
-        delete input;
+        input->scene()->removeItem(input);
       }
+      delete input;
     }
     foreach(Output *output, m_outputs)
     {
-      if(output->scene() == 0)
+      if(output->scene() != 0)
       {
-        delete output;
+        output->scene()->removeItem(output);
       }
+      delete output;
     }
-    if(m_subGraph != 0 && m_subGraph->scene() == 0)
+    if(m_subGraph != 0 && m_subGraph->scene() != 0)
     {
-      delete m_subGraph;
+      m_subGraph->scene()->removeItem(m_subGraph);
     }
+    delete m_subGraph;
   }
 
   /**
@@ -298,6 +302,7 @@ namespace CutePathSim
   {
     disconnect();
     delete m_inputBuffer;
+    delete m_from;
   }
 
   /**
@@ -475,6 +480,7 @@ namespace CutePathSim
     {
       input->disconnect();
     }
+    delete m_to;
   }
 
   /**

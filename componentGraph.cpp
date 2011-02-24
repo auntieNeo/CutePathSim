@@ -124,11 +124,19 @@ namespace CutePathSim
 
   ComponentGraph::~ComponentGraph()
   {
+    // destroy all all the components manually before the graphviz stuff is destroyed
+    foreach(Component *component, m_components.values())
+    {
+      if(scene() != 0)
+      {
+        scene()->removeItem(component);
+      }
+      delete component;
+    }
+
     // free graphviz graph and context
     agclose(m_graph);
     gvFreeContext(m_graphvizContext);
-
-    // FIXME: If the component graph isn't currently in a scene, delete all of the child components here. See Component::~Component().
   }
 
   /**
@@ -298,13 +306,15 @@ namespace CutePathSim
    */
   void ComponentGraph::removeEdge(Component::Output *from, Component::Input *to)
   {
-    // FIXME: update this to be aware of internal inputs/outputs
-    Q_ASSERT(m_nodes.contains(from->component()));
-    Q_ASSERT(m_nodes.contains(to->component()));
+    QGraphicsItem *fromNode = from->internal() ? reinterpret_cast<QGraphicsItem *>(from) : from->component();
+    QGraphicsItem *toNode = to->internal() ? reinterpret_cast<QGraphicsItem *>(to) : to->component();
+    Q_ASSERT(m_nodes.contains(fromNode));
+    Q_ASSERT(m_nodes.contains(toNode));
 
     QPair<Component::Output *, Component::Input *> key(from, to);
 
     Q_ASSERT(m_edges.contains(key));
+    Q_ASSERT(m_edgeItems.contains(key));
 
     Edge *edgeItem = m_edgeItems.take(key);
     scene()->removeItem(edgeItem);
