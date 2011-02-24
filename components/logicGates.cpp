@@ -23,7 +23,7 @@ namespace CutePathSim
     m_output->writeBool(a & b);
   }
 
-  OrGate::OrGate(const QString &name, QGraphicsItem *parent)
+  OrGate::OrGate(const QString &name, QGraphicsItem *parent) : Component(name, parent)
   {
     addInput(m_a = new Input("a", 1, this));
     addInput(m_b = new Input("b", 1, this));
@@ -44,7 +44,7 @@ namespace CutePathSim
     m_output->writeBool(a | b);
   }
 
-  XOrGate::XOrGate(const QString &name, QGraphicsItem *parent)
+  XOrGate::XOrGate(const QString &name, QGraphicsItem *parent) : Component(name, parent)
   {
     addInput(m_a = new Input("a", 1, this));
     addInput(m_b = new Input("b", 1, this));

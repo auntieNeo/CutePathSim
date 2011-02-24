@@ -41,7 +41,7 @@ namespace CutePathSim
       XOrGate(const QString &name, QGraphicsItem *parent = 0);
       ~XOrGate();
 
-      void run;
+      void run();
 
       QColor color() { return QColor(0xD6, 0xD6, 0xA6); }  // light brown
 
