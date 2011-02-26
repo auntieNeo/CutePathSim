@@ -19,7 +19,7 @@ namespace CutePathSim
 
           void run();
 
-          QColor color() { return QColor(0xD6, 0xD6, 0xA6); }  // light brown
+          QColor color() { return QColor(0xFF, 0x2D, 0x0B); }  // light red
 
         private:
           Input *m_a, *m_b;
