@@ -258,6 +258,11 @@ namespace CutePathSim
 
     gvFreeLayout(m_graphvizContext, m_graph);
 
+    if(m_parentComponent != 0)
+    {
+      m_parentComponent->repositionInterfaces();  // the component graph's dimensions changed, so we need to reposition the parent component's layout
+    }
+
     qDebug() << "m_nodes.keys().size():" << m_nodes.keys().size();
   }
 

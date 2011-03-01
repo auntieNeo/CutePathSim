@@ -120,6 +120,8 @@ namespace CutePathSim
       Layout layout() { return m_layout; }
       void setLayout(Layout layout) { m_layout = layout; repositionInterfaces(); }
 
+      void repositionInterfaces();
+
     protected:
       void setParentGraph(ComponentGraph *graph) { m_parentGraph = graph; }
 
@@ -144,8 +146,6 @@ namespace CutePathSim
 
       QMap<QString, Input *> m_inputs;
       QMap<QString, Output *> m_outputs;
-
-      void repositionInterfaces();
 
       ComponentGraph *m_parentGraph;
       ComponentGraph *m_subGraph;
