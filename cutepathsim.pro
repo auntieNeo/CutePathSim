@@ -2,7 +2,7 @@ CONFIG += debug
 message($$CONFIG)
 VERSION = 0.0.1
 HEADERS += boolGeneratorComponent.h common.h component.h componentGraph.h componentGraphScene.h componentGraphView.h edge.h interface.h intGeneratorComponent.h mainWindow.h printIntComponent.h testComponent.h
-SOURCES += boolGeneratorComponent.cpp component.cpp componentGraph.cpp componentGraphScene.cpp componentGraphView.cpp edge.cpp interface.cpp intGeneratorComponent.cpp main.cpp mainWindow.cpp printIntComponent.cpp testComponent.cpp
+SOURCES += boolGeneratorComponent.cpp component.cpp componentGraph.cpp componentGraphScene.cpp componentGraphView.cpp edge.cpp interface.cpp intGeneratorComponent.cpp main.cpp mainWindow.cpp printIntComponent.cpp testComponent.cpp adder.cpp 32_bit_adder.cpp
 #FORMS += mainWindow.ui
 #TRANSLATIONS += cutePathSim_ja.ts
 QT += svg
