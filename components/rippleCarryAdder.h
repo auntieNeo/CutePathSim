@@ -23,7 +23,7 @@ namespace CutePathSim
 
           void run();
 
-          QColor color() { return QColor(0xD6, 0xD6, 0xA6); }  // light brown
+          QColor color() { return QColor(0xE6, 0xE6, 0x00); }  // yellow
 
         private:
           Input *m_a, *m_b, *m_cin;
@@ -39,7 +39,7 @@ namespace CutePathSim
 
       void run();
 
-      QColor color() { return QColor(0xD6, 0xD6, 0xA6); }  // light brown
+      QColor color() { return QColor(0xFF, 0xB6, 0x09); }  // light orange
 
     private:
       Input *m_a, *m_b;
