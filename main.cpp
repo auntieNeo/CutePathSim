@@ -20,7 +20,22 @@ int main(int argc, char **argv)
  * \section basics_section Basics
  * Something something something.
  *
- * \section structure_section Structure
+ * \dot
+ * digraph cpu
+ * {
+ *   instruction [label="Instruction\nFetcher"]
+ *   control [label="Control\nUnit"]
+ *   alu [label=ALU, shape=trapezium]
+ *   registers [label=Registers, shape=record]
+ *
+ *   instruction->control [style=bold]
+ *   control->registers
+ *   control->alu
+ * } 
+ * \enddot
+ *
+ * \section structure_section System Structure
+ * The following are two graphs of the basic structure of CutePathSim, the first graph being the current structure, and the second graph the possible structure in the future. The Reference CPU (derived classes) at the bottom is modeled using the component graph interface (SystemC in the future), which is rendered by the GUI. The GUI also uses Graphviz to position nodes and edges in the graph.
  * \dot
  * digraph system
  * {
@@ -52,6 +67,8 @@ int main(int argc, char **argv)
  * }
  * \enddot
  *
+ * \section graph_layout_section Graph Layout Algorithm Flowchart
+ * This flowchart shows the steps used to layout the graph at runtime with Graphviz while keeping the main GUI thread running and the graph in an acceptable state. The algorithm has to be careful not to scale components or graphs too often or too soon, so it uses some queues and renders the graphs one at a time in a seperate thread.
  * \dot
  * digraph flow
  * {
