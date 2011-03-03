@@ -301,7 +301,8 @@ namespace CutePathSim
     m_edges.insert(key, agedge(m_graph, m_nodes[fromNode], m_nodes[toNode]));
     Edge *edgeItem = new Edge(from, to, this);
     m_edgeItems.insert(key, edgeItem);
-    // TODO: layout graph
+
+    scheduleReLayout();
   }
 
   /**
@@ -326,6 +327,26 @@ namespace CutePathSim
     delete edgeItem;
 
     agDELedge(m_graph, m_edges.take(key));
-    // TODO: layout graph
+
+    scheduleReLayout();
+  }
+
+  /**
+   * Schedules the graph for a re-layout. The graph will be layed out in a seperate thread using Graphviz.
+   * \sa scheduleComponentResize()
+   */
+  void ComponentGraph::scheduleReLayout()
+  {
+    GraphLayoutManager::instance()->scheduleGraph(this);
+  }
+
+  /**
+   * Puts \a component in a queue so it can be resized when the graph is next re-layed out.
+   * Also schedules a re-layout of the graph.
+   */
+  void ComponentGraph::scheduleComponentResize(Component *component)
+  {
+    // TODO: add component to a resize queue
+    scheduleReLayout();
   }
 }

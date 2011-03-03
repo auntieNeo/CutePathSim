@@ -232,7 +232,8 @@ namespace CutePathSim
     prepareGeometryChange();
     input->setParentItem(this);
     m_inputs.insert(input->name(), input);
-    repositionInterfaces();
+//    repositionInterfaces();
+    m_parentGraph->scheduleComponentResize(this);
   }
 
   /**
@@ -246,7 +247,8 @@ namespace CutePathSim
     prepareGeometryChange();
     output->setParentItem(this);
     m_outputs.insert(output->name(), output);
-    repositionInterfaces();
+//    repositionInterfaces();
+    m_parentGraph->scheduleComponentResize();
   }
 
   /**

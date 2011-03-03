@@ -41,6 +41,9 @@ namespace CutePathSim
       void addEdge(Component::Output *from, Component::Input *to);
       void removeEdge(Component::Output *from, Component::Input *to);
 
+      void scheduleReLayout();
+      void scheduleComponentResize(Component *component);
+
     private:
       Component *m_parentComponent;
 

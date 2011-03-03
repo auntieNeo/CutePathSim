@@ -116,7 +116,7 @@ int main(int argc, char **argv)
  *   schedule_graph->is_queue [style=dashed]
  *
  *   start_change_component [label="start change component"]
- *   change_component [label="Change a Component", shape=record]
+ *   change_component [label="Change a component", shape=record]
  *   schedule_component [label="Schedule a component resize", shape=record]
  *   schedule_graph2 [label="Schedule a graph re-layout", shape=record]
  *   end_change_component [label="end change component"]
