@@ -45,12 +45,12 @@ namespace CutePathSim
     // make the arrow
     QPainterPath arrowPath;
     arrowPath.moveTo(path.currentPosition());
-    arrowPath.lineTo(path.currentPosition() - QPointF(-15, -5));
-    arrowPath.lineTo(path.currentPosition() - QPointF(-15, 5));
+    arrowPath.lineTo(path.currentPosition() + QPointF(-15, -5));
+    arrowPath.lineTo(path.currentPosition() + QPointF(-15, 5));
     arrowPath.lineTo(path.currentPosition());
     m_arrow->setPath(arrowPath);
     m_arrow->setTransformOriginPoint(path.currentPosition());
-    m_arrow->setRotation(path.angleAtPercent(0) + 180);
+    m_arrow->setRotation(-path.angleAtPercent(1));
 
     update();
   }
