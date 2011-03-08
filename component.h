@@ -118,7 +118,7 @@ namespace CutePathSim
       ComponentGraph *subGraph();
 
       Layout layout() { return m_layout; }
-      void setLayout(Layout layout) { m_layout = layout; m_parentGraph->scheduleComponentResize(); }
+      void setLayout(Layout layout);
 
       void repositionInterfaces();
 

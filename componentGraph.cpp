@@ -187,7 +187,6 @@ namespace CutePathSim
     if(m_parentComponent)
     {
       gvLayout(m_graphvizContext, m_graph, "dot");
-      gvRenderFilename(m_graphvizContext, m_graph, "png", "dotTest.png");
       gvRender(m_graphvizContext, m_graph, "dot", 0);
     }
     else
@@ -337,7 +336,7 @@ namespace CutePathSim
    */
   void ComponentGraph::scheduleReLayout()
   {
-    GraphLayoutManager::instance()->scheduleGraph(this);
+//    GraphLayoutManager::instance()->scheduleGraph(this);
   }
 
   /**

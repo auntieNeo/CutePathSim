@@ -35,14 +35,14 @@ namespace CutePathSim
       QRectF boundingRect() const;
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
+      void scheduleReLayout();
+      void scheduleComponentResize(Component *component);
+
     protected:
       void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
 
       void addEdge(Component::Output *from, Component::Input *to);
       void removeEdge(Component::Output *from, Component::Input *to);
-
-      void scheduleReLayout();
-      void scheduleComponentResize(Component *component);
 
     private:
       Component *m_parentComponent;
