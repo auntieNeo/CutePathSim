@@ -1,10 +1,17 @@
 #ifndef GRAPH_LAYOUT_MANAGER_H_
 #define GRAPH_LAYOUT_MANAGER_H_
 
+#include <QQueue>
+#include <QThread>
+
 namespace CutePathSim
 {
-  class GraphLayoutManager
+  class ComponentGraph;
+
+  class GraphLayoutManager : public QObject
   {
+    Q_OBJECT
+
     private:
       class GraphLayoutThread : public QThread
       {
@@ -23,17 +30,21 @@ namespace CutePathSim
           ComponentGraph *m_graph;
           bool m_recentlyFinished;
       };
+
+      GraphLayoutManager *m_instance;
+
       GraphLayoutManager();
+//      explicit GraphLayoutManager(const GraphLayoutManager &);
       ~GraphLayoutManager();
 
       void scheduleLayoutGraph(ComponentGraph *graph);
       void processQueue();
 
     public:
-      GraphLayoutManager *GraphLayoutManager *instance();
+      GraphLayoutManager *instance();
 
       QQueue<ComponentGraph*> m_graphs;
-      GraphLayoutThread m_thread;
+      GraphLayoutThread *m_thread;
   };
 }
 

@@ -1,16 +1,30 @@
+#include "componentGraph.h"
 #include "graphLayoutManager.h"
 
 namespace CutePathSim
 {
+  /**
+   * \class GraphLayoutManager
+   * The GraphLayoutManager class is responsible for managing when the component graphs get layed out and the thread it is layed out in. The scheduleLayoutGraph() method can be used to schedule a graph layout, which will layout the graph in a thread using Graphviz. Because the GraphLayoutManager is a singleton and manages all of the graphs, scheduleLayoutGraph() can be called multiple times for the same graph without causing that graph to be layed out more than once.
+   */
   GraphLayoutManager::GraphLayoutManager()
   {
     m_thread = new GraphLayoutThread();
   }
 
+  /*
+  GraphLayoutManager::GraphLayoutManager(const GraphLayoutManager &)
+  {
+  }
+  */
+
   GraphLayoutManager::~GraphLayoutManager()
   {
   }
 
+  /**
+   * Returns an instance of the graph layout manager. Because the graph layout manager is a singleton, this should be the only instance available.
+   */
   GraphLayoutManager *GraphLayoutManager::instance()
   {
     if(m_instance == 0)
@@ -45,25 +59,26 @@ namespace CutePathSim
     if(m_thread->recentlyFinished())
     {
       // apply the recently generated layout to the GUI items
-      m_graph->updateItemPositions();
+      m_thread->graph()->updateItemPositions();
       // TODO: resize the components that need to be resized
     }
 
     if(!m_graphs.isEmpty())
     {
-      m_graph->updateNodeSizes();  // update the sizes of the Graphviz nodes to reflect the anticipated size of the components we will resize afterwards
-      m_thread->setGraph(m_graphs.dequeue());
+      ComponentGraph *graph = m_graphs.dequeue();
+      graph->updateNodeSizes();  // update the sizes of the Graphviz nodes to reflect the anticipated size of the components we will resize afterwards
+      m_thread->setGraph(graph);
       // TODO: add the components to be resized to the thread's data members, so we know what to resize after the thread is done
       m_thread->run();
     }
   }
 
-  GraphLayoutManager::GraphLayoutThread()
+  GraphLayoutManager::GraphLayoutThread::GraphLayoutThread()
   {
     m_recentlyFinished = false;
   }
 
-  GraphLayoutManager::~GraphLayoutThread()
+  GraphLayoutManager::GraphLayoutThread::~GraphLayoutThread()
   {
   }
 

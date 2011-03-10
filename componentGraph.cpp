@@ -330,6 +330,16 @@ namespace CutePathSim
     scheduleReLayout();
   }
 
+  void ComponentGraph::updateNodeSizes()
+  {
+    // This method updates the Graphviz node sizes based on the components that are scheduled to be resized. This also removes those components from the scheduled resize queue and adds them to the imminent resize queue.
+  }
+
+  void ComponentGraph::updateItemPositions()
+  {
+    // This method updates the component and edge item positions based on the Graphviz nodes. This also resizes the components that are in the imminent resize queue.
+  }
+
   /**
    * Schedules the graph for a re-layout. The graph will be layed out in a seperate thread using Graphviz.
    * \sa scheduleComponentResize()
