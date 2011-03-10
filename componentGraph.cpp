@@ -198,14 +198,14 @@ namespace CutePathSim
     // set the positions of the nodes with the new layout information
     foreach(QGraphicsItem *item, m_nodes.keys())
     {
-      if(agget(m_nodes.value(item), "pos") == 0)
+      if(m_agget(m_nodes.value(item), "pos") == 0)
       {
 //        cout << "the pos is null" << endl;
       }
       else
       {
         QString point;
-        QList<QString> splitPoint = QString(agget(m_nodes.value(item), "pos")).split(",");  // FIXME: change this to use agxget
+        QList<QString> splitPoint = QString(m_agget(m_nodes.value(item), "pos")).split(",");  // FIXME: change this to use agxget
         item->setX(QVariant(splitPoint[0]).toFloat());
         item->setY(QVariant(splitPoint[1]).toFloat());
       }
@@ -217,7 +217,7 @@ namespace CutePathSim
     {
       edgesIterator.next();
       Agedge_t *edge = edgesIterator.value();
-      if(agget(edge, "pos") == 0)
+      if(m_agget(edge, "pos") == 0)
       {
 //        cout << "The edge pos is null" << endl;
       }
@@ -226,7 +226,7 @@ namespace CutePathSim
         // parse the points from the spline string representation of the edge
         QList<QPointF> splinePoints;
         QPointF endPoint;  // FIXME: also get a start point, and determine when they're used
-        foreach(QString pointString, QString(agget(edge, "pos")).split(" "))
+        foreach(QString pointString, QString(m_agget(edge, "pos")).split(" "))
         {
           QList<QString>values = pointString.split(",");
           if(values[0] == "e")
@@ -343,7 +343,7 @@ namespace CutePathSim
    * Puts \a component in a queue so it can be resized when the graph is next re-layed out.
    * Also schedules a re-layout of the graph.
    */
-  void ComponentGraph::scheduleComponentResize(Component *component)
+  void ComponentGraph::scheduleComponentResize(Component * /*component*/)
   {
     // TODO: add component to a resize queue
     scheduleReLayout();

@@ -19,6 +19,7 @@ namespace CutePathSim
   {
     friend class Component::Input;
     friend class Component::Output;
+    friend class GraphLayoutManager;
 
     public:
       ComponentGraph(Component *parent = 0);
@@ -28,7 +29,6 @@ namespace CutePathSim
 
       void prepareLayoutGraph() { m_layoutGraph = true; }
 
-      void layoutGraph();  // TODO: make this private
 
       void run();
 
@@ -38,13 +38,14 @@ namespace CutePathSim
       void scheduleReLayout();
       void scheduleComponentResize(Component *component);
 
+      void layoutGraph();  // FIXME: make this protected
+
     protected:
       void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
 
       void addEdge(Component::Output *from, Component::Input *to);
       void removeEdge(Component::Output *from, Component::Input *to);
 
-      void layoutGraph();
       void updateNodeSizes();
       void updateItemPositions();
 
@@ -65,6 +66,11 @@ namespace CutePathSim
       static inline int m_agset(void *object, QString attr, QString value)
       {
         return agset(object, const_cast<char *>(qPrintable(attr)), const_cast<char *>(qPrintable(value)));
+      }
+
+      static inline QString m_agget(void *object, QString name)
+      {
+        return agget(object, const_cast<char *>(qPrintable(name)));
       }
   };
 }
