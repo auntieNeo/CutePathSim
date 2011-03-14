@@ -206,11 +206,15 @@ namespace CutePathSim
    */
 
   /**
-   * \fn setLayout()
    * Sets the layout used to display the component, either minimized, labeled, or expanded.
    *
    * \sa layout() Layout
    */
+  void Component::setLayout(Layout layout)
+  {
+    m_layout = layout;
+    m_parentGraph->scheduleComponentResize(this);
+  }
 
   void Component::mousePressEvent(QGraphicsSceneMouseEvent *)
   {
@@ -232,7 +236,8 @@ namespace CutePathSim
     prepareGeometryChange();
     input->setParentItem(this);
     m_inputs.insert(input->name(), input);
-    repositionInterfaces();
+//    repositionInterfaces();
+    m_parentGraph->scheduleComponentResize(this);
   }
 
   /**
@@ -246,7 +251,8 @@ namespace CutePathSim
     prepareGeometryChange();
     output->setParentItem(this);
     m_outputs.insert(output->name(), output);
-    repositionInterfaces();
+//    repositionInterfaces();
+    m_parentGraph->scheduleComponentResize(this);
   }
 
   /**
