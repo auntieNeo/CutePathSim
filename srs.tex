@@ -1,0 +1,128 @@
+\documentclass[12pt]{article}
+\special{papersize=8.5in,11in}
+\usepackage[utf8]{inputenc}
+\pagestyle{plain}
+\begin{document}
+
+\title{Software Requirements Specification for CutePathSim}
+\date{March 17, 2011}
+\author{Jonathan Glines \and Karl Heiner \and Devin Vollmer}
+
+\maketitle
+
+\begin{center}\large{Version 0.2 approved}\end{center}
+
+\pagebreak
+
+\tableofcontents
+
+\pagebreak
+
+\section{Introduction}
+
+\subsection{Purpose}
+The goal of CutePathSim is to provide an interface to a graphical representation of a digital system, and implement a reference CPU with a simple instruction set using this interface. The interface allows for specifying arbitrarily low levels of the digital system, and the reference CPU will emulate these low levels wherever feasible, for educational purposes. One of the key features of CutePathSim is the ability to manipulate components and connections in the digital system at runtime, hopefully facilitating the exploration of new digital systems.
+
+\subsection{Project Scope}
+The 0.2 release of CutePathSim will be focused on meeting the requirements for CS263, namely a working GUI and a working CPU. The GUI will display a graph of the digital system, as well as allow for stepping through its execution while graphically displaying signals, log messages, and data. The reference CPU will be 32bit and have a simple instruction set.
+
+\subsection{References}
+SystemC - {\textless}http://www.systemc.org/{\textgreater} - Broadly supported C++ open source language and simulation kernel for modeling and implementing electronic systems.
+
+SampaLib - {\textless}http://www.sampalib.org/{\textgreater} - A comprehensive C++ library and Lua  ESL toolset to simulate and analyze system on chip architectures through fast cycle accurate transactional level simulation.
+
+\section{Overall Description}
+
+\subsection{Product Perspective}
+CutePathSim was conceived as a project at Idaho State University in Dr. Steve Chiu’s Spring 2011 CS263 class, with the project requirement being to model the workings of a CPU using object oriented programming, and the additional requirement of displaying the CPU with a GUI. From the beginning, the focus of CutePathSim has been to make a model of a digital system flexible enough to allow for changes to be made to the system through the GUI at runtime. As a result, most of the initial investigation and development of CutePathSim has focused on the digital system and GUI rather than the specifics of the CPU design.
+
+\subsection{Product Features}
+CutePathSim provides a graphical interface to a directed graph of components and their connections in a digital system. A hierarchy of nested graphs allows for the internal behavior of components to be displayed graphically, down to the lowest levels of digital logic if necessary. Component and connection logs/data can be viewed/manipulated through the GUI.
+
+Behind the GUI is a Component class that defines and manages the facilities of a generic component in a digital system. Derived components need not worry about the graph itself, as they simply define and declare their inputs/outputs through the Component class access members.
+
+The reference CPU will be implemented independent of any internal GUI or simulation code, as it only needs to interface with the generic Component class in order to function. Features of the reference CPU are arbitrary, but will be kept as simple as practical to allow for easier exploration and understanding of its design.
+
+\subsection{Intended Purpose}
+The initial intended use for CutePathSim is as an educational tool for exploring CPU architecture and other digital systems. Hopefully CutePathSim will prove to be valuable learning/teaching aid for both students and teachers of digital systems.
+
+In the future, the move to a SystemC based digital system model could make CutePathSim into a tool suitable for engineers exploring digital system designs. A graphical representation of a system should be easier to follow than flat SystemC source files.
+
+\subsection{Operating Environment}
+CutePathSim strives to remain cross-platform by using only libraries that have been ported to all of the major platforms. But for simplicity (mostly ease of library access) initial development is being done on Linux.
+
+The main library is Qt, which provides the GUI and graphical representation of the components, as well as things like file system access and XML parsers.
+
+Graphviz is used to automatically calculate the layout of component graphs. Graphviz is accessed directly through its C API, and the Dot algorithm is used to place nodes and edges.
+
+In the future, SystemC might be used, both to improve the accuracy of the simulation and the applicability of CutePathSim. The addition of Lua bindings is also a strong possibilty, as it would allow the user to change the behavior of components (modules in SystemC) at runtime. SampaLib (see references) looks like it fits into this vein, as it provides both a SystemC-based simulation kernel and Lua bindings.
+
+\subsection{Design and Implementation Constraints}
+As the reference CPU will be developed independently of the GUI, the Component API strives to be as simple, generic, and comprehensive as possible, to allow for changes changes to occur in the GUI and the CPU simultaneously as CutePathSim’s features are developed. The Component class and the ComponentGraph class should allow the user to model almost any digital relationship in a simple, non-concurrent digital system.
+
+Design of the reference CPU should be as simple as possible, to allow for easier exploration and understanding of the CPU’s architecture.
+
+Performance of the GUI is currently a concern, as while Qt's QGraphicsScene excels at managing large sets of graphical items, rendering large sets of items with graphical eye-candy such as anti-aliasing or gradients consumes a lot of CPU time, especially when done in software. This can be remedied by using simpler graphics. The GUI shouldn't affect the simulation speed, at any rate.
+
+Performance of the simulation is of little concern, as the reference CPU will be focusing on the educational value of architecturally complete digital system, however inefficient in software. If something like SystemC is used in the future, performance of the simulation will rest squarely on the performance of the SystemC kernel used.
+
+\subsection{User Documentation}
+Documentation for the different classes and their interfaces will be managed by Doxygen, and appear as comment blocks in the .cpp files. Classes and interfaces expected to be used by implementers of the Component class will be especially heavily documented. Interfaces and behavior of derived component classes should also be documented using Doxygen.
+
+GUI documentation and tutorials will also be managed with Doxygen, but as the GUI is not yet well defined, most of this documentation will have to wait for a later release.
+
+\section{System Features}
+
+\subsection{Graphical Interface}
+
+\subsubsection{Description and Priority}
+The graphical interface displays the digital system as a graph of digital components and their connections. It shows the user the state of the digital system, and allows for the user to configure it in realtime.
+
+\subsubsection{Functional Requirements}
+\begin{enumerate}
+\item Components can be added to or removed from the graph
+\item Connections can be added to or removed from the graph
+\item Sub-component graphs can be expanded or collapsed
+\item A threaded system to maintain a responsive GUI whenever the graph changes, as Graphviz calculations are not always instantaneous
+\item A stepper interface to step through execution of the digital system
+\begin{enumerate}
+\item Blinking/animated connections to show movement of data
+\item A message bubble system to display component activity and logs
+\item An auto-zoom that zooms the view to the component currently executing
+\end{enumerate}
+\item An interface to allow modification of component-specific settings through a component-defined dialog box
+\end{enumerate}
+
+\subsection{Component Interface}
+
+\subsubsection{Description and Priority}
+The component interface is what allows new components to be defined and determines the capabilities of the digital system. The component interface executes the digital system graph effectively independent of the GUI or even the reference CPU code.
+
+\subsubsection{Functional Requirements}
+\begin{enumerate}
+\item Allow for definition of digital components with arbitrary digital inputs and outputs
+\item Allow for an arbitrary number of sub-components in arbitrary levels of sub-graphs to define the behavior of components
+\item Automatic execution of the graph using a topological sorting algorithm
+\begin{enumerate}
+\item Allow components to define ``sensitive" inputs such that the component is only executed when some or all of its sensitive inputs have been written to
+\item Replace this execution algorithm with SystemC in the future
+\end{enumerate}
+\item Cloning of certain resources of excessively common components could have real performance benefits if the digital system is defined in an explicit, low level manner.
+\end{enumerate}
+
+\subsection{Reference CPU}
+
+\subsubsection{Description and Priority}
+We are going to emulate a processor down to the boolean logic gate level.
+\begin{enumerate}
+\item[ALU] This will include an adder. The adder will be able to handle addition, subtraction, multiplication, and division. We made a 1-bit adder and will link 32 of these to make a 32-bit adder. There will actually be 32 1-bit adder objects created.
+\item[Control Unit] This will tell the components when to execute and pass data between components.
+\item[Assembler] Will take a text file and parse out the needed values in order to determine the correct function for the given values. The assemble will define all the parameters of the function and place them in the correct order for the specified function values. 
+\end{enumerate}
+
+\subsubsection{Functional Requirements}
+The adder must take two unsigned integers, add them together and return the result as an unsigned integer. The adder will be modified slightly to perform the other arithmetic functions.
+
+The assembler must be able to check the Text file for the required functions the cpu will be using. If the Text file receives an error then it should be able to let the user know that the input file is bad, or is using the wrong syntax. 
+
+\end{document}
