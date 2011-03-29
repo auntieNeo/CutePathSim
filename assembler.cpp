@@ -7,13 +7,16 @@
 const unsigned int ADD_OP = 0x00;
 const unsigned int SUB_OP = 0x00;
 const unsigned int ORI_OP = 0x0D;
+const unsigned int LW_OP  = 0x23;
+const unsigned int SW_OP  = 0x2B;
+const unsigned int BEQ_OP = 0x04;
+const unsigned int JMP_OP = 0x02;
 
 const unsigned int OP_SHIFT = 26;
 const unsigned int FUNC_SHIFT = 0;
 const unsigned int RS_SHIFT = 21;
 const unsigned int RT_SHIFT = 16;
 const unsigned int RD_SHIFT = 11;
-
 const unsigned int OP_MASK = 0x3F << OP_SHIFT;
 
 const unsigned int ADD_FUNC = 0x20;
@@ -45,6 +48,10 @@ QByteArray parseAssembly(QTextStream assembly)
     {
       instruction |= SUB_OP << OP_SHIFT;
       instruction |= SUB_FUNC << FUNC_SHIFT;
+    }
+    else if (words[0] == "ORI")
+    {
+      instruction |= ORI_OP << OP_SHIFT;
     }
     else
     {
@@ -83,6 +90,33 @@ QByteArray parseAssembly(QTextStream assembly)
           instruction |= rs << RS_SHIFT;
           instruction |= rt << RT_SHIFT;
         }
+
+    case ORI_OP:
+        //Also for LW,SW,BEQ
+    {
+          // parse the register numbers
+          QRegExp rx("^\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.$");
+          int pos = rx.indexIn(words[1]);
+          if(pos < 0)
+          {
+            Q_ASSERT(false);  // TODO: throw an exception
+          }
+          QStringList registers = rx.capturedTexts();
+          if(registers.length() != 3)
+          {
+            Q_ASSERT(false);  // TODO: throw an exception
+          }
+
+          unsigned int rs = QVariant(registers[1]).toInt();
+          if(rs >= NUM_REGISTERS)
+            Q_ASSERT(false);  // TODO: throw an exception
+          unsigned int rt = QVariant(registers[2]).toInt();
+          if(rt >= NUM_REGISTERS)
+            Q_ASSERT(false);  // TODO: throw an exception
+
+          instruction |= rs << RS_SHIFT;
+          instruction |= rt << RT_SHIFT;
+      }
       default:
         Q_ASSERT(false);  // TODO: throw an exception
     }
