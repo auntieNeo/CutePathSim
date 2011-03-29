@@ -6,6 +6,7 @@
 
 const unsigned int ADD_OP = 0x00;
 const unsigned int SUB_OP = 0x00;
+const unsigned int ORI_OP = 0x0D;
 
 const unsigned int OP_SHIFT = 26;
 const unsigned int FUNC_SHIFT = 0;
