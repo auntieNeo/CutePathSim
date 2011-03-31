@@ -36,7 +36,7 @@ namespace CutePathSim
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
       void scheduleReLayout();
-      void scheduleComponentResize(Component *component);
+      void scheduleComponentResize(Component *component, Component::Layout layout = Component::NONE);
 
       void layoutGraph();  // FIXME: make this protected
 
@@ -54,6 +54,8 @@ namespace CutePathSim
 
       QHash<QString, Component *> m_components;
       QHash<QPair<Component::Output *, Component::Input *>, Edge *> m_edgeItems;
+
+      QHash<Component *, Component::Layout> m_resizeQueue;
 
       // Graphviz objects
       GVC_t *m_graphvizContext;

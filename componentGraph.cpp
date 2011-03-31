@@ -353,9 +353,13 @@ namespace CutePathSim
    * Puts \a component in a queue so it can be resized when the graph is next re-layed out.
    * Also schedules a re-layout of the graph.
    */
-  void ComponentGraph::scheduleComponentResize(Component * /*component*/)
+  void ComponentGraph::scheduleComponentResize(Component * component, Component::Layout layout)
   {
-    // TODO: add component to a resize queue
+    if(layout == Component::NONE && m_resizeQueue.contains(component))
+    {
+      return;  // don't clobber the layout type if we're not setting one
+    }
+    m_resizeQueue[component] = layout;
     scheduleReLayout();
   }
 }

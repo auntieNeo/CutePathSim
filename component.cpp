@@ -152,6 +152,8 @@ namespace CutePathSim
           qreal height = TOP_MARGIN + maxInterfaceHeight() + BOTTOM_MARGIN + graphDimensions + BOTTOM_MARGIN;
           return QRect(-width / 2, -height / 2, width, height);
         }
+      default:
+        Q_ASSERT(false);
     }
     return QRect();
   }
@@ -208,12 +210,13 @@ namespace CutePathSim
   /**
    * Sets the layout used to display the component, either minimized, labeled, or expanded.
    *
-   * \sa layout() Layout
+   * This method initiates a re-layout of the parent graph, and the component's layout won't be changed until GraphLayoutManager is finished with the re-layout.
+   *
+   * \sa layout()
    */
   void Component::setLayout(Layout layout)
   {
-    m_layout = layout;
-    m_parentGraph->scheduleComponentResize(this);
+    m_parentGraph->scheduleComponentResize(this, layout);
   }
 
   void Component::mousePressEvent(QGraphicsSceneMouseEvent *)
@@ -236,7 +239,6 @@ namespace CutePathSim
     prepareGeometryChange();
     input->setParentItem(this);
     m_inputs.insert(input->name(), input);
-//    repositionInterfaces();
     m_parentGraph->scheduleComponentResize(this);
   }
 
@@ -251,7 +253,6 @@ namespace CutePathSim
     prepareGeometryChange();
     output->setParentItem(this);
     m_outputs.insert(output->name(), output);
-//    repositionInterfaces();
     m_parentGraph->scheduleComponentResize(this);
   }
 

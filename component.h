@@ -94,7 +94,7 @@ namespace CutePathSim
           bool m_internal;
       };
 
-      enum Layout { MINIMIZED = 0, LABELED, EXPANDED };
+      enum Layout { NONE = 0, MINIMIZED, LABELED, EXPANDED };
 
       Component(const QString &name, QGraphicsItem *parent = 0);
       virtual ~Component();
