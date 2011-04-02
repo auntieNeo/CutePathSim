@@ -45,8 +45,6 @@ namespace CutePathSim
     multiplier->run();
     printInt->run();
 
-    m_componentGraphScene->layoutGraph();
-
     // populate the menus
     m_viewMenu->addAction(m_componentGraphView->zoomInAction());
     m_viewMenu->addAction(m_componentGraphView->zoomOutAction());

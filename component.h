@@ -120,8 +120,6 @@ namespace CutePathSim
       Layout layout() { return m_layout; }
       void setLayout(Layout layout);
 
-      void repositionInterfaces();
-
     protected:
       void setParentGraph(ComponentGraph *graph) { m_parentGraph = graph; }
 
@@ -132,6 +130,10 @@ namespace CutePathSim
       void addOutput(Output *output);
 
       void addSubComponent(Component *component);
+
+      void repositionInterfaces();
+
+      void prepareGeometryChange();
 
     private:
       // style options for drawing the components

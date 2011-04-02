@@ -216,7 +216,11 @@ namespace CutePathSim
    */
   void Component::setLayout(Layout layout)
   {
-    m_parentGraph->scheduleComponentResize(this, layout);
+    m_layout = layout;
+    if(m_parentGraph)
+    {
+      m_parentGraph->scheduleComponentResize(this);
+    }
   }
 
   void Component::mousePressEvent(QGraphicsSceneMouseEvent *)
@@ -239,7 +243,10 @@ namespace CutePathSim
     prepareGeometryChange();
     input->setParentItem(this);
     m_inputs.insert(input->name(), input);
-    m_parentGraph->scheduleComponentResize(this);
+    if(m_parentGraph != 0)
+    {
+      m_parentGraph->scheduleComponentResize(this);
+    }
   }
 
   /**
@@ -253,7 +260,10 @@ namespace CutePathSim
     prepareGeometryChange();
     output->setParentItem(this);
     m_outputs.insert(output->name(), output);
-    m_parentGraph->scheduleComponentResize(this);
+    if(m_parentGraph != 0)
+    {
+      m_parentGraph->scheduleComponentResize(this);
+    }
   }
 
   /**
@@ -345,7 +355,6 @@ namespace CutePathSim
 
     // tell the component graph and Graphviz about our new edge
     graph->addEdge(output, this);
-    graph->prepareLayoutGraph();
   }
 
   /**
@@ -358,7 +367,6 @@ namespace CutePathSim
 
     // tell the component graph and Graphviz to remove the edge
     component()->parentGraph()->removeEdge(m_connection, this);
-    component()->parentGraph()->prepareLayoutGraph();
 
     m_connection->m_disconnect(this);
     m_disconnect();
@@ -518,7 +526,6 @@ namespace CutePathSim
 
     // tell the component graph and Graphviz about our new edge
     graph->addEdge(this, input);
-    graph->prepareLayoutGraph();
   }
 
   /**
@@ -533,7 +540,6 @@ namespace CutePathSim
     {
       // tell the component graph and Graphviz to remove the edge
       component()->parentGraph()->removeEdge(this, input);
-      component()->parentGraph()->prepareLayoutGraph();
 
       input->m_disconnect();
       m_disconnect(input);
@@ -619,6 +625,7 @@ namespace CutePathSim
 
     if(m_to == 0)
     {
+      // FIXME: this shouldn't be done here...
       m_to = new Input("to " + name(), width(), component());  // TODO: figure out how to translate this
 //      m_to->setParentItem(component()->subGraph());  // FIXME: this doesn't work for some reason
       m_to->m_internal = true;
@@ -765,6 +772,14 @@ namespace CutePathSim
         break;
       default:
         ;
+    }
+  }
+
+  void Component::prepareGeometryChange()
+  {
+    if(m_parentGraph)
+    {
+      m_parentGraph->scheduleComponentResize(this);
     }
   }
 

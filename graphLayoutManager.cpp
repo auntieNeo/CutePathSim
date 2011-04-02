@@ -1,6 +1,8 @@
 #include "componentGraph.h"
 #include "graphLayoutManager.h"
 
+#include <QCoreApplication>
+
 namespace CutePathSim
 {
   /**
@@ -9,7 +11,10 @@ namespace CutePathSim
    */
   GraphLayoutManager::GraphLayoutManager()
   {
-    m_thread = new GraphLayoutThread();
+    if(m_layoutGraphEventType == -1)
+    {
+      m_layoutGraphEventType = static_cast<QEvent::Type>(QEvent::registerEventType());
+    }
   }
 
   /*
@@ -43,6 +48,10 @@ namespace CutePathSim
    */
   void GraphLayoutManager::scheduleLayoutGraph(ComponentGraph *graph)
   {
+    if(m_graphs.size() == 0)
+    {
+      QCoreApplication::postEvent(this, new QEvent(m_layoutGraphEventType));
+    }
     if(!m_graphs.contains(graph))
     {
       m_graphs.enqueue(graph);
@@ -51,41 +60,24 @@ namespace CutePathSim
 
   void GraphLayoutManager::processQueue()
   {
-    if(m_thread->isRunning())
-    {
-      return;
-    }
-
-    if(m_thread->recentlyFinished())
-    {
-      // apply the recently generated layout to the GUI items
-      m_thread->graph()->updateItemPositions();
-      // TODO: resize the components that need to be resized
-    }
-
-    if(!m_graphs.isEmpty())
+    while(!m_graphs.isEmpty())
     {
       ComponentGraph *graph = m_graphs.dequeue();
-      graph->updateNodeSizes();  // update the sizes of the Graphviz nodes to reflect the anticipated size of the components we will resize afterwards
-      m_thread->setGraph(graph);
-      // TODO: add the components to be resized to the thread's data members, so we know what to resize after the thread is done
-      m_thread->run();
+      graph->layoutGraph();
     }
   }
 
-  GraphLayoutManager::GraphLayoutThread::GraphLayoutThread()
+  bool GraphLayoutManager::event(QEvent *e)
   {
-    m_recentlyFinished = false;
+    if(e->type() == m_layoutGraphEventType)
+    {
+      e->accept();
+      this->processQueue();
+      return true;
+    }
+    return QObject::event(e);
   }
 
-  GraphLayoutManager::GraphLayoutThread::~GraphLayoutThread()
-  {
-  }
-
-  void GraphLayoutManager::GraphLayoutThread::run()
-  {
-    m_recentlyFinished = false;
-
-    m_graph->layoutGraph();
-  }
+  GraphLayoutManager *GraphLayoutManager::m_instance = 0;
+  QEvent::Type GraphLayoutManager::m_layoutGraphEventType = static_cast<QEvent::Type>(-1);
 }
