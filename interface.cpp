@@ -22,11 +22,13 @@ namespace CutePathSim
   {
     m_name = name;
 
+    /*
     // add a drop shadow effect
     QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect();
     shadow->setBlurRadius(5);
     shadow->setOffset(2, 3);
     setGraphicsEffect(shadow);
+    */
 
     // set up the font
     if(m_font == 0)
