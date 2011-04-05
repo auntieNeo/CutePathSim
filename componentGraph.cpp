@@ -175,6 +175,20 @@ namespace CutePathSim
       m_agset(m_nodes.value(component), "width", QVariant(component->boundingRect().width() / POINTS_IN_INCH).toString());
       m_agset(m_nodes.value(component), "height", QVariant(component->boundingRect().height() / POINTS_IN_INCH).toString());
     }
+    if(m_parentComponent != 0)
+    {
+      // update the size of the interfaces
+      foreach(Component::Input *input, m_parentComponent->getInputs())
+      {
+        m_agset(m_nodes.value(input->from()), "width", QVariant(input->from()->boundingRect().width() / POINTS_IN_INCH).toString());
+        m_agset(m_nodes.value(input->from()), "height", QVariant(input->from()->boundingRect().height() / POINTS_IN_INCH).toString());
+      }
+      foreach(Component::Output *output, m_parentComponent->getOutputs())
+      {
+        m_agset(m_nodes.value(output->to()), "width", QVariant(output->to()->boundingRect().width() / POINTS_IN_INCH).toString());
+        m_agset(m_nodes.value(output->to()), "height", QVariant(output->to()->boundingRect().height() / POINTS_IN_INCH).toString());
+      }
+    }
 
     gvLayout(m_graphvizContext, m_graph, "dot");
     gvRender(m_graphvizContext, m_graph, "dot", 0);
