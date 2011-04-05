@@ -165,7 +165,7 @@ namespace CutePathSim
     return true;
   }
 
-  void ComponentGraph::layoutGraph()  // TODO: make this private
+  void ComponentGraph::layoutGraph()
   {
     prepareGeometryChange();
     // update the size of the nodes for the components that changed size

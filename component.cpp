@@ -42,6 +42,8 @@ namespace CutePathSim
     m_subGraph = 0;
 
     m_layout = LABELED;
+
+    m_toolBox = 0;
   }
 
   Component::~Component()
@@ -783,6 +785,37 @@ namespace CutePathSim
     {
       m_parentGraph->scheduleComponentResize(this);
     }
+  }
+
+  /**
+   * Returns an instance of the toolbox containing all of the tools needed to manipulate the component. Derived component classes can reimplement this method to add tools to the toolbox as they see fit.
+   *
+   * As the toolbox can be destroyed by closeToolBox(), this method should construct a new toolbox if no constructed toolbox exists. If a constructed toolbox does exist, a pointer to that toolbox should be returned.
+   *
+   * This method retains the ownership of the toolbox returned.
+   *
+   * \sa closeToolBox()
+   */
+  QToolBox *Component::getToolBox()
+  {
+    if(m_toolBox == 0)
+    {
+      m_toolBox= new QToolBox();
+    }
+    return m_toolBox;
+  }
+
+  /**
+   * Closes and frees memory associated with the toolbox. Derived classes should reimplement this method if they have made changes to the toolbox that need to be cleaned up.
+   *
+   * Because keeping a toolbox for each and every component would be a prohibitively large waste of memory, the toolbox can be destroyed at any time with this method.
+   *
+   * \sa getToolBox()
+   */
+  void Component::closeToolBox()
+  {
+    delete m_toolBox;
+    m_toolBox = 0;
   }
 
   qreal Component::maxInterfaceWidth() const

@@ -35,7 +35,7 @@ namespace CutePathSim
       void scheduleReLayout();
       void scheduleComponentResize(Component *component) { m_resizeComponents.insert(component); scheduleReLayout(); }
 
-      void layoutGraph();  // FIXME: make this protected
+      void layoutGraph();
 
     protected:
       void dragMoveEvent(QGraphicsSceneDragDropEvent *event);

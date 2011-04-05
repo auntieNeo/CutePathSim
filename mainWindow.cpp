@@ -49,8 +49,6 @@ namespace CutePathSim
     m_viewMenu->addAction(m_componentGraphView->zoomInAction());
     m_viewMenu->addAction(m_componentGraphView->zoomOutAction());
     m_viewMenu->addAction(m_componentGraphView->fitViewAction());
-
-    // connect the signals
   }
 
   MainWindow::~MainWindow()

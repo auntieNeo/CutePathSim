@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QSet>
 #include <QString>
+#include <QToolBox>
 
 #include "interface.h"
 
@@ -135,6 +136,9 @@ namespace CutePathSim
 
       void prepareGeometryChange();
 
+      virtual QToolBox *getToolBox();
+      virtual void closeToolBox();
+
     private:
       // style options for drawing the components
       // FIXME: I don't know why the following code manages to link without these statics being defined somewhere.
@@ -153,6 +157,8 @@ namespace CutePathSim
       ComponentGraph *m_subGraph;
 
       Layout m_layout;
+
+      QToolBox *m_toolBox;
 
       qreal maxInterfaceWidth() const;
       qreal maxInterfaceHeight() const;
