@@ -227,7 +227,7 @@ namespace CutePathSim
 
     if(m_parentComponent != 0)
     {
-//      m_parentComponent->repositionInterfaces();  // the component graph's dimensions changed, so we need to reposition the parent component's layout
+      m_parentComponent->repositionInterfaces();  // the component graph's dimensions changed, so we need to reposition the parent component's layout
     }
   }
 

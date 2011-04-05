@@ -112,8 +112,6 @@ namespace CutePathSim
     }
     // connect the last adder to output the product
     m_adders.last()->getOutput("sum")->connect(m_product->to());
-
-    subGraph()->layoutGraph();  // FIXME: this shouldn't be needed in the future
   }
 
   BinaryMultiplier::~BinaryMultiplier()

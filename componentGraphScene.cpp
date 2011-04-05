@@ -38,10 +38,4 @@ namespace CutePathSim
   {
     return m_rootGraph->addComponent(component);
   }
-
-  // FIXME: remove this
-  void ComponentGraphScene::layoutGraph()
-  {
-    m_rootGraph->layoutGraph();
-  }
 }
