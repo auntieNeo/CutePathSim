@@ -60,6 +60,7 @@ QByteArray parseAssembly(QTextStream assembly)
     else
     {
       Q_ASSERT(false);  // TODO: throw an exception
+      return 0;
     }
 
 
@@ -74,22 +75,32 @@ QByteArray parseAssembly(QTextStream assembly)
           if(pos < 0)
           {
             Q_ASSERT(false);  // TODO: throw an exception
+            return 0;
           }
           QStringList registers = rx.capturedTexts();
           if(registers.length() != 3)
           {
             Q_ASSERT(false);  // TODO: throw an exception
+            return 0;
           }
           unsigned int rd = QVariant(registers[0]).toInt();
           if(rd >= NUM_REGISTERS)
+          {
             Q_ASSERT(false);  // TODO: throw an exception
+            return 0;
+          }
           unsigned int rs = QVariant(registers[1]).toInt();
           if(rs >= NUM_REGISTERS)
+          {
             Q_ASSERT(false);  // TODO: throw an exception
+            return 0;
+          }
           unsigned int rt = QVariant(registers[2]).toInt();
           if(rt >= NUM_REGISTERS)
+          {
             Q_ASSERT(false);  // TODO: throw an exception
-
+            return 0;
+          }
           instruction |= rd << RD_SHIFT;
           instruction |= rs << RS_SHIFT;
           instruction |= rt << RT_SHIFT;
@@ -105,19 +116,27 @@ QByteArray parseAssembly(QTextStream assembly)
           if(pos < 0)
           {
             Q_ASSERT(false);  // TODO: throw an exception
+            return 0;
           }
           QStringList registers = rx.capturedTexts();
           if(registers.length() != 3)
           {
             Q_ASSERT(false);  // TODO: throw an exception
+            return 0;
           }
 
           unsigned int rs = QVariant(registers[0]).toInt();
           if(rs >= NUM_REGISTERS)
+          {
             Q_ASSERT(false);  // TODO: throw an exception
+            return 0;
+          }
           unsigned int rt = QVariant(registers[1]).toInt();
           if(rt >= NUM_REGISTERS)
+          {
             Q_ASSERT(false);  // TODO: throw an exception
+            return 0;
+          }
           unsigned int IMM16 = QVariant(registers[2]).toInt();
 
           rs |= IMM16;
@@ -128,6 +147,14 @@ QByteArray parseAssembly(QTextStream assembly)
     case JMP_OP:
       {
           // Parse the target value
+          QRegExp rx("^\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.$");
+          int pos = rx.indexIn(words[1]);
+
+          if(pos < 0)
+          {
+              Q_ASSERT(false); // TODO: throw an exception
+              return 0;
+          }
 
       }
 
@@ -135,6 +162,7 @@ QByteArray parseAssembly(QTextStream assembly)
 
       default:
         Q_ASSERT(false);  // TODO: throw an exception
+        return 0;
     }
     result.append(qToLittleEndian(instruction));
   }
