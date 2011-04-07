@@ -11,7 +11,6 @@ const unsigned int LW_OP  = 0x23;
 const unsigned int SW_OP  = 0x2B;
 const unsigned int BEQ_OP = 0x04;
 const unsigned int JMP_OP = 0x02;
-const unsigned int TARGET = 0;
 
 const unsigned int OP_SHIFT = 26;
 const unsigned int FUNC_SHIFT = 0;
@@ -149,13 +148,25 @@ QByteArray parseAssembly(QTextStream assembly)
           // Parse the target value
           QRegExp rx("^\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.$");
           int pos = rx.indexIn(words[1]);
-
+          QStringList target = rx.capturedTexts();
           if(pos < 0)
           {
               Q_ASSERT(false); // TODO: throw an exception
               return 0;
           }
 
+          if(target.length() > 20000)
+          {
+              Q_ASSERT(false);
+              return 0;
+          }
+
+          unsigned int jmp = QVariant(target[0]).toInt();
+
+
+
+          instruction |= jmp << FUNC_SHIFT; // Jump function in our case takes the target value and points to
+                                            // an arbitrary value that we will set in a register.
       }
 
 
