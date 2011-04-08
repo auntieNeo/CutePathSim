@@ -2,6 +2,7 @@
 #include <QMenuBar>
 #include <QSignalMapper>
 
+#include "common.h"
 #include "componentGraphScene.h"
 #include "componentGraphView.h"
 #include "mainWindow.h"
@@ -93,4 +94,17 @@ namespace CutePathSim
     delete m_guiDocks.take(widget);
     return;
   }
+
+  bool MainWindow::event(QEvent *event)
+  {
+    if(event->type() == ComponentDockEvent::EventType)
+    {
+      addDock(static_cast<ComponentDockEvent*>(event)->component()->getToolBox());
+      return true;
+    }
+
+    return QObject::event(event);
+  }
+
+  MainWindow *mainWindow;
 }

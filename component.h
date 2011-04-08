@@ -122,6 +122,9 @@ namespace CutePathSim
       Layout layout() { return m_layout; }
       void setLayout(Layout layout);
 
+      virtual QToolBox *getToolBox();
+      virtual void closeToolBox();
+
     protected:
       void setParentGraph(ComponentGraph *graph) { m_parentGraph = graph; }
 
@@ -131,6 +134,8 @@ namespace CutePathSim
       void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
       void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
+      void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
       void addInput(Input *input);
       void addOutput(Output *output);
 
@@ -139,9 +144,6 @@ namespace CutePathSim
       void repositionInterfaces();
 
       void prepareGeometryChange();
-
-      virtual QToolBox *getToolBox();
-      virtual void closeToolBox();
 
     private:
       // style options for drawing the components

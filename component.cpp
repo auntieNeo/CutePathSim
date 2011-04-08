@@ -4,10 +4,13 @@
 #include <QPainter>
 #include <QtEndian>
 #include <QDebug>
+#include <QCoreApplication>
 
+#include "common.h"
 #include "component.h"
 #include "componentGraph.h"
 #include "componentDataModel.h"
+#include "mainWindow.h"
 
 namespace CutePathSim
 {
@@ -805,6 +808,7 @@ namespace CutePathSim
     if(m_toolBox == 0)
     {
       m_toolBox = new QToolBox();
+      m_toolBox->setWindowTitle(name());
       m_dataTable = new QTableView(m_toolBox);
       m_dataTable->setModel(new ComponentDataModel(this));
       m_toolBox->addItem(m_dataTable, QObject::tr("Component Data"));
@@ -880,6 +884,12 @@ namespace CutePathSim
 
   void Component::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
   {
+  }
+
+  void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *)
+  {
+    QCoreApplication::sendEvent(mainWindow, new ComponentDockEvent(this));
+    qDebug() << "Double clicked...";
   }
 
   const qreal Component::MIN_GRAPH_SIZE;  // FIXME: why does this need a definition and the others don't?

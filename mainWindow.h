@@ -25,6 +25,9 @@ namespace CutePathSim
       void addDock(QWidget *widget);
       void removeDock(QWidget *widget);
 
+    protected:
+      bool event(QEvent *event);
+
     private slots:
       void newSimulation();
       void openSimulation();
@@ -35,6 +38,8 @@ namespace CutePathSim
       ComponentGraphView *m_componentGraphView;
       QHash<QWidget *, QDockWidget *> m_guiDocks;
   };
+
+  extern MainWindow *mainWindow;
 }
 
 #endif

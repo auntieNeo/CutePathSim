@@ -1,13 +1,18 @@
 #include <QtGui>
 
+#include "common.h"
 #include "mainWindow.h"
 
 int main(int argc, char **argv)
 {
   QApplication app(argc, argv);
 
-  CutePathSim::MainWindow mainWindow;
-  mainWindow.show();
+  // register event types
+  CutePathSim::ComponentDockEvent::EventType = static_cast<QEvent::Type>(QEvent::registerEventType());
+
+  CutePathSim::MainWindow mw;
+  CutePathSim::mainWindow = &mw;
+  mw.show();
 
   return app.exec();
 }
