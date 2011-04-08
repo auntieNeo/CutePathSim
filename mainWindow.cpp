@@ -12,6 +12,7 @@
 #include "components/printIntComponent.h"
 #include "components/rippleCarryAdder.h"
 #include "components/binaryMultiplier.h"
+#include "components/instructionFetcher.h"
 
 namespace CutePathSim
 {
@@ -34,6 +35,9 @@ namespace CutePathSim
     m_componentGraphScene->addComponent(outputs5);
     m_componentGraphScene->addComponent(printInt);
     m_componentGraphScene->addComponent(multiplier);
+
+    InstructionFetcher *instructionFetcher = new InstructionFetcher("InstructionFetcher");
+    m_componentGraphScene->addComponent(instructionFetcher);
 
     outputs42->getOutput("output")->connect(multiplier->getInput("a"));
     outputs5->getOutput("output")->connect(multiplier->getInput("b"));
@@ -103,7 +107,7 @@ namespace CutePathSim
       return true;
     }
 
-    return QObject::event(event);
+    return QMainWindow::event(event);
   }
 
   MainWindow *mainWindow;

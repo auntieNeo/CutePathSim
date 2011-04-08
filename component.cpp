@@ -889,7 +889,6 @@ namespace CutePathSim
   void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *)
   {
     QCoreApplication::sendEvent(mainWindow, new ComponentDockEvent(this));
-    qDebug() << "Double clicked...";
   }
 
   const qreal Component::MIN_GRAPH_SIZE;  // FIXME: why does this need a definition and the others don't?
