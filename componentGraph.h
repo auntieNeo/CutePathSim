@@ -37,6 +37,8 @@ namespace CutePathSim
 
       void layoutGraph();
 
+//      QList<Component *>
+
     protected:
       void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
 

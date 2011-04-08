@@ -6,6 +6,7 @@
 #include <QSet>
 #include <QString>
 #include <QToolBox>
+#include <QTableView>
 
 #include "interface.h"
 
@@ -127,6 +128,9 @@ namespace CutePathSim
       void mousePressEvent(QGraphicsSceneMouseEvent *event);
       void mouseDragEvent(QGraphicsSceneDragDropEvent *event);
 
+      void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+      void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+
       void addInput(Input *input);
       void addOutput(Output *output);
 
@@ -159,6 +163,7 @@ namespace CutePathSim
       Layout m_layout;
 
       QToolBox *m_toolBox;
+      QTableView *m_dataTable;
 
       qreal maxInterfaceWidth() const;
       qreal maxInterfaceHeight() const;

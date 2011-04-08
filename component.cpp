@@ -7,6 +7,7 @@
 
 #include "component.h"
 #include "componentGraph.h"
+#include "componentDataModel.h"
 
 namespace CutePathSim
 {
@@ -44,6 +45,9 @@ namespace CutePathSim
     m_layout = LABELED;
 
     m_toolBox = 0;
+    m_dataTable = 0;
+
+    setAcceptHoverEvents(true);
   }
 
   Component::~Component()
@@ -800,7 +804,10 @@ namespace CutePathSim
   {
     if(m_toolBox == 0)
     {
-      m_toolBox= new QToolBox();
+      m_toolBox = new QToolBox();
+      m_dataTable = new QTableView(m_toolBox);
+      m_dataTable->setModel(new ComponentDataModel(this));
+      m_toolBox->addItem(m_dataTable, QObject::tr("Component Data"));
     }
     return m_toolBox;
   }
@@ -816,6 +823,13 @@ namespace CutePathSim
   {
     delete m_toolBox;
     m_toolBox = 0;
+    if(m_dataTable != 0)
+    {
+      QAbstractItemModel *model = m_dataTable->model();
+      delete m_dataTable;
+      delete model;
+    }
+    m_dataTable = 0;
   }
 
   qreal Component::maxInterfaceWidth() const
@@ -858,6 +872,14 @@ namespace CutePathSim
       }
     }
     return maxInterfaceHeight;
+  }
+
+  void Component::hoverEnterEvent(QGraphicsSceneHoverEvent *)
+  {
+  }
+
+  void Component::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
+  {
   }
 
   const qreal Component::MIN_GRAPH_SIZE;  // FIXME: why does this need a definition and the others don't?

@@ -64,4 +64,33 @@ namespace CutePathSim
   void MainWindow::openSimulation()
   {
   }
+
+  void MainWindow::runSimulation()
+  {
+    /*
+    // use a topological sort to determine execution order
+    QList<Component *> sortedNodes;
+    foreach(Component *component, m_componentGraphScene->rootGraph()
+    */
+  }
+
+  void MainWindow::addDock(QWidget *widget)
+  {
+    if(m_guiDocks.contains(widget))
+      return;
+
+    QDockWidget *dock = new QDockWidget(widget->windowTitle(), this);
+    dock->setWidget(widget);
+
+    addDockWidget(Qt::LeftDockWidgetArea, dock);
+  }
+
+  void MainWindow::removeDock(QWidget *widget)
+  {
+    if(!m_guiDocks.contains(widget))
+      return;
+
+    delete m_guiDocks.take(widget);
+    return;
+  }
 }
