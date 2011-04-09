@@ -1,6 +1,7 @@
 #ifndef INSTRUCTION_FETCHER_H_
 #define INSTRUCTION_FETCHER_H_
 
+#include <QByteArray>
 #include <QPlainTextEdit>
 
 #include "component.h"
@@ -23,6 +24,8 @@ namespace CutePathSim
     private:
       Output *m_output;
       QPlainTextEdit *m_textEdit;
+      QByteArray m_assembled;
+      int m_instructionCounter;
   };
 }
 

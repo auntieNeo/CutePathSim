@@ -22,71 +22,74 @@ const unsigned int RTshift_ADDSUB = 16;
 
 const unsigned int NUM_REGISTERS = 32;
 
-QByteArray parseAssembly(QTextStream assembly)
+namespace CutePathSim
 {
-  QByteArray result;
-
-  while (!assembly.atEnd())
+  QByteArray parseAssembly(QTextStream &assembly)
   {
-    unsigned int instruction = 0;
+    QByteArray result;
 
-    QString line1 = assembly.readLine();
-    QStringList words = line1.split(' ');
-
-    // parse the instruction name
-    if (words[0] == "ADD")
+    while (!assembly.atEnd())
     {
-      instruction |= ADD_OP << OP_SHIFT;
-      instruction |= ADD_FUNC << FUNC_SHIFT;
+      unsigned int instruction = 0;
 
-    }
-    else if (words[0] == "SUB")
-    {
-      instruction |= SUB_OP << OP_SHIFT;
-      instruction |= SUB_FUNC << FUNC_SHIFT;
-    }
-    else
-    {
-      Q_ASSERT(false);  // TODO: throw an exception
-    }
+      QString line1 = assembly.readLine();
+      QStringList words = line1.split(' ');
 
+      // parse the instruction name
+      if (words[0] == "ADD")
+      {
+        instruction |= ADD_OP << OP_SHIFT;
+        instruction |= ADD_FUNC << FUNC_SHIFT;
 
-    switch((instruction & OP_MASK) >> OP_SHIFT)
-    {
-      case ADD_OP:
-//      case SUB_OP:
-        {
-          // parse the register numbers
-          QRegExp rx("^\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.$");
-          int pos = rx.indexIn(words[1]);
-          if(pos < 0)
-          {
-            Q_ASSERT(false);  // TODO: throw an exception
-          }
-          QStringList registers = rx.capturedTexts();
-          if(registers.length() != 3)
-          {
-            Q_ASSERT(false);  // TODO: throw an exception
-          }
-          unsigned int rd = QVariant(registers[0]).toInt();
-          if(rd >= NUM_REGISTERS)
-            Q_ASSERT(false);  // TODO: throw an exception
-          unsigned int rs = QVariant(registers[1]).toInt();
-          if(rs >= NUM_REGISTERS)
-            Q_ASSERT(false);  // TODO: throw an exception
-          unsigned int rt = QVariant(registers[2]).toInt();
-          if(rt >= NUM_REGISTERS)
-            Q_ASSERT(false);  // TODO: throw an exception
-
-          instruction |= rd << RD_SHIFT;
-          instruction |= rs << RS_SHIFT;
-          instruction |= rt << RT_SHIFT;
-        }
-      default:
+      }
+      else if (words[0] == "SUB")
+      {
+        instruction |= SUB_OP << OP_SHIFT;
+        instruction |= SUB_FUNC << FUNC_SHIFT;
+      }
+      else
+      {
         Q_ASSERT(false);  // TODO: throw an exception
-    }
-    result.append(qToLittleEndian(instruction));
-  }
+      }
 
-  return result;
+
+      switch((instruction & OP_MASK) >> OP_SHIFT)
+      {
+        case ADD_OP:
+          //      case SUB_OP:
+          {
+            // parse the register numbers
+            QRegExp rx("^\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.$");
+            int pos = rx.indexIn(words[1]);
+            if(pos < 0)
+            {
+              Q_ASSERT(false);  // TODO: throw an exception
+            }
+            QStringList registers = rx.capturedTexts();
+            if(registers.length() != 3)
+            {
+              Q_ASSERT(false);  // TODO: throw an exception
+            }
+            unsigned int rd = QVariant(registers[0]).toInt();
+            if(rd >= NUM_REGISTERS)
+              Q_ASSERT(false);  // TODO: throw an exception
+            unsigned int rs = QVariant(registers[1]).toInt();
+            if(rs >= NUM_REGISTERS)
+              Q_ASSERT(false);  // TODO: throw an exception
+            unsigned int rt = QVariant(registers[2]).toInt();
+            if(rt >= NUM_REGISTERS)
+              Q_ASSERT(false);  // TODO: throw an exception
+
+            instruction |= rd << RD_SHIFT;
+            instruction |= rs << RS_SHIFT;
+            instruction |= rt << RT_SHIFT;
+          }
+        default:
+          Q_ASSERT(false);  // TODO: throw an exception
+      }
+      result.append(qToLittleEndian(instruction));
+    }
+
+    return result;
+  }
 }
