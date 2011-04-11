@@ -103,8 +103,8 @@ namespace CutePathSim
 
       QString name() { return m_name; }
 
-      QList<Input *> getInputs() { return m_inputs.values(); }
-      QList<Output *> getOutputs() { return m_outputs.values(); }
+      QList<Input *> getInputs() const { return m_inputs.values(); }
+      QList<Output *> getOutputs() const { return m_outputs.values(); }
 
       Input *getInput(const QString &name);
       Output *getOutput(const QString &name);
