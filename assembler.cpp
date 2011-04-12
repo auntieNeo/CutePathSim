@@ -180,6 +180,7 @@ namespace CutePathSim
           instruction |= rs << RS_SHIFT;
           instruction |= rt << RT_SHIFT;
       }
+
     case JMP_OP:
       {
           // Parse the target value
