@@ -35,6 +35,8 @@ namespace CutePathSim
       void scheduleReLayout();
       void scheduleComponentResize(Component *component) { m_resizeComponents.insert(component); scheduleReLayout(); }
 
+      QList<Component *> const components() { return m_components.values(); }
+
       void layoutGraph();
 
 //      QList<Component *>

@@ -9,6 +9,7 @@
 #include <QTableView>
 
 #include "interface.h"
+#include "componentDataModel.h"
 
 namespace CutePathSim
 {
@@ -18,6 +19,7 @@ namespace CutePathSim
   {
     public:
       friend class ComponentGraph;
+      friend class ComponentDataModel;
       class Output;
       class Input : public Interface
       {
@@ -103,8 +105,8 @@ namespace CutePathSim
 
       QString name() { return m_name; }
 
-      QList<Input *> getInputs() { return m_inputs.values(); }
-      QList<Output *> getOutputs() { return m_outputs.values(); }
+      QList<Input *> getInputs() const { return m_inputs.values(); }
+      QList<Output *> getOutputs() const { return m_outputs.values(); }
 
       Input *getInput(const QString &name);
       Output *getOutput(const QString &name);
@@ -145,6 +147,9 @@ namespace CutePathSim
 
       void prepareGeometryChange();
 
+      void setData(const QString &name, ComponentData data);
+      ComponentData getData(const QString &name);
+
     private:
       // style options for drawing the components
       // FIXME: I don't know why the following code manages to link without these statics being defined somewhere.
@@ -169,6 +174,8 @@ namespace CutePathSim
 
       qreal maxInterfaceWidth() const;
       qreal maxInterfaceHeight() const;
+
+      QMap<QString, ComponentData> m_data;
   };
 }
 

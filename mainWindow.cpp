@@ -3,6 +3,7 @@
 #include <QSignalMapper>
 
 #include "common.h"
+#include "componentGraph.h"
 #include "componentGraphScene.h"
 #include "componentGraphView.h"
 #include "mainWindow.h"
@@ -72,11 +73,29 @@ namespace CutePathSim
 
   void MainWindow::runSimulation()
   {
-    /*
     // use a topological sort to determine execution order
     QList<Component *> sortedNodes;
-    foreach(Component *component, m_componentGraphScene->rootGraph()
-    */
+    QList<Component *> currentNodes;
+    foreach(Component *component, m_componentGraphScene->rootGraph()->components())
+    {
+      // add components with no incoming edges into currentNodes
+      if(component->getInputs().size() == 0)
+      {
+        currentNodes.append(component);
+      }
+    }
+    while(!currentNodes.isEmpty())
+    {
+      Component *current = currentNodes.takeLast();
+      sortedNodes.append(current);
+      foreach(Component::Output *output, current->getOutputs())
+      {
+        foreach(Component::Input *nextInput, output->connections())
+        {
+//          nextInput->
+        }
+      }
+    }
   }
 
   void MainWindow::addDock(QWidget *widget)

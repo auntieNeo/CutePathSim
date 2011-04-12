@@ -795,6 +795,28 @@ namespace CutePathSim
   }
 
   /**
+   * Sets the data to be displayed in the component's data tab.
+   *
+   * \a data should cointain either an integer, boolean, or pointer to a byte array and a correct type set.
+   *
+   * If \a data contains a pointer to a byte array, then the contents of the byte array are copied and Component does not assume ownership of it.
+   *
+   * \sa getData
+   */
+  void Component::setData(const QString &name, const ComponentData data)
+  {
+  }
+
+  /**
+   * Returns the data set by the setData() method.
+   *
+   * \sa setData()
+   */
+  ComponentData Component::getData(const QString &name)
+  {
+  }
+
+  /**
    * Returns an instance of the toolbox containing all of the tools needed to manipulate the component. Derived component classes can reimplement this method to add tools to the toolbox as they see fit.
    *
    * As the toolbox can be destroyed by closeToolBox(), this method should construct a new toolbox if no constructed toolbox exists. If a constructed toolbox does exist, a pointer to that toolbox should be returned.
