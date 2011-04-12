@@ -9,6 +9,18 @@ namespace CutePathSim
 {
   class Component;
 
+  struct ComponentData
+  {
+    union Data
+    {
+      int integer;
+      bool boolean;
+      QByteArray *bytes;
+    } data;
+    enum Type { INTEGER = 1, BOOLEAN, BYTES };
+    Type type;
+  };
+
   class ComponentDataModel : public QAbstractItemModel
   {
     Q_OBJECT
