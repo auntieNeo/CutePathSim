@@ -35,8 +35,6 @@ namespace CutePathSim
     {
         unsigned int instruction = 0;
 
-
-
         QString line1 = assembly.readLine();
         QStringList words = line1.split(' ');
 
@@ -53,19 +51,37 @@ namespace CutePathSim
              instruction |= SUB_OP << OP_SHIFT;
              instruction |= SUB_FUNC << FUNC_SHIFT;
          }
+
         else if (words[0] == "ORI")
          {
              instruction |= ORI_OP << OP_SHIFT;
          }
+
          else if (words[0] == "JUMP")
-        {
+         {
              instruction |= JMP_OP << OP_SHIFT;
-        }
+         }
+
+         else if (words[0] == "LW")
+         {
+             instruction |= LW_OP << OP_SHIFT;
+         }
+
+         else if (words[0] == "SW")
+         {
+             instruction |= SW_OP << OP_SHIFT;
+         }
+
+         else if (words[0] == "BEQ_OP")
+         {
+             instruction |= BEQ_OP << OP_SHIFT;
+         }
+
          else
-        {
+         {
              Q_ASSERT(false);  // TODO: throw an exception
              return QByteArray();
-        }
+         }
 
 
     switch((instruction & OP_MASK) >> OP_SHIFT)
@@ -76,35 +92,45 @@ namespace CutePathSim
           // parse the register numbers
           QRegExp rx("^\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.$");
           int pos = rx.indexIn(words[1]);
+
           if(pos < 0)
           {
             Q_ASSERT(false);  // TODO: throw an exception
             return QByteArray();
           }
+
           QStringList registers = rx.capturedTexts();
+
           if(registers.length() != 3)
           {
             Q_ASSERT(false);  // TODO: throw an exception
             return QByteArray();
           }
+
           unsigned int rd = QVariant(registers[0]).toInt();
+
           if(rd >= NUM_REGISTERS)
           {
             Q_ASSERT(false);  // TODO: throw an exception
             return QByteArray();
           }
+
           unsigned int rs = QVariant(registers[1]).toInt();
+
           if(rs >= NUM_REGISTERS)
           {
             Q_ASSERT(false);  // TODO: throw an exception
             return QByteArray();
           }
+
           unsigned int rt = QVariant(registers[2]).toInt();
+
           if(rt >= NUM_REGISTERS)
           {
             Q_ASSERT(false);  // TODO: throw an exception
             return QByteArray();
           }
+
           instruction |= rd << RD_SHIFT;
           instruction |= rs << RS_SHIFT;
           instruction |= rt << RT_SHIFT;
@@ -122,7 +148,9 @@ namespace CutePathSim
             Q_ASSERT(false);  // TODO: throw an exception
             return QByteArray();
           }
+
           QStringList registers = rx.capturedTexts();
+
           if(registers.length() != 3)
           {
             Q_ASSERT(false);  // TODO: throw an exception
@@ -130,17 +158,21 @@ namespace CutePathSim
           }
 
           unsigned int rs = QVariant(registers[0]).toInt();
+
           if(rs >= NUM_REGISTERS)
           {
             Q_ASSERT(false);  // TODO: throw an exception
             return QByteArray();
           }
+
           unsigned int rt = QVariant(registers[1]).toInt();
+
           if(rt >= NUM_REGISTERS)
           {
             Q_ASSERT(false);  // TODO: throw an exception
             return QByteArray();
           }
+
           unsigned int IMM16 = QVariant(registers[2]).toInt();
 
           rs |= IMM16;
@@ -152,8 +184,11 @@ namespace CutePathSim
       {
           // Parse the target value
           QRegExp rx("^\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.$");
+
           int pos = rx.indexIn(words[1]);
+
           QStringList target = rx.capturedTexts();
+
           if(pos < 0)
           {
               Q_ASSERT(false); // TODO: throw an exception
