@@ -22,7 +22,7 @@ namespace CutePathSim
 
       bool addComponent(Component *component);
 
-      void layoutGraph();
+      ComponentGraph *rootGraph() { return m_rootGraph; };
 
     private:
       ComponentGraph *m_rootGraph;

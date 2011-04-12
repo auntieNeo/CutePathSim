@@ -4,9 +4,13 @@
 #include <QPainter>
 #include <QtEndian>
 #include <QDebug>
+#include <QCoreApplication>
 
+#include "common.h"
 #include "component.h"
 #include "componentGraph.h"
+#include "componentDataModel.h"
+#include "mainWindow.h"
 
 namespace CutePathSim
 {
@@ -22,11 +26,13 @@ namespace CutePathSim
   {
     m_name = name;
 
+    /*
     // add a drop shadow effect
     QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect();
     shadow->setBlurRadius(5);
     shadow->setOffset(2, 3);
     setGraphicsEffect(shadow);
+    */
 
     // set up the font
     if(m_font == 0)
@@ -40,6 +46,11 @@ namespace CutePathSim
     m_subGraph = 0;
 
     m_layout = LABELED;
+
+    m_toolBox = 0;
+    m_dataTable = 0;
+
+    setAcceptHoverEvents(true);
   }
 
   Component::~Component()
@@ -216,7 +227,11 @@ namespace CutePathSim
    */
   void Component::setLayout(Layout layout)
   {
-    m_parentGraph->scheduleComponentResize(this, layout);
+    m_layout = layout;
+    if(m_parentGraph)
+    {
+      m_parentGraph->scheduleComponentResize(this);
+    }
   }
 
   void Component::mousePressEvent(QGraphicsSceneMouseEvent *)
@@ -239,7 +254,10 @@ namespace CutePathSim
     prepareGeometryChange();
     input->setParentItem(this);
     m_inputs.insert(input->name(), input);
-    m_parentGraph->scheduleComponentResize(this);
+    if(m_parentGraph != 0)
+    {
+      m_parentGraph->scheduleComponentResize(this);
+    }
   }
 
   /**
@@ -253,7 +271,10 @@ namespace CutePathSim
     prepareGeometryChange();
     output->setParentItem(this);
     m_outputs.insert(output->name(), output);
-    m_parentGraph->scheduleComponentResize(this);
+    if(m_parentGraph != 0)
+    {
+      m_parentGraph->scheduleComponentResize(this);
+    }
   }
 
   /**
@@ -345,7 +366,6 @@ namespace CutePathSim
 
     // tell the component graph and Graphviz about our new edge
     graph->addEdge(output, this);
-    graph->prepareLayoutGraph();
   }
 
   /**
@@ -358,7 +378,6 @@ namespace CutePathSim
 
     // tell the component graph and Graphviz to remove the edge
     component()->parentGraph()->removeEdge(m_connection, this);
-    component()->parentGraph()->prepareLayoutGraph();
 
     m_connection->m_disconnect(this);
     m_disconnect();
@@ -518,7 +537,6 @@ namespace CutePathSim
 
     // tell the component graph and Graphviz about our new edge
     graph->addEdge(this, input);
-    graph->prepareLayoutGraph();
   }
 
   /**
@@ -533,7 +551,6 @@ namespace CutePathSim
     {
       // tell the component graph and Graphviz to remove the edge
       component()->parentGraph()->removeEdge(this, input);
-      component()->parentGraph()->prepareLayoutGraph();
 
       input->m_disconnect();
       m_disconnect(input);
@@ -619,6 +636,7 @@ namespace CutePathSim
 
     if(m_to == 0)
     {
+      // FIXME: this shouldn't be done here...
       m_to = new Input("to " + name(), width(), component());  // TODO: figure out how to translate this
 //      m_to->setParentItem(component()->subGraph());  // FIXME: this doesn't work for some reason
       m_to->m_internal = true;
@@ -768,6 +786,56 @@ namespace CutePathSim
     }
   }
 
+  void Component::prepareGeometryChange()
+  {
+    if(m_parentGraph)
+    {
+      m_parentGraph->scheduleComponentResize(this);
+    }
+  }
+
+  /**
+   * Returns an instance of the toolbox containing all of the tools needed to manipulate the component. Derived component classes can reimplement this method to add tools to the toolbox as they see fit.
+   *
+   * As the toolbox can be destroyed by closeToolBox(), this method should construct a new toolbox if no constructed toolbox exists. If a constructed toolbox does exist, a pointer to that toolbox should be returned.
+   *
+   * This method retains the ownership of the toolbox returned.
+   *
+   * \sa closeToolBox()
+   */
+  QToolBox *Component::getToolBox()
+  {
+    if(m_toolBox == 0)
+    {
+      m_toolBox = new QToolBox();
+      m_toolBox->setWindowTitle(name());
+      m_dataTable = new QTableView(m_toolBox);
+      m_dataTable->setModel(new ComponentDataModel(this));
+      m_toolBox->addItem(m_dataTable, QObject::tr("Component Data"));
+    }
+    return m_toolBox;
+  }
+
+  /**
+   * Closes and frees memory associated with the toolbox. Derived classes should reimplement this method if they have made changes to the toolbox that need to be cleaned up.
+   *
+   * Because keeping a toolbox for each and every component would be a prohibitively large waste of memory, the toolbox can be destroyed at any time with this method.
+   *
+   * \sa getToolBox()
+   */
+  void Component::closeToolBox()
+  {
+    delete m_toolBox;
+    m_toolBox = 0;
+    if(m_dataTable != 0)
+    {
+      QAbstractItemModel *model = m_dataTable->model();
+      delete m_dataTable;
+      delete model;
+    }
+    m_dataTable = 0;
+  }
+
   qreal Component::maxInterfaceWidth() const
   {
     // returns the width of the widest interface in the component
@@ -808,6 +876,19 @@ namespace CutePathSim
       }
     }
     return maxInterfaceHeight;
+  }
+
+  void Component::hoverEnterEvent(QGraphicsSceneHoverEvent *)
+  {
+  }
+
+  void Component::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
+  {
+  }
+
+  void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *)
+  {
+    QCoreApplication::sendEvent(mainWindow, new ComponentDockEvent(this));
   }
 
   const qreal Component::MIN_GRAPH_SIZE;  // FIXME: why does this need a definition and the others don't?

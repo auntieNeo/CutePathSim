@@ -2,6 +2,7 @@
 #include <QMenuBar>
 #include <QSignalMapper>
 
+#include "common.h"
 #include "componentGraphScene.h"
 #include "componentGraphView.h"
 #include "mainWindow.h"
@@ -11,6 +12,7 @@
 #include "components/printIntComponent.h"
 #include "components/rippleCarryAdder.h"
 #include "components/binaryMultiplier.h"
+#include "components/instructionFetcher.h"
 
 namespace CutePathSim
 {
@@ -34,6 +36,9 @@ namespace CutePathSim
     m_componentGraphScene->addComponent(printInt);
     m_componentGraphScene->addComponent(multiplier);
 
+    InstructionFetcher *instructionFetcher = new InstructionFetcher("InstructionFetcher");
+    m_componentGraphScene->addComponent(instructionFetcher);
+
     outputs42->getOutput("output")->connect(multiplier->getInput("a"));
     outputs5->getOutput("output")->connect(multiplier->getInput("b"));
     multiplier->getOutput("product")->connect(printInt->getInput("input"));
@@ -45,14 +50,10 @@ namespace CutePathSim
     multiplier->run();
     printInt->run();
 
-    m_componentGraphScene->layoutGraph();
-
     // populate the menus
     m_viewMenu->addAction(m_componentGraphView->zoomInAction());
     m_viewMenu->addAction(m_componentGraphView->zoomOutAction());
     m_viewMenu->addAction(m_componentGraphView->fitViewAction());
-
-    // connect the signals
   }
 
   MainWindow::~MainWindow()
@@ -68,4 +69,46 @@ namespace CutePathSim
   void MainWindow::openSimulation()
   {
   }
+
+  void MainWindow::runSimulation()
+  {
+    /*
+    // use a topological sort to determine execution order
+    QList<Component *> sortedNodes;
+    foreach(Component *component, m_componentGraphScene->rootGraph()
+    */
+  }
+
+  void MainWindow::addDock(QWidget *widget)
+  {
+    if(m_guiDocks.contains(widget))
+      return;
+
+    QDockWidget *dock = new QDockWidget(widget->windowTitle(), this);
+    dock->setWidget(widget);
+
+    addDockWidget(Qt::LeftDockWidgetArea, dock);
+  }
+
+  void MainWindow::removeDock(QWidget *widget)
+  {
+    if(!m_guiDocks.contains(widget))
+      return;
+
+    delete m_guiDocks.take(widget);
+    return;
+  }
+
+  bool MainWindow::event(QEvent *event)
+  {
+    if(event->type() == ComponentDockEvent::EventType)
+    {
+      addDock(static_cast<ComponentDockEvent*>(event)->component()->getToolBox());
+      return true;
+    }
+
+    return QMainWindow::event(event);
+  }
+
+  MainWindow *mainWindow;
 }

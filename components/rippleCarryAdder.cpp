@@ -42,8 +42,6 @@ namespace CutePathSim
     m_cin->from()->connect(m_xor1->getInput("b"));
 
     m_xor1->getOutput("output")->connect(m_s->to());
-
-    subGraph()->layoutGraph();  // FIXME: this shouldn't be needed in the future
   }
 
   RippleCarryAdder::FullAdder::~FullAdder()
@@ -79,11 +77,10 @@ namespace CutePathSim
     addInput(m_b = new Input("b", width, this));
     addOutput(m_sum = new Output("sum", width, this));
 
-    // TODO: feed the first adder a false carry bit
     // make the adders
     adders.append(new FullAdder("Adder_" + QVariant(0).toString()));
     addSubComponent(adders.last());
-    adders.last()->setLayout(EXPANDED);  // FIXME: this shouldn't be needed
+    adders.last()->setLayout(EXPANDED);
     FullAdder *previousAdder = adders.last();
     for(int i = 1; i < width; i++)
     {
@@ -91,7 +88,7 @@ namespace CutePathSim
       addSubComponent(adders.last());
       previousAdder->getOutput("cout")->connect(adders.last()->getInput("cin"));
       previousAdder = adders.last();
-      adders.last()->setLayout(MINIMIZED);  // FIXME: this shouldn't be needed
+      adders.last()->setLayout(MINIMIZED);
     }
 
     // feed the first adder a false carry bit
@@ -112,8 +109,6 @@ namespace CutePathSim
       adders[i]->getOutput("s")->connect(m_boolsToInt->getInput(QVariant(i).toString()));
     }
     m_boolsToInt->getOutput("output")->connect(m_sum->to());
-
-    subGraph()->layoutGraph();  // FIXME: this shouldn't be needed in the future
   }
 
   RippleCarryAdder::~RippleCarryAdder()

@@ -5,7 +5,7 @@
 
 namespace CutePathSim
 {
-  QByteArray parseAssembly(QTextStream assembly);
+  QByteArray parseAssembly(QTextStream &assembly);
 }
 
 #endif // ASSEMBLER_H

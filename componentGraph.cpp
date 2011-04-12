@@ -5,6 +5,7 @@
 #include "common.h"
 #include "component.h"
 #include "edge.h"
+#include "graphLayoutManager.h"
 
 #define POINTS_IN_INCH 72
 
@@ -101,8 +102,6 @@ namespace CutePathSim
     agset(m_graph, const_cast<char*>("overlap_scaling"), const_cast<char*>("0"));
 //    agnodeattr(m_graph, const_cast<char*>("pos"), const_cast<char*>("42"));
 
-    m_layoutGraph = false;
-
     m_parentComponent = parent;
 
     if(m_parentComponent != 0)
@@ -160,55 +159,47 @@ namespace CutePathSim
     // make a Graphviz node
     m_nodes.insert(component, agnode(m_graph, const_cast<char *>(qPrintable(component->name()))));
 
-    // TODO: re-layout the graph with Graphviz
+    scheduleComponentResize(component);
+    scheduleReLayout();
+
     return true;
   }
 
-  /**
-   * \fn prepareLayoutGraph()
-   * Tells the component graph to re-layout the graph when it next gets the chance.
-   *
-   * This is needed because laying out the graph is a relatively expensive operation, and changes to the graph should be applied collectively in one layout operation.
-   */
-
-  // FIXME: find some hook with which to actually layout the graph <_<
-  void ComponentGraph::layoutGraph()  // TODO: make this private
+  void ComponentGraph::layoutGraph()
   {
     prepareGeometryChange();
-    // set the size of all of the nodes
-    // FIXME: figure out how to do this only when the items change size
-    foreach(QGraphicsItem *item, m_nodes.keys())
+    // update the size of the nodes for the components that changed size
+    foreach(Component *component, m_resizeComponents)
     {
-      // FIXME: stop calling these bounding rects so much
-      m_agset(m_nodes.value(item), "width", QVariant(item->boundingRect().width() / POINTS_IN_INCH).toString());
-      m_agset(m_nodes.value(item), "height", QVariant(item->boundingRect().height() / POINTS_IN_INCH).toString());
+      component->repositionInterfaces();
+      m_agset(m_nodes.value(component), "width", QVariant(component->boundingRect().width() / POINTS_IN_INCH).toString());
+      m_agset(m_nodes.value(component), "height", QVariant(component->boundingRect().height() / POINTS_IN_INCH).toString());
+    }
+    if(m_parentComponent != 0)
+    {
+      // update the size of the interfaces
+      foreach(Component::Input *input, m_parentComponent->getInputs())
+      {
+        m_agset(m_nodes.value(input->from()), "width", QVariant(input->from()->boundingRect().width() / POINTS_IN_INCH).toString());
+        m_agset(m_nodes.value(input->from()), "height", QVariant(input->from()->boundingRect().height() / POINTS_IN_INCH).toString());
+      }
+      foreach(Component::Output *output, m_parentComponent->getOutputs())
+      {
+        m_agset(m_nodes.value(output->to()), "width", QVariant(output->to()->boundingRect().width() / POINTS_IN_INCH).toString());
+        m_agset(m_nodes.value(output->to()), "height", QVariant(output->to()->boundingRect().height() / POINTS_IN_INCH).toString());
+      }
     }
 
-    if(m_parentComponent)
-    {
-      gvLayout(m_graphvizContext, m_graph, "dot");
-      gvRender(m_graphvizContext, m_graph, "dot", 0);
-    }
-    else
-    {
-      gvLayout(m_graphvizContext, m_graph, "dot");
-      gvRender(m_graphvizContext, m_graph, "dot", 0);
-    }
+    gvLayout(m_graphvizContext, m_graph, "dot");
+    gvRender(m_graphvizContext, m_graph, "dot", 0);
 
     // set the positions of the nodes with the new layout information
     foreach(QGraphicsItem *item, m_nodes.keys())
     {
-      if(m_agget(m_nodes.value(item), "pos") == 0)
-      {
-//        cout << "the pos is null" << endl;
-      }
-      else
-      {
-        QString point;
-        QList<QString> splitPoint = QString(m_agget(m_nodes.value(item), "pos")).split(",");  // FIXME: change this to use agxget
-        item->setX(QVariant(splitPoint[0]).toFloat());
-        item->setY(QVariant(splitPoint[1]).toFloat());
-      }
+      QString point;
+      QList<QString> splitPoint = QString(m_agget(m_nodes.value(item), "pos")).split(",");  // FIXME: change this to use agxget
+      item->setX(QVariant(splitPoint[0]).toFloat());
+      item->setY(QVariant(splitPoint[1]).toFloat());
     }
 
     // set the curves of the edges
@@ -217,42 +208,33 @@ namespace CutePathSim
     {
       edgesIterator.next();
       Agedge_t *edge = edgesIterator.value();
-      if(m_agget(edge, "pos") == 0)
+      // parse the points from the spline string representation of the edge
+      QList<QPointF> splinePoints;
+      QPointF endPoint;  // FIXME: also get a start point, and determine when they're used
+      foreach(QString pointString, QString(m_agget(edge, "pos")).split(" "))
       {
-//        cout << "The edge pos is null" << endl;
+        QList<QString>values = pointString.split(",");
+        if(values[0] == "e")
+        {
+          endPoint = QPointF(QVariant(values[1]).toFloat(), QVariant(values[2]).toFloat());
+        }
+        else
+        {
+          splinePoints.append(QPointF(QVariant(values[0]).toFloat(), QVariant(values[1]).toFloat()));
+        }
       }
-      else
+      // convert the spline points into a bezier path
+      QPainterPath path;
+      path.moveTo(splinePoints[0]);
+      // draw curve points
+      for(int i = 1; i < splinePoints.size(); i += 3)
       {
-        // parse the points from the spline string representation of the edge
-        QList<QPointF> splinePoints;
-        QPointF endPoint;  // FIXME: also get a start point, and determine when they're used
-        foreach(QString pointString, QString(m_agget(edge, "pos")).split(" "))
-        {
-          QList<QString>values = pointString.split(",");
-          if(values[0] == "e")
-          {
-            endPoint = QPointF(QVariant(values[1]).toFloat(), QVariant(values[2]).toFloat());
-          }
-          else
-          {
-            splinePoints.append(QPointF(QVariant(values[0]).toFloat(), QVariant(values[1]).toFloat()));
-          }
-        }
-        // convert the spline points into a bezier path
-        QPainterPath path;
-        path.moveTo(splinePoints[0]);
-        // draw curve points
-        for(int i = 1; i < splinePoints.size(); i += 3)
-        {
-          path.cubicTo(splinePoints[i], splinePoints[i + 1], splinePoints[i + 2]);
-        }
-        // draw end point
-        path.lineTo(endPoint);
-        // set the edge item's path
-        m_edgeItems.value(edgesIterator.key())->setPath(path);
-        // adding the following line works
-//        addItem(new QGraphicsPathItem(path));
+        path.cubicTo(splinePoints[i], splinePoints[i + 1], splinePoints[i + 2]);
       }
+      // draw end point
+      path.lineTo(endPoint);
+      // set the edge item's path
+      m_edgeItems.value(edgesIterator.key())->setPath(path);
     }
 
     gvFreeLayout(m_graphvizContext, m_graph);
@@ -261,8 +243,6 @@ namespace CutePathSim
     {
       m_parentComponent->repositionInterfaces();  // the component graph's dimensions changed, so we need to reposition the parent component's layout
     }
-
-    qDebug() << "m_nodes.keys().size():" << m_nodes.keys().size();
   }
 
   QRectF ComponentGraph::boundingRect() const
@@ -330,36 +310,18 @@ namespace CutePathSim
     scheduleReLayout();
   }
 
-  void ComponentGraph::updateNodeSizes()
-  {
-    // This method updates the Graphviz node sizes based on the components that are scheduled to be resized. This also removes those components from the scheduled resize queue and adds them to the imminent resize queue.
-  }
-
-  void ComponentGraph::updateItemPositions()
-  {
-    // This method updates the component and edge item positions based on the Graphviz nodes. This also resizes the components that are in the imminent resize queue.
-  }
-
   /**
    * Schedules the graph for a re-layout. The graph will be layed out in a seperate thread using Graphviz.
    * \sa scheduleComponentResize()
    */
   void ComponentGraph::scheduleReLayout()
   {
-//    GraphLayoutManager::instance()->scheduleGraph(this);
+    GraphLayoutManager::instance()->scheduleLayoutGraph(this);
   }
 
   /**
+   * \fn scheduleComponentResize()
    * Puts \a component in a queue so it can be resized when the graph is next re-layed out.
    * Also schedules a re-layout of the graph.
    */
-  void ComponentGraph::scheduleComponentResize(Component * component, Component::Layout layout)
-  {
-    if(layout == Component::NONE && m_resizeQueue.contains(component))
-    {
-      return;  // don't clobber the layout type if we're not setting one
-    }
-    m_resizeQueue[component] = layout;
-    scheduleReLayout();
-  }
 }

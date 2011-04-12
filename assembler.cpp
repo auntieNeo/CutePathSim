@@ -25,42 +25,47 @@ const unsigned int SUB_FUNC = 0x22;
 
 const unsigned int NUM_REGISTERS = 32;
 
-QByteArray parseAssembly(QTextStream assembly)
+namespace CutePathSim
 {
-  QByteArray result;
-
-  while (!assembly.atEnd())
+  QByteArray parseAssembly(QTextStream &assembly)
   {
-    unsigned int instruction = 0;
+    QByteArray result;
 
-    QString line1 = assembly.readLine();
-    QStringList words = line1.split(' ');
+    while (!assembly.atEnd())
+    {
+        unsigned int instruction = 0;
 
-    // parse the instruction name
-    if (words[0] == "ADD")
-    {
-      instruction |= ADD_OP << OP_SHIFT;
-      instruction |= ADD_FUNC << FUNC_SHIFT;
 
-    }
-    else if (words[0] == "SUB")
-    {
-      instruction |= SUB_OP << OP_SHIFT;
-      instruction |= SUB_FUNC << FUNC_SHIFT;
-    }
-    else if (words[0] == "ORI")
-    {
-      instruction |= ORI_OP << OP_SHIFT;
-    }
-    else if (words[0] == "JUMP")
-    {
-        instruction |= JMP_OP << OP_SHIFT;
-    }
-    else
-    {
-      Q_ASSERT(false);  // TODO: throw an exception
-      return QByteArray();
-    }
+
+        QString line1 = assembly.readLine();
+        QStringList words = line1.split(' ');
+
+
+        // parse the instruction name
+        if (words[0] == "ADD")
+         {
+            instruction |= ADD_OP << OP_SHIFT;
+            instruction |= ADD_FUNC << FUNC_SHIFT;
+         }
+
+        else if (words[0] == "SUB")
+         {
+             instruction |= SUB_OP << OP_SHIFT;
+             instruction |= SUB_FUNC << FUNC_SHIFT;
+         }
+        else if (words[0] == "ORI")
+         {
+             instruction |= ORI_OP << OP_SHIFT;
+         }
+         else if (words[0] == "JUMP")
+        {
+             instruction |= JMP_OP << OP_SHIFT;
+        }
+         else
+        {
+             Q_ASSERT(false);  // TODO: throw an exception
+             return QByteArray();
+        }
 
 
     switch((instruction & OP_MASK) >> OP_SHIFT)
@@ -172,9 +177,14 @@ QByteArray parseAssembly(QTextStream assembly)
       default:
         Q_ASSERT(false);  // TODO: throw an exception
         return QByteArray();
-    }
-    result.append(qToLittleEndian(instruction));
-  }
 
-  return result;
+
+
+      }
+      result.append(qToLittleEndian(instruction));
+
+    }
+
+    return result;
+  }
 }

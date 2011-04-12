@@ -27,18 +27,17 @@ namespace CutePathSim
 
       bool addComponent(Component *component);
 
-      void prepareLayoutGraph() { m_layoutGraph = true; }
-
-
       void run();
 
       QRectF boundingRect() const;
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
       void scheduleReLayout();
-      void scheduleComponentResize(Component *component, Component::Layout layout = Component::NONE);
+      void scheduleComponentResize(Component *component) { m_resizeComponents.insert(component); scheduleReLayout(); }
 
-      void layoutGraph();  // FIXME: make this protected
+      void layoutGraph();
+
+//      QList<Component *>
 
     protected:
       void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
@@ -46,7 +45,6 @@ namespace CutePathSim
       void addEdge(Component::Output *from, Component::Input *to);
       void removeEdge(Component::Output *from, Component::Input *to);
 
-      void updateNodeSizes();
       void updateItemPositions();
 
     private:
@@ -55,15 +53,13 @@ namespace CutePathSim
       QHash<QString, Component *> m_components;
       QHash<QPair<Component::Output *, Component::Input *>, Edge *> m_edgeItems;
 
-      QHash<Component *, Component::Layout> m_resizeQueue;
+      QSet<Component *> m_resizeComponents;
 
       // Graphviz objects
       GVC_t *m_graphvizContext;
       Agraph_t *m_graph;
       QHash<QGraphicsItem *, Agnode_t *> m_nodes;
       QHash<QPair<Component::Output *, Component::Input *>, Agedge_t *> m_edges;
-
-      bool m_layoutGraph;
 
       static inline int m_agset(void *object, QString attr, QString value)
       {

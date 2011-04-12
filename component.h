@@ -5,6 +5,8 @@
 #include <QMap>
 #include <QSet>
 #include <QString>
+#include <QToolBox>
+#include <QTableView>
 
 #include "interface.h"
 
@@ -120,7 +122,8 @@ namespace CutePathSim
       Layout layout() { return m_layout; }
       void setLayout(Layout layout);
 
-      void repositionInterfaces();
+      virtual QToolBox *getToolBox();
+      virtual void closeToolBox();
 
     protected:
       void setParentGraph(ComponentGraph *graph) { m_parentGraph = graph; }
@@ -128,10 +131,19 @@ namespace CutePathSim
       void mousePressEvent(QGraphicsSceneMouseEvent *event);
       void mouseDragEvent(QGraphicsSceneDragDropEvent *event);
 
+      void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+      void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+
+      void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
       void addInput(Input *input);
       void addOutput(Output *output);
 
       void addSubComponent(Component *component);
+
+      void repositionInterfaces();
+
+      void prepareGeometryChange();
 
     private:
       // style options for drawing the components
@@ -151,6 +163,9 @@ namespace CutePathSim
       ComponentGraph *m_subGraph;
 
       Layout m_layout;
+
+      QToolBox *m_toolBox;
+      QTableView *m_dataTable;
 
       qreal maxInterfaceWidth() const;
       qreal maxInterfaceHeight() const;
