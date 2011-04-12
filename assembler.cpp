@@ -59,7 +59,7 @@ QByteArray parseAssembly(QTextStream assembly)
     else
     {
       Q_ASSERT(false);  // TODO: throw an exception
-      return 0;
+      return QByteArray();
     }
 
 
@@ -74,31 +74,31 @@ QByteArray parseAssembly(QTextStream assembly)
           if(pos < 0)
           {
             Q_ASSERT(false);  // TODO: throw an exception
-            return 0;
+            return QByteArray();
           }
           QStringList registers = rx.capturedTexts();
           if(registers.length() != 3)
           {
             Q_ASSERT(false);  // TODO: throw an exception
-            return 0;
+            return QByteArray();
           }
           unsigned int rd = QVariant(registers[0]).toInt();
           if(rd >= NUM_REGISTERS)
           {
             Q_ASSERT(false);  // TODO: throw an exception
-            return 0;
+            return QByteArray();
           }
           unsigned int rs = QVariant(registers[1]).toInt();
           if(rs >= NUM_REGISTERS)
           {
             Q_ASSERT(false);  // TODO: throw an exception
-            return 0;
+            return QByteArray();
           }
           unsigned int rt = QVariant(registers[2]).toInt();
           if(rt >= NUM_REGISTERS)
           {
             Q_ASSERT(false);  // TODO: throw an exception
-            return 0;
+            return QByteArray();
           }
           instruction |= rd << RD_SHIFT;
           instruction |= rs << RS_SHIFT;
@@ -115,26 +115,26 @@ QByteArray parseAssembly(QTextStream assembly)
           if(pos < 0)
           {
             Q_ASSERT(false);  // TODO: throw an exception
-            return 0;
+            return QByteArray();
           }
           QStringList registers = rx.capturedTexts();
           if(registers.length() != 3)
           {
             Q_ASSERT(false);  // TODO: throw an exception
-            return 0;
+            return QByteArray();
           }
 
           unsigned int rs = QVariant(registers[0]).toInt();
           if(rs >= NUM_REGISTERS)
           {
             Q_ASSERT(false);  // TODO: throw an exception
-            return 0;
+            return QByteArray();
           }
           unsigned int rt = QVariant(registers[1]).toInt();
           if(rt >= NUM_REGISTERS)
           {
             Q_ASSERT(false);  // TODO: throw an exception
-            return 0;
+            return QByteArray();
           }
           unsigned int IMM16 = QVariant(registers[2]).toInt();
 
@@ -152,18 +152,16 @@ QByteArray parseAssembly(QTextStream assembly)
           if(pos < 0)
           {
               Q_ASSERT(false); // TODO: throw an exception
-              return 0;
-          }
-
-          if(target.length() > 20000)
-          {
-              Q_ASSERT(false);
-              return 0;
+              return QByteArray();
           }
 
           unsigned int jmp = QVariant(target[0]).toInt();
 
-
+          if(target.length() > ((1 << 25) - 1))
+          {
+              Q_ASSERT(false);
+              return QByteArray();
+          }
 
           instruction |= jmp << FUNC_SHIFT; // Jump function in our case takes the target value and points to
                                             // an arbitrary value that we will set in a register.
@@ -173,7 +171,7 @@ QByteArray parseAssembly(QTextStream assembly)
 
       default:
         Q_ASSERT(false);  // TODO: throw an exception
-        return 0;
+        return QByteArray();
     }
     result.append(qToLittleEndian(instruction));
   }
