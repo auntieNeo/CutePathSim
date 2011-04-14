@@ -177,6 +177,8 @@ namespace CutePathSim
     {
       qDebug() << component->name();
       // TODO: check for sensitive inputs
+      if(component == m_parentComponent)  // FIXME: this is a hack, the sorting is broken
+        continue;
       component->run();
     }
   }
@@ -345,29 +347,43 @@ namespace CutePathSim
   {
     // use a topological sort to determine execution order
     m_sortedComponents.clear();
-    QList<Component *> currentNodes;
-    QSet<Component *> visitedNodes;
+    QList<Component *> currentComponents;
+    QSet<Component *> visitedComponents;
     foreach(Component *component, m_components)
     {
-      // add components with no outgoing edges into currentNodes
+      // add components with no connected outputs, ignoring edges that connect to internal inputs, into currentNodes
       bool hasOutgoingEdges = false;
       foreach(Component::Output *output, component->getOutputs())
       {
-        if(!output->connections().isEmpty())
+        if(output->connections().size() == 0)
         {
-          hasOutgoingEdges = true;
+          hasOutgoingEdges = false;
+          break;
+        }
+        foreach(Component::Input *input, output->connections())
+        {
+          if(!input->internal())
+          {
+            hasOutgoingEdges = true;
+            break;
+          }
+        }
+        if(hasOutgoingEdges)
+        {
           break;
         }
       }
       if(!hasOutgoingEdges)
       {
-        currentNodes.append(component);
+        qDebug() << "noOutgoing:" << component->name();
+        currentComponents.append(component);
       }
     }
-    while(!currentNodes.isEmpty())
+    // visit all of the current nodes
+    while(!currentComponents.isEmpty())
     {
-      Component *current = currentNodes.takeLast();
-      sortVisit(current, visitedNodes);
+      Component *current = currentComponents.takeLast();
+      sortVisit(current, visitedComponents);
     }
   }
 
@@ -379,8 +395,10 @@ namespace CutePathSim
     visited.insert(component);
     foreach(Component::Input *input, component->getInputs())
     {
-      if(input->connection() == 0)
+      if((input->connection() == 0) && !(input->connection()->internal()))
+      {
         continue;
+      }
 
       sortVisit(input->connection()->component(), visited);
     }
