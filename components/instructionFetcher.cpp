@@ -26,7 +26,7 @@ namespace CutePathSim
       m_instructionCounter = 0;
       QByteArray hexassembly = m_assembled.toHex();
 
-      for(i=0; i < hexassembly.length(); i++)
+      for(int i=0; i < hexassembly.length(); i++)
       {
           if (hexassembly.at(i))
           {
@@ -42,7 +42,7 @@ namespace CutePathSim
   {
     QToolBox *toolBox = Component::getToolBox();
     toolBox->addItem(m_textEdit, QObject::tr("Assembly Code"));
-    toolBox->addItem(*m_assemtext, QObject::tr("Instructions"));
+    toolBox->addItem(m_assemtext, QObject::tr("Instructions"));
     return toolBox;
 
   }
