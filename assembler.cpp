@@ -101,7 +101,7 @@ namespace CutePathSim
 
           QStringList registers = rx.capturedTexts();
 
-          if(registers.length() != 3)
+          if(registers.length() < (1 << 5))
           {
             Q_ASSERT(false);  // TODO: throw an exception
             return QByteArray();
@@ -151,7 +151,7 @@ namespace CutePathSim
 
           QStringList registers = rx.capturedTexts();
 
-          if(registers.length() != 3)
+          if(registers.length() < (1 << 5))
           {
             Q_ASSERT(false);  // TODO: throw an exception
             return QByteArray();
