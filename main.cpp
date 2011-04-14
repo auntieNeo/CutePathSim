@@ -20,10 +20,10 @@ int main(int argc, char **argv)
 /**
  * \mainpage CutePathSim Documentation
  * \section intro_section Introduction
- * CutePathSim is a graphical, object oriented simulation of the data path in a digital system.
+ * CutePathSim is a graphical, object oriented simulation of the data path in a digital system. This documentation breifly explains how digital systems are simulated in CutePathSim, and how these systems can be explored and modified using the CutePathSim GUI.
  *
  * \section basics_section Basics
- * Something something something.
+ * Upon starting CutePathSim for the first time, one is presented with a blank canvas. To open one of the example systems, navigate to "File" and then "Open...", and select the "reference_cpu.xml" file in the examples directory.
  *
  * \dot
  * digraph cpu

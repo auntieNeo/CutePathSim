@@ -55,6 +55,8 @@ namespace CutePathSim
       QHash<QString, Component *> m_components;
       QHash<QPair<Component::Output *, Component::Input *>, Edge *> m_edgeItems;
 
+      QList<Component *> m_sortedComponents;
+
       QSet<Component *> m_resizeComponents;
 
       // Graphviz objects
@@ -72,6 +74,9 @@ namespace CutePathSim
       {
         return agget(object, const_cast<char *>(qPrintable(name)));
       }
+
+      void sortGraph();
+      void sortVisit(Component *component, QSet<Component*> &visited);
   };
 }
 

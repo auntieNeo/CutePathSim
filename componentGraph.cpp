@@ -165,6 +165,18 @@ namespace CutePathSim
     return true;
   }
 
+  void ComponentGraph::run()
+  {
+//    if(m_graphChanged)
+    {
+      sortGraph();
+    }
+
+    foreach(Component *component, m_sortedComponents)
+    {
+    }
+  }
+
   void ComponentGraph::layoutGraph()
   {
     prepareGeometryChange();
@@ -324,4 +336,50 @@ namespace CutePathSim
    * Puts \a component in a queue so it can be resized when the graph is next re-layed out.
    * Also schedules a re-layout of the graph.
    */
+
+  void ComponentGraph::sortGraph()
+  {
+    // use a topological sort to determine execution order
+    m_sortedComponents.clear();
+    QList<Component *> currentNodes;
+    QSet<Component *> visitedNodes;
+    foreach(Component *component, m_components)
+    {
+      // add components with no outgoing edges into currentNodes
+      bool hasOutgoingEdges = false;
+      foreach(Component::Output *output, component->getOutputs())
+      {
+        if(!output->connections().isEmpty())
+        {
+          hasOutgoingEdges = true;
+          break;
+        }
+      }
+      if(!hasOutgoingEdges)
+      {
+        currentNodes.append(component);
+      }
+    }
+    while(!currentNodes.isEmpty())
+    {
+      Component *current = currentNodes.takeLast();
+      sortVisit(current, visitedNodes);
+    }
+  }
+
+  void ComponentGraph::sortVisit(Component *component, QSet<Component *> &visited)
+  {
+    if(visited.contains(component))
+      return;
+
+    visited.insert(component);
+    foreach(Component::Input *input, component->getInputs())
+    {
+      if(input->connection() == 0)
+        continue;
+
+      sortVisit(input->connection()->component(), visited);
+    }
+    m_sortedComponents.append(component);
+  }
 }
