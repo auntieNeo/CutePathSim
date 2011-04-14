@@ -172,8 +172,12 @@ namespace CutePathSim
       sortGraph();
     }
 
+    qDebug() << "size of m_sortedComponents:" << m_sortedComponents.size();
     foreach(Component *component, m_sortedComponents)
     {
+      qDebug() << component->name();
+      // TODO: check for sensitive inputs
+      component->run();
     }
   }
 
