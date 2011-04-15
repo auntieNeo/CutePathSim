@@ -71,7 +71,7 @@ namespace CutePathSim
     gradient.setColorAt(1, Qt::white);
     QBrush gradientBrush(gradient);
     painter->setBrush(gradientBrush);
-    painter->setPen(QPen(Qt::NoPen));
+    painter->setPen(QPen(QBrush(Qt::SolidPattern), BORDER_PEN_WIDTH));
     QRect drawingRect(boundingRect().x() + BORDER_PEN_WIDTH / 2, boundingRect().y() + BORDER_PEN_WIDTH / 2, boundingRect().width() - BORDER_PEN_WIDTH, boundingRect().height() - BORDER_PEN_WIDTH);
     painter->drawRoundedRect(drawingRect, 5, 5);
 

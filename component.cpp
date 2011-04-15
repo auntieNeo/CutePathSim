@@ -179,7 +179,7 @@ namespace CutePathSim
     gradient.setColorAt(1, Qt::white);
     QBrush gradientBrush(gradient);
     painter->setBrush(gradientBrush);
-    painter->setPen(QPen(Qt::NoPen));
+    painter->setPen(QPen(QBrush(Qt::SolidPattern), BORDER_PEN_WIDTH));
     painter->drawRect(drawingRect);
 
     // draw the name
@@ -187,6 +187,10 @@ namespace CutePathSim
     painter->setPen(QPen());
     painter->setFont(*m_font);
     painter->drawText(QRect(drawingRect.x(), drawingRect.y(), drawingRect.width(), TOP_MARGIN), Qt::AlignCenter, name());
+
+    // FIXME: remove this
+    painter->setBrush(QBrush());
+    painter->drawRect(boundingRect());
   }
 
   /**

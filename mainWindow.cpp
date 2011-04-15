@@ -32,6 +32,7 @@ namespace CutePathSim
     IntGeneratorComponent *outputs5 = new IntGeneratorComponent("Outputs_3", 3);
     PrintIntComponent *printInt = new PrintIntComponent("Print_Int");
     BinaryMultiplier *multiplier = new BinaryMultiplier("BinaryMultiplier", 8);
+    multiplier->setLayout(Component::EXPANDED);
     m_componentGraphScene->addComponent(outputs42);
     m_componentGraphScene->addComponent(outputs5);
     m_componentGraphScene->addComponent(printInt);
@@ -43,7 +44,6 @@ namespace CutePathSim
     outputs42->getOutput("output")->connect(multiplier->getInput("a"));
     outputs5->getOutput("output")->connect(multiplier->getInput("b"));
     multiplier->getOutput("product")->connect(printInt->getInput("input"));
-    multiplier->setLayout(Component::EXPANDED);
 
     /*
     // call run() manually... the order in which these are run will be determined by a sorting algorithm in the future
