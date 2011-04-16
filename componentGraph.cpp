@@ -119,6 +119,8 @@ namespace CutePathSim
       }
       // TODO: add/remove the internal input/output nodes whenever the inputs/outputs are changed
     }
+
+    m_graphChanged = true;
   }
 
   ComponentGraph::~ComponentGraph()
@@ -162,14 +164,17 @@ namespace CutePathSim
     scheduleComponentResize(component);
     scheduleReLayout();
 
+    m_graphChanged = true;
+
     return true;
   }
 
   void ComponentGraph::run()
   {
-//    if(m_graphChanged)
+    if(m_graphChanged)
     {
       sortGraph();
+      m_graphChanged = false;
     }
 
     if(m_parentComponent != 0)
@@ -304,6 +309,8 @@ namespace CutePathSim
     m_edgeItems.insert(key, edgeItem);
 
     scheduleReLayout();
+
+    m_graphChanged = true;
   }
 
   /**
@@ -330,6 +337,8 @@ namespace CutePathSim
     agDELedge(m_graph, m_edges.take(key));
 
     scheduleReLayout();
+
+    m_graphChanged = true;
   }
 
   /**
