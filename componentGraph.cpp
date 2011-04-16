@@ -172,13 +172,17 @@ namespace CutePathSim
       sortGraph();
     }
 
+    if(m_parentComponent != 0)
+      qDebug() << "running graph for " << m_parentComponent->name();
     qDebug() << "size of m_sortedComponents:" << m_sortedComponents.size();
+    qDebug() << "size of m_components:" << m_components.size();
     foreach(Component *component, m_sortedComponents)
     {
       qDebug() << component->name();
+    }
+    foreach(Component *component, m_sortedComponents)
+    {
       // TODO: check for sensitive inputs
-      if(component == m_parentComponent)  // FIXME: this is a hack, the sorting is broken
-        continue;
       component->run();
     }
   }
@@ -395,7 +399,7 @@ namespace CutePathSim
     visited.insert(component);
     foreach(Component::Input *input, component->getInputs())
     {
-      if((input->connection() == 0) && !(input->connection()->internal()))
+      if(input->connection() == 0 || input->connection()->internal())
       {
         continue;
       }

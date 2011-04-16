@@ -60,15 +60,7 @@ namespace CutePathSim
     unsigned char cin = m_cin->readBool() ? 0x01 : 0x00;
     qDebug() << "adder:" << name() << "a:" << bool(a) << "b:" << bool(b) << "cin:" << bool(cin) << "cout:" << bool((a & b) | (cin & (a ^ b))) << "s:" << bool(a ^ b ^ cin);
 
-//    m_cout->writeBool((a & b) | (cin & (a ^ b)));
-//    m_s->writeBool(a ^ b ^ cin);
-
-    // FIXME: get rid of this manual run code
-    m_and0->run();
-    m_xor0->run();
-    m_and1->run();
-    m_or->run();
-    m_xor1->run();
+    subGraph()->run();
   }
 
   RippleCarryAdder::RippleCarryAdder(const QString &name, int width, QGraphicsItem *parent) : Component(name, parent)
@@ -121,14 +113,6 @@ namespace CutePathSim
 
   void RippleCarryAdder::run()
   {
-    // FIXME: get rid of this manual run code
-    m_intToBoolsA->run();
-    m_intToBoolsB->run();
-    m_false->run();
-    foreach(FullAdder *adder, adders)
-    {
-      adder->run();
-    }
-    m_boolsToInt->run();
+    subGraph()->run();
   }
 }

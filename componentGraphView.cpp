@@ -70,9 +70,8 @@ namespace CutePathSim
   {
     if(isFitView())
     {
-//      QRect fitRect(sceneRect().x() - FIT_MARGIN, sceneRect().y() - FIT_MARGIN, sceneRect().width() + FIT_MARGIN * 2, sceneRect().height() + FIT_MARGIN * 2);
-//      fitInView(fitRect, Qt::KeepAspectRatio);
-      fitInView(sceneRect(), Qt::KeepAspectRatio);
+      QRect fitRect(sceneRect().x() - FIT_MARGIN, sceneRect().y() - FIT_MARGIN, sceneRect().width() + FIT_MARGIN * 2, sceneRect().height() + FIT_MARGIN * 2);
+      fitInView(fitRect, Qt::KeepAspectRatio);
     }
   }
 
