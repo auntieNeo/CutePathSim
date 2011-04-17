@@ -6,7 +6,6 @@
 #include <QDebug>
 #include <QCoreApplication>
 
-#include "common.h"
 #include "component.h"
 #include "componentGraph.h"
 #include "componentDataModel.h"

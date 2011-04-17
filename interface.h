@@ -3,6 +3,8 @@
 
 #include <QGraphicsItem>
 
+#include "common.h"
+
 namespace CutePathSim
 {
   class Interface : public QGraphicsItem
@@ -11,12 +13,16 @@ namespace CutePathSim
       Interface(const QString &name, QGraphicsItem *parent = 0);
       virtual ~Interface();
 
+      enum { Type = InterfaceType };
+
       QString name() { return m_name; }
 
       virtual QColor color() const = 0;
 
       QRectF boundingRect() const;
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+
+      int type() const { return InterfaceType; }
 
     protected:
       void hoverEnterEvent(QGraphicsSceneHoverEvent *event);

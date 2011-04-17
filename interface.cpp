@@ -39,6 +39,7 @@ namespace CutePathSim
     m_textWidth = QFontMetrics(*m_font).size(Qt::TextSingleLine, m_name).width();
 
     setAcceptHoverEvents(true);
+    setAcceptDrops(true);
     m_drawHover = false;
   }
 

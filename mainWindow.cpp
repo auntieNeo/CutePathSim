@@ -14,6 +14,8 @@
 #include "components/rippleCarryAdder.h"
 #include "components/binaryMultiplier.h"
 #include "components/instructionFetcher.h"
+#include "components/arithmeticLogicUnit.h"
+#include "components/controlUnit.h"
 
 namespace CutePathSim
 {
@@ -27,6 +29,7 @@ namespace CutePathSim
     m_componentGraphView->setScene(m_componentGraphScene);
     setCentralWidget(m_componentGraphView);
 
+    /*
     // FIXME: remove this test code
     IntGeneratorComponent *outputs42 = new IntGeneratorComponent("Outputs_14", 14);
     IntGeneratorComponent *outputs5 = new IntGeneratorComponent("Outputs_3", 3);
@@ -44,14 +47,19 @@ namespace CutePathSim
     outputs42->getOutput("output")->connect(multiplier->getInput("a"));
     outputs5->getOutput("output")->connect(multiplier->getInput("b"));
     multiplier->getOutput("product")->connect(printInt->getInput("input"));
-
-    /*
-    // call run() manually... the order in which these are run will be determined by a sorting algorithm in the future
-    outputs42->run();
-    outputs5->run();
-    multiplier->run();
-    printInt->run();
     */
+
+    ControlUnit *controlUnit = new ControlUnit("Control Unit");
+    m_componentGraphScene->addComponent(controlUnit);
+
+    InstructionFetcher *instructionFetcher = new InstructionFetcher("Instruction Fetcher");
+    m_componentGraphScene->addComponent(instructionFetcher);
+
+    ArithmeticLogicUnit *alu = new ArithmeticLogicUnit("ALU");
+    m_componentGraphScene->addComponent(alu);
+
+    instructionFetcher->getOutput("output")->connect(controlUnit->getInput("instruction"));
+
     m_componentGraphScene->rootGraph()->run();
 
     // populate the menus

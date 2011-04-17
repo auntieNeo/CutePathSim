@@ -2,12 +2,15 @@
 #define COMMON_H_
 
 #include <QEvent>
+#include <QGraphicsItem>
 
 namespace CutePathSim
 {
   class Component;
 
   const int EDGE_Z_VALUE = -1;
+
+  enum { InterfaceType = QGraphicsItem::UserType, InputType, OutputType };
 
   class ComponentDockEvent : public QEvent
   {
