@@ -39,7 +39,7 @@
     <property name="title">
      <string>&amp;Edit</string>
     </property>
-    <addaction name="action_Add_Component"/>
+    <addaction name="m_addComponent"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
@@ -83,7 +83,7 @@
     <string>&amp;Open Simulation...</string>
    </property>
   </action>
-  <action name="action_Add_Component">
+  <action name="m_addComponent">
    <property name="text">
     <string>&amp;Add Component...</string>
    </property>
