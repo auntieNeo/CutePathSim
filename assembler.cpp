@@ -204,7 +204,7 @@ namespace CutePathSim
               return QByteArray();
           }
 
-          instruction |= jmp << FUNC_SHIFT; // Jump function in our case takes the target value and points to
+          instruction |= jmp << FUNC_SHIFT; // Jump function takes the target value and points to
                                             // an arbitrary value that we will set in a register.
       }
 
