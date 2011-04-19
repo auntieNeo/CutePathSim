@@ -16,6 +16,8 @@
 #include "components/instructionFetcher.h"
 #include "components/arithmeticLogicUnit.h"
 #include "components/controlUnit.h"
+#include "components/registers.h"
+#include "components/luaComponent.h"
 
 namespace CutePathSim
 {
@@ -57,6 +59,12 @@ namespace CutePathSim
 
     ArithmeticLogicUnit *alu = new ArithmeticLogicUnit("ALU");
     m_componentGraphScene->addComponent(alu);
+
+    Registers *registers = new Registers("Registers");
+    m_componentGraphScene->addComponent(registers);
+
+    LuaComponent *lua = new LuaComponent("Lua Component");
+    m_componentGraphScene->addComponent(lua);
 
     instructionFetcher->getOutput("output")->connect(controlUnit->getInput("instruction"));
 

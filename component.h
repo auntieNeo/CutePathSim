@@ -134,6 +134,9 @@ namespace CutePathSim
       virtual QToolBox *getToolBox();
       virtual void closeToolBox();
 
+      void addInput(Input *input);
+      void addOutput(Output *output);
+
     protected:
       void setParentGraph(ComponentGraph *graph) { m_parentGraph = graph; }
 
@@ -144,9 +147,6 @@ namespace CutePathSim
       void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
       void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-
-      void addInput(Input *input);
-      void addOutput(Output *output);
 
       void addSubComponent(Component *component);
 
