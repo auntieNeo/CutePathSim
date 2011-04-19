@@ -34,25 +34,9 @@ namespace CutePathSim
     private:
       ComponentGraph *m_rootGraph;
       Interface *m_selectedInterface, *m_draggedInterface;
-      DragInterface *m_dragInterface;
       QPointF m_startDragPoint;
       bool m_moved;
-  };
-
-  class DragInterface : public QGraphicsItem
-  {
-    public:
-      DragInterface(Interface *interface, QGraphicsItem *parent = 0);
-      ~DragInterface();
-
-      void move(QPointF offset);
-
-      QRectF boundingRect() const;
-      void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
-
-    private:
-      Interface *m_fromInterface;
-      QPointF m_offset;
+      QGraphicsLineItem *m_dragLine;
   };
 }
 

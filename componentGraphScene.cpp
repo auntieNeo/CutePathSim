@@ -8,6 +8,8 @@
 
 #include <QDebug>
 
+#define DRAG_LINE_SIZE 2
+
 namespace CutePathSim
 {
   /**
@@ -27,7 +29,7 @@ namespace CutePathSim
 
     m_selectedInterface = 0;
     m_startDragPoint = QPointF();
-    m_dragInterface = 0;
+    m_dragLine = 0;
   }
 
   ComponentGraphScene::~ComponentGraphScene()
@@ -56,6 +58,7 @@ namespace CutePathSim
       // initiate dragging of interface
       m_selectedInterface = interface;
       m_startDragPoint = mouseEvent->scenePos();
+      m_selectedInterface->setSelected(true);
     }
 
     QGraphicsScene::mousePressEvent(mouseEvent);
@@ -65,23 +68,25 @@ namespace CutePathSim
   {
     if(m_selectedInterface != 0)
     {
-      if(m_dragInterface == 0)
+      if(m_dragLine == 0)
       {
-        addItem(m_dragInterface = new DragInterface(m_selectedInterface));
+        m_dragLine = new QGraphicsLineItem();
+        m_dragLine->setPen(QPen(Qt::black, DRAG_LINE_SIZE));
+        addItem(m_dragLine);
       }
-      m_dragInterface->move(mouseEvent->pos() - mouseEvent->lastPos());
-      m_dragInterface->update();
-      qDebug() << "dragged interface...";
+      m_dragLine->setLine(QLineF(m_selectedInterface->scenePos(), mouseEvent->scenePos()));
     }
+    mouseEvent->setAccepted(false);
     QGraphicsScene::mouseMoveEvent(mouseEvent);
   }
 
   void ComponentGraphScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
   {
-    qDebug() << "made it this far";
     if(m_selectedInterface != 0)
     {
-      qDebug() << "selectedInterface is non-zero";
+      removeItem(m_dragLine);
+      delete m_dragLine;
+      m_dragLine = 0;
 //      Interface *interface = qgraphicsitem_cast<Interface *>(itemAt(mouseEvent->scenePos()));
       Interface *interface = dynamic_cast<Interface *>(itemAt(mouseEvent->scenePos()));
       if(interface != 0 && interface != m_selectedInterface)
@@ -127,39 +132,11 @@ namespace CutePathSim
       {
         // TODO: animate interface back to the start of the drag
       }
+      m_selectedInterface->setSelected(false);
       m_selectedInterface = 0;
       m_startDragPoint = QPointF();
-      delete m_dragInterface;
-      m_dragInterface = 0;
     }
 
     QGraphicsScene::mouseReleaseEvent(mouseEvent);
-  }
-
-  DragInterface::DragInterface(Interface *interface, QGraphicsItem *parent) : QGraphicsItem(parent)
-  {
-    m_fromInterface = interface;
-    m_offset = QPointF(0, 0);
-  }
-
-  DragInterface::~DragInterface()
-  {
-  }
-
-  void DragInterface::move(QPointF offset)
-  {
-    prepareGeometryChange();
-    m_offset += offset;
-  }
-
-  QRectF DragInterface::boundingRect() const
-  {
-    return m_fromInterface->boundingRect().united(QRectF(m_offset + m_fromInterface->pos(), m_offset + m_fromInterface->pos()));
-  }
-
-  void DragInterface::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-  {
-    painter->setPen(QPen(QBrush(Qt::SolidPattern), 4));
-    painter->drawLine(m_fromInterface->pos(), m_offset + m_fromInterface->pos());
   }
 }
