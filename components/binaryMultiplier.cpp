@@ -123,6 +123,7 @@ namespace CutePathSim
 
   void BinaryMultiplier::run()
   {
+    /*
     // FIXME: this manual run code won't be needed in the future
     m_bToBools->run();
     foreach(Component *c, m_anders)
@@ -137,5 +138,7 @@ namespace CutePathSim
     {
       c->run();
     }
+    */
+    subGraph()->run();
   }
 }

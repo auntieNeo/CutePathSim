@@ -8,7 +8,6 @@ namespace CutePathSim
     addOutput(m_output = new Output("output", 32, this));
     m_textEdit = new QPlainTextEdit();
     m_assemtext = new QPlainTextEdit();
-    m_registers = new QPlainTextEdit();
   }
 
   InstructionFetcher::~InstructionFetcher()
@@ -43,9 +42,9 @@ namespace CutePathSim
   QToolBox *InstructionFetcher::getToolBox()
   {
     QToolBox *toolBox = Component::getToolBox();
-    toolBox->addItem(m_textEdit, QObject::tr("Assembly Code"));
     toolBox->addItem(m_assemtext,QObject::tr("Instructions"));
-    toolBox->addItem(m_registers, QObject::tr("Registers"));
+    toolBox->addItem(m_textEdit, QObject::tr("Assembly Code"));
+
     return toolBox;
 
   }

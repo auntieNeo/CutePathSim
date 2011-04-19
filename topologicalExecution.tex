@@ -1,0 +1,137 @@
+\documentclass[12pt]{article}
+\special{papersize=8.5in,11in}
+\usepackage[utf8]{inputenc}
+\usepackage[pdftex]{graphicx}
+\usepackage{graphviz}
+\usepackage[small,bf]{caption}
+%\usepackage[xindy,toc]{glossary}
+\pagestyle{plain}
+\begin{document}
+\title{Method for Executing a Graph Using a Topological Sort}
+\author{Jonathan Glines}
+\maketitle
+\tableofcontents
+\section{Introduction}
+This document describes the method used by CutePathSim to determine the order of execution of its component graph. CutePathSim's initial design was motivated by the desire to have a graph representation of a system that is both representative and fully functional. Since this graph also needs to be modifiable at runtime, determining how the graph is to be executed is a runtime operation. Instead of taking the more conventional approach of executing the components of the digital system in parallel as they do in real life, I opted for a serial approach that I hoped would be easier for me to manage. The order of execution is determined with what is essentially a sorted dependency graph with some modifications to allow for quasi-cycles and portions of the graph that don't need to be executed with every traversal.
+
+\section{Method}
+\subsection{Graph Representation}
+\subsubsection{Representation Overview}
+Component graphs are comprised of nodes and directed edges connecting those nodes. Each edge corresponds to one output on the sending component, and one input on the receiving component. Outputs can be connected to more than one input, but each input must be connected to no more than one output. As components can have multiple inputs and outputs, more than one edge can connect the same two components, so the graph as rendered by CutePathSim is non-strict. When considered interface-wise, all edges correspond to a unique input and output pair, so the graph is actually strict.
+
+In order for such a graph to be executable and model a real world digital system in an adequate way, a few augmentations had to be made to the graph in order to eliminate some of the deficiencies of a plain-old dependency graph. The first such deficiency is the lack of support for cycles in the graph. This deficiency is made up for by the addition of \textsl{mutable inputs}, or \textsl{mutable edges}. Mutable inputs allow for cycles in the graph by ignoring any edges connected to mutable inputs ({i.e.} mutable edges) when the graph is sorted for execution. It is up to the user to make sure their graph, sans mutable edges, has no cycles. Mutable inputs are represented with \textbf{dotted lines}, and are described in detail in section~\ref{sec:mutable}. 
+
+The other deficiency that a dependency graph has is that, without any hints to the execution code, every component that is sorted is executed, regardless of whether or not its output is even needed for that execution cycle. CutePathSim circumvents this issue by providing \textsl{sensitive inputs}. Components with sensitive inputs are executed only when one or more of their sensitive inputs have been written to for that execution cycle. This is similar to SystemC's notion of sensitive ports. Edges that connect to a sensitive input are represented with \textbf{dashed lines}, and are described in detail in section~\ref{sec:sensitive}.
+
+Figure~\ref{examplegraph} shows a simple, valid CutePathSim graph. Notice how component A is connected to two inputs on component D. Component C is connected to component A with a mutable edge, which allows for C to send data back to A to be read the next execution cycle, without complicating the sorting of the graph. The edge from A to B is sensitive, so B will not be executed if A does not send it any data.
+\\*
+\\*
+\begin{figure}[h]
+\centering
+\digraph[scale=0.75]{examplegraph}{
+node [shape=record]
+rankdir=LR
+A->B [style=dashed]
+B->C
+A->D
+A->D
+D->C
+C->A [style=dotted]
+}
+\caption{A CutePathSim graph exhibiting mutable and sensitive connections.}
+\label{examplegraph}
+\end{figure}
+
+%\newglossaryentry{mutable input}
+%{
+%  description={A mutable input is an input that is not considered when sorting the graph for execution. Edges that connect to mutible inputs are dotted.}
+%}
+\subsubsection{Comparison to Other Representations}
+CutePathSim's design was inspired by other graphical representations of digital systems, but in order to be modifiable and executable in serial, CutePathSim's graph differs from other common graph representations.
+
+The flowchart is one of the first such graph to come to mind. In a typical flowchart, execution is carried out by traversing through the graph one node at a time, and only choosing to follow one edge whenever a decision is made. The problem with comparing CutePathSim to a flowchart is that components in CutePathSim often have many outputs, each of which needs to be sent to many inputs every time the graph is traversed. The motivation behind the design of CutePathSim might have come from diagrams of digital systems that look like flowcharts, but CutePathSim's graph representation is closer to a dependency graph. Cycles are not handled the same way in CutePathSim as they are in a flowchart, because in order for CutePathSim to sort its graph, it has to avoid cycles by using mutable edges.
+
+Another graph one might compare CutePathSim to is the physical graph of wired connections that are made by a physical, electronic digital system. In an electronic digital system, everything executes in parallel. Separate electronic components can be grouped into a single logical unit, and those units can be synchronized with a clock signal. Programs designed to model such electronic systems with some fidelity, such as SystemC, are aware of these aspects of electronic digital systems. CutePathSim takes an approach that is fundamentally different from how an electronic system works, so it cannot model clock signals or parallel execution accurately. CutePathSim can, however, simulate the logic of these systems, and can even simulate components that execute in parallel, although they will be executed in serial at runtime.
+
+\subsection{Sorting the Graph}
+The first step in this method is the sorting of the components in the graph. Components are sorted by input dependencies, with components that do not depend on any inputs scheduled to be executed first, and components that do depend on inputs scheduled after those. Mutable inputs are ignored by the graph sorting algorithm, as these inputs are meant to allow for cycles in the graph that would otherwise complicate graph sorting and execution. Sensitive inputs, on the other hand, are sorted the same as other inputs. Sorting uses a conventional topological sorting algorithm. When sorting is completed, and no cycles have been detected by the sorting algorithm, the component graph is left with a list of components sorted in the order it needs to execute them. Graph sorting only needs be done when the graph changes, and no additional sorting is needed while the digital system is being executed.
+
+As an example, Figure~\ref{examplegraph} could be sorted and executed in order of A, B, D, and finally C. Another valid execution order is A, D, B, and C. The mutable edge from C to A is ignored completely when this graph is sorted.
+
+\subsection{Execution}
+\subsubsection{Execution Cycles}
+Because a sorted dependency graph cannot have any cycles in it, in contrast to the graph of a flowchart or electronic digital system, the graph in CutePathSim needs to be executed repeatedly in order to achieve cycles of execution. It is important to note that cycles in the graph \textsl{do not} correspond to cycles in the execution of the graph, which sets CutePathSim apart from flowcharts and electronic systems.
+
+Cycles in the graph, which are achieved with mutable inputs, can be seen as cycles in message passing. Typically, a component that is executed at the end will need to report back to one of the components executed prior. In order to avoid a cycle in the graph, that component reports back using a mutable edge to a mutable input. Data sent to that input will be delivered at the next execution cycle, {i.e.} the next time the graph is executed.
+
+This is in contrast to execution cycles, which are akin to the cycles denoted by a clock signal in a CPU.
+\subsubsection{Graph Cycles and Mutable Inputs}
+\label{sec:mutable}
+Mutable inputs are used to avoid cycles in the component graph when it is sorted for execution, as stated in earlier sections. Mutable edges (edges that connect to a mutable input) are represented with \textbf{dotted lines}. When the graph is topologically sorted, edges connecting to mutable inputs are completely ignored by the algorithm. It is the responsibility of the user that their graph has no cycles in it once the mutable edges are ignored. Figure~\ref{examplemutable} shows a simple graph that uses one mutable edge from C to A to avoid a cycle. At the end of the first execution cycle, when C writes to A, that data is delivered to A at the start of the second execution cycle.
+\begin{figure}[h]
+\centering
+\digraph[scale=0.75]{examplemutable}{
+node [shape=record]
+rankdir=LR
+A->B
+B->C
+C->A [style=dotted]
+}
+\caption{An example graph with a mutable edge that avoids a cycle in the graph.}
+\label{examplemutable}
+\end{figure}
+
+When the graph is executed, the execution algorithm pays no mind to mutable inputs, as the graph has already been sorted and mutable inputs are treated the same as regular inputs at execution time.
+
+There is some potential for abuse of mutable inputs. Figure~\ref{mutableabuse} shows a graph with a mutable edge that essentially breaks the graph up into two disjoint graphs when it is sorted. While this might be useful in some contexts, it is undefined whether A or B will be executed first. Such use of mutable edges should be avoided, and the user should exercise caution with mutable inputs.
+
+\begin{figure}[h]
+\centering
+\digraph[scale=0.75]{mutableabuse}{
+node [shape=record]
+rankdir=LR
+A->B [style=dotted]
+B->C
+}
+\caption{Unintended use of a mutable edge.}
+\label{mutableabuse}
+\end{figure}
+\subsubsection{Sensitive Inputs}
+Sensitive inputs allow one to circumvent the execution of components that don't need to be executed with every execution cycle. Otherwise, every component sorted would be executed regardless of whether or not that components output is needed. This allows us to avoid the costly execution of the complicated sub-graphs of certain components.
+
+Figure~\ref{examplesensitive} shows a graph with a sensitive edge from A to B. It is conceivable that A plays the part of some sort of control unit, and that sometimes the output of B is not needed. When B isn't needed, the message from A to C reflects this, and A doesn't send anything to B. When the graph execution reaches component B in its list of sorted components, it notes that B has a sensitive input, but it hasn't received anything on that input. So execution skips B and moves on to execute C.
+\label{sec:sensitive}
+\begin{figure}[h]
+\centering
+\digraph[scale=0.75]{examplesensitive}{
+node [shape=record]
+rankdir=LR
+A->B [style=dashed]
+B->C
+A->C
+}
+\caption{An example graph with a sensitive edge that allows A to circumvent the execution of B.}
+\label{examplesensitive}
+\end{figure}
+
+Figure~\ref{trickysensitive} demonstrates some potentially confusing behavior of sensitive edges. By not sending anything to B, A can prevent the execution of B. C, however, does not have any sensitive inputs, so it is executed with every execution cycle, regardless of whether or not it has received anything from B.
+
+\begin{figure}[h]
+\centering
+\digraph[scale=0.75]{trickysensitive}{
+node [shape=record]
+rankdir=LR
+A->B [style=dashed]
+B->C
+}
+\caption{Tricky behavior of sensitive edges; C is executed with every execution cycle, regardless of the output of B.}
+\label{trickysensitive}
+\end{figure}
+\subsubsection{Halting}
+In a typical graph for a digital system in CutePathSim, every component in the top level graph is going to be sensitive to some kind of Control Unit or Instruction Fetcher that is responsible for mediating the state and execution of the system. When this mediator unit decides it is time to halt, it needs to signal the graph itself to halt execution. Otherwise, the graph would continue to execute the components at the top of the dependency graph, regardless of whether or not any lower level sensitive components are even executed.
+
+\section{Conclusions}
+To be made once the code is working.
+
+%\makeglossaries
+\end{document}

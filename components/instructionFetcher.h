@@ -25,7 +25,6 @@ namespace CutePathSim
       Output *m_output;
       QPlainTextEdit *m_textEdit;
       QPlainTextEdit *m_assemtext;
-      QPlainTextEdit *m_registers;
       QByteArray m_assembled;
       int m_instructionCounter;
   };

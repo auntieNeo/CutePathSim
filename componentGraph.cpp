@@ -165,6 +165,24 @@ namespace CutePathSim
     return true;
   }
 
+  void ComponentGraph::run()
+  {
+//    if(m_graphChanged)
+    {
+      sortGraph();
+    }
+
+    qDebug() << "size of m_sortedComponents:" << m_sortedComponents.size();
+    foreach(Component *component, m_sortedComponents)
+    {
+      qDebug() << component->name();
+      // TODO: check for sensitive inputs
+      if(component == m_parentComponent)  // FIXME: this is a hack, the sorting is broken
+        continue;
+      component->run();
+    }
+  }
+
   void ComponentGraph::layoutGraph()
   {
     prepareGeometryChange();
@@ -324,4 +342,66 @@ namespace CutePathSim
    * Puts \a component in a queue so it can be resized when the graph is next re-layed out.
    * Also schedules a re-layout of the graph.
    */
+
+  void ComponentGraph::sortGraph()
+  {
+    // use a topological sort to determine execution order
+    m_sortedComponents.clear();
+    QList<Component *> currentComponents;
+    QSet<Component *> visitedComponents;
+    foreach(Component *component, m_components)
+    {
+      // add components with no connected outputs, ignoring edges that connect to internal inputs, into currentNodes
+      bool hasOutgoingEdges = false;
+      foreach(Component::Output *output, component->getOutputs())
+      {
+        if(output->connections().size() == 0)
+        {
+          hasOutgoingEdges = false;
+          break;
+        }
+        foreach(Component::Input *input, output->connections())
+        {
+          if(!input->internal())
+          {
+            hasOutgoingEdges = true;
+            break;
+          }
+        }
+        if(hasOutgoingEdges)
+        {
+          break;
+        }
+      }
+      if(!hasOutgoingEdges)
+      {
+        qDebug() << "noOutgoing:" << component->name();
+        currentComponents.append(component);
+      }
+    }
+    // visit all of the current nodes
+    while(!currentComponents.isEmpty())
+    {
+      Component *current = currentComponents.takeLast();
+      sortVisit(current, visitedComponents);
+    }
+  }
+
+  void ComponentGraph::sortVisit(Component *component, QSet<Component *> &visited)
+  {
+    if(visited.contains(component))
+      return;
+
+    visited.insert(component);
+    foreach(Component::Input *input, component->getInputs())
+    {
+      if((input->connection() == 0) && !(input->connection()->internal()))
+      {
+        continue;
+      }
+
+      sortVisit(input->connection()->component(), visited);
+    }
+    m_sortedComponents.append(component);
+  }
 }

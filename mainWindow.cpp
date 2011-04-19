@@ -28,8 +28,8 @@ namespace CutePathSim
     setCentralWidget(m_componentGraphView);
 
     // FIXME: remove this test code
-    IntGeneratorComponent *outputs42 = new IntGeneratorComponent("Outputs_42", 42);
-    IntGeneratorComponent *outputs5 = new IntGeneratorComponent("Outputs_5", 5);
+    IntGeneratorComponent *outputs42 = new IntGeneratorComponent("Outputs_14", 14);
+    IntGeneratorComponent *outputs5 = new IntGeneratorComponent("Outputs_3", 3);
     PrintIntComponent *printInt = new PrintIntComponent("Print_Int");
     BinaryMultiplier *multiplier = new BinaryMultiplier("BinaryMultiplier", 8);
     m_componentGraphScene->addComponent(outputs42);
@@ -45,11 +45,14 @@ namespace CutePathSim
     multiplier->getOutput("product")->connect(printInt->getInput("input"));
     multiplier->setLayout(Component::EXPANDED);
 
+    /*
     // call run() manually... the order in which these are run will be determined by a sorting algorithm in the future
     outputs42->run();
     outputs5->run();
     multiplier->run();
     printInt->run();
+    */
+    m_componentGraphScene->rootGraph()->run();
 
     // populate the menus
     m_viewMenu->addAction(m_componentGraphView->zoomInAction());
@@ -73,29 +76,6 @@ namespace CutePathSim
 
   void MainWindow::runSimulation()
   {
-    // use a topological sort to determine execution order
-    QList<Component *> sortedNodes;
-    QList<Component *> currentNodes;
-    foreach(Component *component, m_componentGraphScene->rootGraph()->components())
-    {
-      // add components with no incoming edges into currentNodes
-      if(component->getInputs().size() == 0)
-      {
-        currentNodes.append(component);
-      }
-    }
-    while(!currentNodes.isEmpty())
-    {
-      Component *current = currentNodes.takeLast();
-      sortedNodes.append(current);
-      foreach(Component::Output *output, current->getOutputs())
-      {
-        foreach(Component::Input *nextInput, output->connections())
-        {
-//          nextInput->
-        }
-      }
-    }
   }
 
   void MainWindow::addDock(QWidget *widget)
