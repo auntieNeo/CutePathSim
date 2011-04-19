@@ -82,6 +82,8 @@ namespace CutePathSim
 
   void InterfacesWidget::removeInput()
   {
+    delete m_component->removeInput(m_inputTable->item(m_inputTable->currentRow(), 0)->text());
+    m_inputTable->removeRow(m_inputTable->currentRow());
   }
 
   void InterfacesWidget::addOutput()

@@ -281,6 +281,34 @@ namespace CutePathSim
   }
 
   /**
+   * Removes the input with the name \a name from the list of inputs used by the component.
+   *
+   * A pointer to the input removed is returned, for convenience.
+   */
+  Component::Input *Component::removeInput(const QString &name)
+  {
+    if(m_parentGraph != 0)
+    {
+      m_parentGraph->scheduleComponentResize(this);
+    }
+    return m_inputs.take(name);
+  }
+
+  /**
+   * Removes the output with the name \a name from the list of outputs used by the component.
+   *
+   * A pointer to the output removed is returned, for convenience.
+   */
+  Component::Output *Component::removeOutput(const QString &name)
+  {
+    if(m_parentGraph != 0)
+    {
+      m_parentGraph->scheduleComponentResize(this);
+    }
+    return m_outputs.take(name);
+  }
+
+  /**
    * Adds a sub-component to the component's sub-graph.
    *
    * If a sub-graph does not yet exist, it is created.

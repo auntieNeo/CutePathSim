@@ -137,6 +137,9 @@ namespace CutePathSim
       void addInput(Input *input);
       void addOutput(Output *output);
 
+      Input *removeInput(const QString &name);
+      Output *removeOutput(const QString &name);
+
     protected:
       void setParentGraph(ComponentGraph *graph) { m_parentGraph = graph; }
 
