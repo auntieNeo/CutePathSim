@@ -17,6 +17,7 @@ namespace CutePathSim
 
     private:
       Input *m_instruction;
+      Output *m_aluOp, *m_registerOp, *m_registerAddress;
   };
 }
 

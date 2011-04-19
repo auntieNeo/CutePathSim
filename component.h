@@ -8,6 +8,7 @@
 #include <QToolBox>
 #include <QTableView>
 
+#include "common.h"
 #include "interface.h"
 #include "componentDataModel.h"
 
@@ -27,7 +28,9 @@ namespace CutePathSim
           friend class Output;
 
           Input(const QString &name, int width, Component *component = 0);
-          ~Input();
+          virtual ~Input();
+
+          enum { Type = InputType };
 
           int width() { return m_width; }
           Component *component() { return m_component; }
@@ -52,6 +55,7 @@ namespace CutePathSim
           void m_connect(Output *output) { m_connection = output; }
           void writeToInput(const unsigned char *data);
           QColor color() const { return QColor(0xA6, 0xD6, 0xA6); }  // light green
+          int type() const { return Type; }
 
         private:
           int m_width, m_bufferSize;
@@ -69,7 +73,9 @@ namespace CutePathSim
           friend class Input;
 
           Output(const QString &name, int width, Component *component = 0);
-          ~Output();
+          virtual ~Output();
+
+          enum { Type = OutputType };
 
           int width() { return m_width; }
           Component *component() { return m_component; }
@@ -89,6 +95,7 @@ namespace CutePathSim
           // to avoid recursions with Input::disconnect()
           void m_disconnect(Input *input) { m_connections.remove(input); }
           QColor color() const { return QColor(0xA6, 0xA6, 0xD6); }  // light blue
+          int type() const { return Type; }
 
         private:
           int m_width, m_bufferSize;
@@ -127,6 +134,12 @@ namespace CutePathSim
       virtual QToolBox *getToolBox();
       virtual void closeToolBox();
 
+      void addInput(Input *input);
+      void addOutput(Output *output);
+
+      Input *removeInput(const QString &name);
+      Output *removeOutput(const QString &name);
+
     protected:
       void setParentGraph(ComponentGraph *graph) { m_parentGraph = graph; }
 
@@ -137,9 +150,6 @@ namespace CutePathSim
       void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
       void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-
-      void addInput(Input *input);
-      void addOutput(Output *output);
 
       void addSubComponent(Component *component);
 
@@ -176,6 +186,8 @@ namespace CutePathSim
       qreal maxInterfaceHeight() const;
 
       QMap<QString, ComponentData> m_data;
+
+      bool m_hovered;
   };
 }
 

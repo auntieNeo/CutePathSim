@@ -3,10 +3,12 @@
 
 #include <QGraphicsScene>
 
+#include "common.h"
 #include "component.h"
 
 namespace CutePathSim
 {
+  class DragInterface;
   class Edge;
 
   class ComponentGraphScene : public QGraphicsScene
@@ -24,8 +26,17 @@ namespace CutePathSim
 
       ComponentGraph *rootGraph() { return m_rootGraph; };
 
+    protected:
+      void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
+      void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent);
+      void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent);
+
     private:
       ComponentGraph *m_rootGraph;
+      Interface *m_selectedInterface, *m_hoveredInterface;
+      QPointF m_startDragPoint;
+      bool m_dragging;
+      QGraphicsLineItem *m_dragLine;
   };
 }
 

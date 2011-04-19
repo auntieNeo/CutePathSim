@@ -6,7 +6,6 @@
 #include <QDebug>
 #include <QCoreApplication>
 
-#include "common.h"
 #include "component.h"
 #include "componentGraph.h"
 #include "componentDataModel.h"
@@ -51,6 +50,8 @@ namespace CutePathSim
     m_dataTable = 0;
 
     setAcceptHoverEvents(true);
+
+    m_hovered = false;
   }
 
   Component::~Component()
@@ -175,11 +176,18 @@ namespace CutePathSim
 
     // draw a gradient background
     QLinearGradient gradient(0, 0, 0, drawingRect.height());
-    gradient.setColorAt(0, color());
+    if(m_hovered)
+    {
+      gradient.setColorAt(0, color().lighter(110));
+    }
+    else
+    {
+      gradient.setColorAt(0, color());
+    }
     gradient.setColorAt(1, Qt::white);
     QBrush gradientBrush(gradient);
     painter->setBrush(gradientBrush);
-    painter->setPen(QPen(Qt::NoPen));
+    painter->setPen(QPen(QBrush(Qt::SolidPattern), BORDER_PEN_WIDTH));
     painter->drawRect(drawingRect);
 
     // draw the name
@@ -275,6 +283,34 @@ namespace CutePathSim
     {
       m_parentGraph->scheduleComponentResize(this);
     }
+  }
+
+  /**
+   * Removes the input with the name \a name from the list of inputs used by the component.
+   *
+   * A pointer to the input removed is returned, for convenience.
+   */
+  Component::Input *Component::removeInput(const QString &name)
+  {
+    if(m_parentGraph != 0)
+    {
+      m_parentGraph->scheduleComponentResize(this);
+    }
+    return m_inputs.take(name);
+  }
+
+  /**
+   * Removes the output with the name \a name from the list of outputs used by the component.
+   *
+   * A pointer to the output removed is returned, for convenience.
+   */
+  Component::Output *Component::removeOutput(const QString &name)
+  {
+    if(m_parentGraph != 0)
+    {
+      m_parentGraph->scheduleComponentResize(this);
+    }
+    return m_outputs.take(name);
   }
 
   /**
@@ -902,10 +938,14 @@ namespace CutePathSim
 
   void Component::hoverEnterEvent(QGraphicsSceneHoverEvent *)
   {
+    m_hovered = true;
+    update();
   }
 
   void Component::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
   {
+    m_hovered = false;
+    update();
   }
 
   void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *)

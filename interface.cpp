@@ -39,7 +39,9 @@ namespace CutePathSim
     m_textWidth = QFontMetrics(*m_font).size(Qt::TextSingleLine, m_name).width();
 
     setAcceptHoverEvents(true);
+    setAcceptDrops(true);
     m_drawHover = false;
+    m_selected = false;
   }
 
   Interface::~Interface()
@@ -68,11 +70,21 @@ namespace CutePathSim
     {
       gradient.setColorAt(0, color());
     }
+    int penWidth;
+    if(m_selected)
+    {
+      penWidth = SELECTED_PEN_WIDTH;
+      painter->setPen(QPen(QBrush(Qt::SolidPattern), penWidth));
+    }
+    else
+    {
+      penWidth = BORDER_PEN_WIDTH;
+      painter->setPen(QPen(QBrush(Qt::SolidPattern), penWidth));
+    }
     gradient.setColorAt(1, Qt::white);
     QBrush gradientBrush(gradient);
     painter->setBrush(gradientBrush);
-    painter->setPen(QPen(Qt::NoPen));
-    QRect drawingRect(boundingRect().x() + BORDER_PEN_WIDTH / 2, boundingRect().y() + BORDER_PEN_WIDTH / 2, boundingRect().width() - BORDER_PEN_WIDTH, boundingRect().height() - BORDER_PEN_WIDTH);
+    QRect drawingRect(boundingRect().x() + penWidth / 2, boundingRect().y() + penWidth / 2, boundingRect().width() - penWidth, boundingRect().height() - penWidth);
     painter->drawRoundedRect(drawingRect, 5, 5);
 
     // draw the name
@@ -95,6 +107,7 @@ namespace CutePathSim
   }
 
   const qreal Interface::BORDER_PEN_WIDTH;
+  const qreal Interface::SELECTED_PEN_WIDTH;
   const qreal Interface::LEFT_MARGIN;
   const qreal Interface::RIGHT_MARGIN;
   const qreal Interface::TOP_MARGIN;

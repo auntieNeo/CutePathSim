@@ -59,6 +59,8 @@ namespace CutePathSim
 
       QSet<Component *> m_resizeComponents;
 
+      bool m_graphChanged;
+
       // Graphviz objects
       GVC_t *m_graphvizContext;
       Agraph_t *m_graph;

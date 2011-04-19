@@ -17,6 +17,7 @@ namespace CutePathSim
 
     private:
       Output *m_output;
+      Input *m_opCode;
   };
 }
 
