@@ -33,9 +33,9 @@ namespace CutePathSim
 
     private:
       ComponentGraph *m_rootGraph;
-      Interface *m_selectedInterface, *m_draggedInterface;
+      Interface *m_selectedInterface, *m_hoveredInterface;
       QPointF m_startDragPoint;
-      bool m_moved;
+      bool m_dragging;
       QGraphicsLineItem *m_dragLine;
   };
 }
