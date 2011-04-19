@@ -50,6 +50,8 @@ namespace CutePathSim
     m_dataTable = 0;
 
     setAcceptHoverEvents(true);
+
+    m_hovered = false;
   }
 
   Component::~Component()
@@ -174,7 +176,14 @@ namespace CutePathSim
 
     // draw a gradient background
     QLinearGradient gradient(0, 0, 0, drawingRect.height());
-    gradient.setColorAt(0, color());
+    if(m_hovered)
+    {
+      gradient.setColorAt(0, color().lighter(110));
+    }
+    else
+    {
+      gradient.setColorAt(0, color());
+    }
     gradient.setColorAt(1, Qt::white);
     QBrush gradientBrush(gradient);
     painter->setBrush(gradientBrush);
@@ -186,10 +195,6 @@ namespace CutePathSim
     painter->setPen(QPen());
     painter->setFont(*m_font);
     painter->drawText(QRect(drawingRect.x(), drawingRect.y(), drawingRect.width(), TOP_MARGIN), Qt::AlignCenter, name());
-
-    // FIXME: remove this
-    painter->setBrush(QBrush());
-    painter->drawRect(boundingRect());
   }
 
   /**
@@ -933,10 +938,14 @@ namespace CutePathSim
 
   void Component::hoverEnterEvent(QGraphicsSceneHoverEvent *)
   {
+    m_hovered = true;
+    update();
   }
 
   void Component::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
   {
+    m_hovered = false;
+    update();
   }
 
   void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *)

@@ -186,6 +186,8 @@ namespace CutePathSim
       qreal maxInterfaceHeight() const;
 
       QMap<QString, ComponentData> m_data;
+
+      bool m_hovered;
   };
 }
 
