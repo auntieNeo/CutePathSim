@@ -41,8 +41,18 @@
     </property>
     <addaction name="m_addComponent"/>
    </widget>
+   <widget class="QMenu" name="menu_Simulation">
+    <property name="title">
+     <string>&amp;Simulation</string>
+    </property>
+    <addaction name="m_runSimulation"/>
+    <addaction name="m_stopSimulation"/>
+    <addaction name="separator"/>
+    <addaction name="m_stepSimulation"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
+   <addaction name="menu_Simulation"/>
    <addaction name="m_viewMenu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -91,6 +101,21 @@
   <action name="action_Zoom">
    <property name="text">
     <string>&amp;Zoom</string>
+   </property>
+  </action>
+  <action name="m_runSimulation">
+   <property name="text">
+    <string>&amp;Run</string>
+   </property>
+  </action>
+  <action name="m_stopSimulation">
+   <property name="text">
+    <string>&amp;Stop</string>
+   </property>
+  </action>
+  <action name="m_stepSimulation">
+   <property name="text">
+    <string>Ste&amp;p</string>
    </property>
   </action>
  </widget>

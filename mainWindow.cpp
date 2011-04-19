@@ -79,6 +79,7 @@ namespace CutePathSim
 
     // connect the signals/slots
     connect(m_addComponent, SIGNAL(activated()), this, SLOT(addComponent()));
+    connect(m_runSimulation, SIGNAL(activated()), this, SLOT(runSimulation()));
   }
 
   MainWindow::~MainWindow()
@@ -97,6 +98,7 @@ namespace CutePathSim
 
   void MainWindow::runSimulation()
   {
+    m_componentGraphScene->rootGraph()->run();
   }
 
   void MainWindow::addComponent()
