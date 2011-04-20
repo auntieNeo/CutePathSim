@@ -121,6 +121,7 @@ namespace CutePathSim
     }
 
     m_graphChanged = true;
+    m_halted = false;
   }
 
   ComponentGraph::~ComponentGraph()
@@ -169,6 +170,9 @@ namespace CutePathSim
     return true;
   }
 
+  /**
+   * Runs the components in the component graph using a topological sort to determine order.
+   */
   void ComponentGraph::run()
   {
     if(m_graphChanged)

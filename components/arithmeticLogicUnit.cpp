@@ -1,5 +1,7 @@
 #include "arithmeticLogicUnit.h"
 
+#include <QDebug>
+
 namespace CutePathSim
 {
   ArithmeticLogicUnit::ArithmeticLogicUnit(const QString &name, QGraphicsItem *parent) : Component(name, parent)
@@ -15,5 +17,6 @@ namespace CutePathSim
 
   void ArithmeticLogicUnit::run()
   {
+    qDebug() << "ALU was run";
   }
 }

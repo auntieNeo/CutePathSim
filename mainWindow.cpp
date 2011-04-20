@@ -1,12 +1,14 @@
 #include <QDebug>
 #include <QMenuBar>
 #include <QSignalMapper>
+#include <QMessageBox>
 
 #include "common.h"
 #include "componentGraph.h"
 #include "componentGraphScene.h"
 #include "componentGraphView.h"
 #include "mainWindow.h"
+#include "inputDialogs.h"
 #include "components/testComponent.h"
 #include "components/intGeneratorComponent.h"
 #include "components/boolGeneratorComponent.h"
@@ -74,6 +76,10 @@ namespace CutePathSim
     m_viewMenu->addAction(m_componentGraphView->zoomInAction());
     m_viewMenu->addAction(m_componentGraphView->zoomOutAction());
     m_viewMenu->addAction(m_componentGraphView->fitViewAction());
+
+    // connect the signals/slots
+    connect(m_addComponent, SIGNAL(activated()), this, SLOT(addComponent()));
+    connect(m_runSimulation, SIGNAL(activated()), this, SLOT(runSimulation()));
   }
 
   MainWindow::~MainWindow()
@@ -92,6 +98,18 @@ namespace CutePathSim
 
   void MainWindow::runSimulation()
   {
+    m_componentGraphScene->rootGraph()->run();
+  }
+
+  void MainWindow::addComponent()
+  {
+    QString name = promptString(tr("Enter a unique name for the component."));
+    if(m_componentGraphScene->rootGraph()->getComponent(name) != 0)
+    {
+      QMessageBox::warning(this, tr("Component name not unique"), tr("Component with that name already exists. Please enter a unique name."));
+      return;
+    }
+    m_componentGraphScene->rootGraph()->addComponent(new LuaComponent(name));
   }
 
   void MainWindow::addDock(QWidget *widget)

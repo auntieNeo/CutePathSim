@@ -26,6 +26,7 @@ namespace CutePathSim
       ~ComponentGraph();
 
       bool addComponent(Component *component);
+      Component *getComponent(const QString &name) { return m_components.value(name); }
 
       void run();
 
@@ -39,6 +40,8 @@ namespace CutePathSim
 
       void layoutGraph();
 
+      bool isHalted() { return m_halted; }
+
 //      QList<Component *>
 
     protected:
@@ -48,6 +51,8 @@ namespace CutePathSim
       void removeEdge(Component::Output *from, Component::Input *to);
 
       void updateItemPositions();
+
+      void halt() { m_halted = true; }
 
     private:
       Component *m_parentComponent;
@@ -60,6 +65,7 @@ namespace CutePathSim
       QSet<Component *> m_resizeComponents;
 
       bool m_graphChanged;
+      bool m_halted;
 
       // Graphviz objects
       GVC_t *m_graphvizContext;
