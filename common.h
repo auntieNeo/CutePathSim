@@ -4,6 +4,9 @@
 #include <QEvent>
 #include <QGraphicsItem>
 
+#define ANIMATION_SECONDS 1
+#define ANIMATION_FPS 30
+
 namespace CutePathSim
 {
   class Component;

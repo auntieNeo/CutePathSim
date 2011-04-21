@@ -75,7 +75,7 @@ namespace CutePathSim
     int row = m_inputTable->rowCount();
     m_inputTable->insertRow(row);
     m_inputTable->setItem(row, 0, new QTableWidgetItem(name));
-    m_inputTable->setItem(row, 1, new QTableWidgetItem(QVariant(width).toString()));  // FIXME: make this configurable
+    m_inputTable->setItem(row, 1, new QTableWidgetItem(QVariant(width).toString()));
     m_inputTable->sortByColumn(0);
     m_inputTable->resizeColumnsToContents();
   }
@@ -90,9 +90,31 @@ namespace CutePathSim
 
   void InterfacesWidget::addOutput()
   {
+    QString name = promptString(tr("Enter a unique name for the output:"));
+    if(name.isNull())
+      return;
+    if(m_component->getOutput(name) != 0)
+    {
+      QMessageBox::warning(this, tr("Output name not unique"), tr("Input with that name already exists. Please enter a unique name."));
+      return;
+    }
+    int width = promptNatural(tr("Enter the bus width for the output:"));
+    if(width == -1)
+      return;
+    m_component->addOutput(new Component::Output(name, width, m_component));
+    int row = m_outputTable->rowCount();
+    m_outputTable->insertRow(row);
+    m_outputTable->setItem(row, 0, new QTableWidgetItem(name));
+    m_outputTable->setItem(row, 1, new QTableWidgetItem(QVariant(width).toString()));
+    m_outputTable->sortByColumn(0);
+    m_outputTable->resizeColumnsToContents();
   }
 
   void InterfacesWidget::removeOutput()
   {
+    if(m_outputTable->currentRow() == -1)
+      return;
+    delete m_component->removeOutput(m_outputTable->item(m_outputTable->currentRow(), 0)->text());
+    m_outputTable->removeRow(m_outputTable->currentRow());
   }
 }

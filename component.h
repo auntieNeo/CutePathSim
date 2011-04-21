@@ -33,7 +33,7 @@ namespace CutePathSim
           enum { Type = InputType };
 
           int width() { return m_width; }
-          Component *component() { return m_component; }
+          Component *component() const { return m_component; }
           Output *connection() { return m_connection; }
           void connect(Output *output);
           void disconnect();
@@ -46,7 +46,8 @@ namespace CutePathSim
           unsigned int readInt(bool bigEndian = false);
           int bufferSize() { return m_bufferSize; }
           Output *from();
-          bool internal() { return m_internal; }
+          bool internal() const { return m_internal; }
+          ComponentGraph *parentGraph() const;
 
         protected:
           // to avoid recursions with Output::disconnect()
@@ -78,7 +79,7 @@ namespace CutePathSim
           enum { Type = OutputType };
 
           int width() { return m_width; }
-          Component *component() { return m_component; }
+          Component *component() const { return m_component; }
           QSet<Input *> connections() { return m_connections; }
           void connect(Input *input);
           void disconnect(Input *input);
@@ -87,7 +88,8 @@ namespace CutePathSim
           void writeInt(unsigned int integer, bool bigEndian = false);
           int bufferSize() { return m_bufferSize; }
           Input *to();
-          bool internal() { return m_internal; }
+          bool internal() const { return m_internal; }
+          ComponentGraph *parentGraph() const;
 
         protected:
           // to avoid recursions with Input::connect()
@@ -125,7 +127,7 @@ namespace CutePathSim
       QRectF boundingRect() const;
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
-      ComponentGraph *parentGraph() { return m_parentGraph; }
+      ComponentGraph *parentGraph() const { return m_parentGraph; }
       ComponentGraph *subGraph();
 
       Layout layout() { return m_layout; }
@@ -143,12 +145,12 @@ namespace CutePathSim
     protected:
       void setParentGraph(ComponentGraph *graph) { m_parentGraph = graph; }
 
-      void mousePressEvent(QGraphicsSceneMouseEvent *event);
       void mouseDragEvent(QGraphicsSceneDragDropEvent *event);
 
       void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
       void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
+      void mousePressEvent(QGraphicsSceneMouseEvent *event);
       void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
       void addSubComponent(Component *component);
@@ -166,6 +168,7 @@ namespace CutePathSim
       static const qreal BORDER_PEN_WIDTH = 2;
       static const qreal LEFT_MARGIN = 20, RIGHT_MARGIN = 20, TOP_MARGIN = 50, BOTTOM_MARGIN = 20, INTERFACE_MARGIN = 7, MIN_GRAPH_SIZE = 500;
       static const qreal FONT_SIZE = 20;
+      static const qreal EXPAND_BUTTON_SIZE = 30;
       static QFont *m_font;
 
       QString m_name;

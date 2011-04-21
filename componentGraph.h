@@ -42,6 +42,8 @@ namespace CutePathSim
 
       bool isHalted() { return m_halted; }
 
+      bool isAnimated() { return true; }  // FIXME: make this configurable
+
 //      QList<Component *>
 
     protected:
@@ -49,6 +51,7 @@ namespace CutePathSim
 
       void addEdge(Component::Output *from, Component::Input *to);
       void removeEdge(Component::Output *from, Component::Input *to);
+      Edge *getEdge(Component::Output *from, Component::Input *to) const { return m_edgeItems.value(QPair<Component::Output *, Component::Input *>(from, to)); }
 
       void updateItemPositions();
 

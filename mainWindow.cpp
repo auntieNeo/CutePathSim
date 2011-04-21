@@ -33,7 +33,6 @@ namespace CutePathSim
     m_componentGraphView->setScene(m_componentGraphScene);
     setCentralWidget(m_componentGraphView);
 
-    /*
     // FIXME: remove this test code
     IntGeneratorComponent *outputs42 = new IntGeneratorComponent("Outputs_14", 14);
     IntGeneratorComponent *outputs5 = new IntGeneratorComponent("Outputs_3", 3);
@@ -45,13 +44,9 @@ namespace CutePathSim
     m_componentGraphScene->addComponent(printInt);
     m_componentGraphScene->addComponent(multiplier);
 
-    InstructionFetcher *instructionFetcher = new InstructionFetcher("InstructionFetcher");
-    m_componentGraphScene->addComponent(instructionFetcher);
-
     outputs42->getOutput("output")->connect(multiplier->getInput("a"));
     outputs5->getOutput("output")->connect(multiplier->getInput("b"));
     multiplier->getOutput("product")->connect(printInt->getInput("input"));
-    */
 
     ControlUnit *controlUnit = new ControlUnit("Control Unit");
     m_componentGraphScene->addComponent(controlUnit);

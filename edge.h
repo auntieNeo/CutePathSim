@@ -17,7 +17,10 @@ namespace CutePathSim
       void setPath(const QPainterPath &path);
 
       QRectF boundingRect() const;
-      void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+      void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) { }
+
+      void setAnimationStep(qreal step) { m_animationStep = step; }
+      void resetAnimationStep() { m_animationStep = -1; }
 
     private:
       class Path : public QGraphicsPathItem
@@ -29,6 +32,8 @@ namespace CutePathSim
         protected:
           void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
           void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+
+          void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
         private:
           Edge *m_edge;
@@ -52,8 +57,8 @@ namespace CutePathSim
       Arrow *m_arrow;
       Component::Output *m_from;
       Component::Input *m_to;
-
       bool m_drawHover;
+      qreal m_animationStep;
   };
 }
 #endif
