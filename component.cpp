@@ -173,7 +173,7 @@ namespace CutePathSim
 
   void Component::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
   {
-    QRect drawingRect(boundingRect().x() + BORDER_PEN_WIDTH / 2, boundingRect().y() + BORDER_PEN_WIDTH / 2, boundingRect().width() - BORDER_PEN_WIDTH, boundingRect().height() - BORDER_PEN_WIDTH);
+    QRectF drawingRect(boundingRect().x() + BORDER_PEN_WIDTH / 2, boundingRect().y() + BORDER_PEN_WIDTH / 2, boundingRect().width() - BORDER_PEN_WIDTH, boundingRect().height() - BORDER_PEN_WIDTH);
 
     // draw a gradient background
     QLinearGradient gradient(0, 0, 0, drawingRect.height());
@@ -196,6 +196,27 @@ namespace CutePathSim
     painter->setPen(QPen());
     painter->setFont(*m_font);
     painter->drawText(QRect(drawingRect.x(), drawingRect.y(), drawingRect.width(), TOP_MARGIN), Qt::AlignCenter, name());
+
+    // draw the expansion buttons if hovered
+    if(m_hovered)
+    {
+      switch(m_layout)
+      {
+        case MINIMIZED:
+        case LABELED:
+          painter->drawRect(QRectF(drawingRect.x() + drawingRect.width() - EXPAND_BUTTON_SIZE - INTERFACE_MARGIN, drawingRect.y() + INTERFACE_MARGIN, EXPAND_BUTTON_SIZE, EXPAND_BUTTON_SIZE));
+        default:
+          break;
+      }
+      switch(m_layout)
+      {
+        case LABELED:
+        case EXPANDED:
+          painter->drawRect(QRectF(drawingRect.x() + INTERFACE_MARGIN, drawingRect.y() + INTERFACE_MARGIN, EXPAND_BUTTON_SIZE, EXPAND_BUTTON_SIZE));
+        default:
+          break;
+      }
+    }
   }
 
   /**
@@ -241,10 +262,6 @@ namespace CutePathSim
     {
       m_parentGraph->scheduleComponentResize(this);
     }
-  }
-
-  void Component::mousePressEvent(QGraphicsSceneMouseEvent *)
-  {
   }
 
   void Component::mouseDragEvent(QGraphicsSceneDragDropEvent * /*event*/)
@@ -851,13 +868,13 @@ namespace CutePathSim
           if(m_subGraph != 0)
           {
             m_subGraph->setParentItem(this);
+            // scale the graph so that it fits on the component
+            // FIXME: scale this whenever the graph changes
+            qreal graphDimensions = boundingRect.width() - LEFT_MARGIN - RIGHT_MARGIN;
+            m_subGraph->setScale(graphDimensions / qMax(m_subGraph->boundingRect().width(), m_subGraph->boundingRect().height()));
+            //          m_subGraph->setScale(0.25);
+            m_subGraph->setPos(LEFT_MARGIN - boundingRect.width() / 2, TOP_MARGIN + maxInterfaceHeight + BOTTOM_MARGIN - boundingRect.height() / 2);
           }
-          // scale the graph so that it fits on the component
-          // FIXME: scale this whenever the graph changes
-          qreal graphDimensions = boundingRect.width() - LEFT_MARGIN - RIGHT_MARGIN;
-          m_subGraph->setScale(graphDimensions / qMax(m_subGraph->boundingRect().width(), m_subGraph->boundingRect().height()));
-//          m_subGraph->setScale(0.25);
-          m_subGraph->setPos(LEFT_MARGIN - boundingRect.width() / 2, TOP_MARGIN + maxInterfaceHeight + BOTTOM_MARGIN - boundingRect.height() / 2);
         }
         break;
       default:
@@ -989,6 +1006,33 @@ namespace CutePathSim
   {
     m_hovered = false;
     update();
+  }
+
+  void Component::mousePressEvent(QGraphicsSceneMouseEvent *event)
+  {
+    QRectF drawingRect(boundingRect().x() + BORDER_PEN_WIDTH / 2, boundingRect().y() + BORDER_PEN_WIDTH / 2, boundingRect().width() - BORDER_PEN_WIDTH, boundingRect().height() - BORDER_PEN_WIDTH);
+    switch(m_layout)
+    {
+      case MINIMIZED:
+      case LABELED:
+        if(QRectF(drawingRect.x() + drawingRect.width() - EXPAND_BUTTON_SIZE - INTERFACE_MARGIN, drawingRect.y() + INTERFACE_MARGIN, EXPAND_BUTTON_SIZE, EXPAND_BUTTON_SIZE).contains(event->pos()))
+        {
+          setLayout(Component::Layout(m_layout + 1));
+        }
+      default:
+        break;
+    }
+    switch(m_layout)
+    {
+      case LABELED:
+      case EXPANDED:
+        if(QRectF(drawingRect.x() + INTERFACE_MARGIN, drawingRect.y() + INTERFACE_MARGIN, EXPAND_BUTTON_SIZE, EXPAND_BUTTON_SIZE).contains(event->pos()))
+        {
+          setLayout(Component::Layout(m_layout - 1));
+        }
+      default:
+        break;
+    }
   }
 
   void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *)

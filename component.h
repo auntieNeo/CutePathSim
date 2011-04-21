@@ -145,12 +145,12 @@ namespace CutePathSim
     protected:
       void setParentGraph(ComponentGraph *graph) { m_parentGraph = graph; }
 
-      void mousePressEvent(QGraphicsSceneMouseEvent *event);
       void mouseDragEvent(QGraphicsSceneDragDropEvent *event);
 
       void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
       void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
+      void mousePressEvent(QGraphicsSceneMouseEvent *event);
       void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
       void addSubComponent(Component *component);
@@ -168,6 +168,7 @@ namespace CutePathSim
       static const qreal BORDER_PEN_WIDTH = 2;
       static const qreal LEFT_MARGIN = 20, RIGHT_MARGIN = 20, TOP_MARGIN = 50, BOTTOM_MARGIN = 20, INTERFACE_MARGIN = 7, MIN_GRAPH_SIZE = 500;
       static const qreal FONT_SIZE = 20;
+      static const qreal EXPAND_BUTTON_SIZE = 30;
       static QFont *m_font;
 
       QString m_name;
