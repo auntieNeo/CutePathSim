@@ -9,6 +9,7 @@
 #include "component.h"
 #include "componentGraph.h"
 #include "componentDataModel.h"
+#include "edge.h"
 #include "mainWindow.h"
 
 namespace CutePathSim
@@ -491,6 +492,21 @@ namespace CutePathSim
   }
 
   /**
+   * Returns a pointer to the component graph that this input belongs to.
+   *
+   * If this input is an internal input corresponding to an external output, this returns a pointer to the sub component graph. Otherwise, this returns a pointer to the same graph that this input's component belongs to.
+   */
+  ComponentGraph *Component::Input::parentGraph() const
+  {
+    if(internal())
+    {
+      Q_ASSERT(component()->m_subGraph != 0);
+      return component()->m_subGraph;
+    }
+    return component()->parentGraph();
+  }
+
+  /**
    * \fn Component::Input::internal()
    * Returns true if this input is an internal input on a component's sub-graph. Otherwise, returns false.
    *
@@ -612,6 +628,18 @@ namespace CutePathSim
     {
       input->writeToInput(data);
     }
+    if(parentGraph()->isAnimated())
+    {
+      // animate the edges
+      for(double d = 0; d < 1; d += 1.0 / (ANIMATION_SECONDS * ANIMATION_FPS))
+      {
+        foreach(Input *input, m_connections)
+        {
+          parentGraph()->getEdge(this, input)->setAnimationStep(d);
+          parentGraph()->getEdge(this, input)->update();
+        }
+      }
+    }
   }
 
   /**
@@ -680,6 +708,21 @@ namespace CutePathSim
     }
 
     return m_to;
+  }
+
+  /**
+   * Returns a pointer to the component graph that this output belongs to.
+   *
+   * If this output is an internal output corresponding to an external input, this returns a pointer to the sub component graph. Otherwise, this returns a pointer to the same graph that this output's component belongs to.
+   */
+  ComponentGraph *Component::Output::parentGraph() const
+  {
+    if(internal())
+    {
+      Q_ASSERT(component()->m_subGraph != 0);
+      return component()->m_subGraph;
+    }
+    return component()->parentGraph();
   }
 
   /**

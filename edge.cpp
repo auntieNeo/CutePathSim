@@ -3,9 +3,12 @@
 #include <QPen>
 #include <QDebug>
 #include <cmath>
+#include <QtGlobal>
 
 #include "common.h"
 #include "edge.h"
+
+#define EDGE_ANIMATION_LENGTH 50
 
 #include <iostream>
 using namespace std;
@@ -27,6 +30,7 @@ namespace CutePathSim
     m_path = new Path(this);
     m_arrow = new Arrow(this);
     setZValue(EDGE_Z_VALUE);
+    m_animationStep = .5;
   }
 
   Edge::~Edge()
@@ -65,8 +69,24 @@ namespace CutePathSim
     return result;
   }
 
-  void Edge::paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *)
+  void Edge::Path::paint(QPainter *painter, const QStyleOptionGraphicsItem *style, QWidget *widget)
   {
+    this->QGraphicsPathItem::paint(painter, style, widget);
+    if(m_edge->m_animationStep != -1)
+    {
+      qreal step = m_edge->m_animationStep;
+      QPen oldPen = pen();
+
+      qreal lengthRatio = EDGE_ANIMATION_LENGTH / path().length();
+      QLinearGradient gradient;
+      gradient.setColorAt(0, Qt::transparent);
+      gradient.setColorAt(qMax(step - lengthRatio, qreal(0)), Qt::transparent);
+      gradient.setColorAt(qMin(step + lengthRatio, 0.999), Qt::green);
+      gradient.setColorAt(qMin(step + lengthRatio + 0.0001, qreal(1)), Qt::transparent);
+      setPen(QPen(QBrush(gradient), 4));
+      QGraphicsPathItem::paint(painter, style, widget);
+      setPen(oldPen);
+    }
   }
 
   Edge::Path::Path(Edge *parent) : QGraphicsPathItem(parent)

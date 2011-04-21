@@ -33,7 +33,7 @@ namespace CutePathSim
           enum { Type = InputType };
 
           int width() { return m_width; }
-          Component *component() { return m_component; }
+          Component *component() const { return m_component; }
           Output *connection() { return m_connection; }
           void connect(Output *output);
           void disconnect();
@@ -46,7 +46,8 @@ namespace CutePathSim
           unsigned int readInt(bool bigEndian = false);
           int bufferSize() { return m_bufferSize; }
           Output *from();
-          bool internal() { return m_internal; }
+          bool internal() const { return m_internal; }
+          ComponentGraph *parentGraph() const;
 
         protected:
           // to avoid recursions with Output::disconnect()
@@ -78,7 +79,7 @@ namespace CutePathSim
           enum { Type = OutputType };
 
           int width() { return m_width; }
-          Component *component() { return m_component; }
+          Component *component() const { return m_component; }
           QSet<Input *> connections() { return m_connections; }
           void connect(Input *input);
           void disconnect(Input *input);
@@ -87,7 +88,8 @@ namespace CutePathSim
           void writeInt(unsigned int integer, bool bigEndian = false);
           int bufferSize() { return m_bufferSize; }
           Input *to();
-          bool internal() { return m_internal; }
+          bool internal() const { return m_internal; }
+          ComponentGraph *parentGraph() const;
 
         protected:
           // to avoid recursions with Input::connect()
@@ -125,7 +127,7 @@ namespace CutePathSim
       QRectF boundingRect() const;
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
-      ComponentGraph *parentGraph() { return m_parentGraph; }
+      ComponentGraph *parentGraph() const { return m_parentGraph; }
       ComponentGraph *subGraph();
 
       Layout layout() { return m_layout; }

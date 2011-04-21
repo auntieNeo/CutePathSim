@@ -49,6 +49,8 @@
     <addaction name="m_stopSimulation"/>
     <addaction name="separator"/>
     <addaction name="m_stepSimulation"/>
+    <addaction name="separator"/>
+    <addaction name="m_animateSimulation"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
@@ -116,6 +118,17 @@
   <action name="m_stepSimulation">
    <property name="text">
     <string>Ste&amp;p</string>
+   </property>
+  </action>
+  <action name="m_animateSimulation">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Animate</string>
    </property>
   </action>
  </widget>
