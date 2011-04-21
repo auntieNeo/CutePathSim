@@ -27,8 +27,11 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="action_New_Simulation"/>
-    <addaction name="action_Load_Simulation"/>
+    <addaction name="m_fileNew"/>
+    <addaction name="m_fileOpen"/>
+    <addaction name="separator"/>
+    <addaction name="m_fileSave"/>
+    <addaction name="m_fileSaveAs"/>
    </widget>
    <widget class="QMenu" name="m_viewMenu">
     <property name="title">
@@ -85,14 +88,14 @@
     <string>&amp;Fit View</string>
    </property>
   </action>
-  <action name="action_New_Simulation">
+  <action name="m_fileNew">
    <property name="text">
-    <string>&amp;New Simulation...</string>
+    <string>&amp;New</string>
    </property>
   </action>
-  <action name="action_Load_Simulation">
+  <action name="m_fileOpen">
    <property name="text">
-    <string>&amp;Open Simulation...</string>
+    <string>&amp;Open...</string>
    </property>
   </action>
   <action name="m_addComponent">
@@ -129,6 +132,16 @@
    </property>
    <property name="text">
     <string>&amp;Animate</string>
+   </property>
+  </action>
+  <action name="m_fileSave">
+   <property name="text">
+    <string>&amp;Save</string>
+   </property>
+  </action>
+  <action name="m_fileSaveAs">
+   <property name="text">
+    <string>Save &amp;As...</string>
    </property>
   </action>
  </widget>

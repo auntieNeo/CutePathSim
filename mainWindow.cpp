@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QFile>
 #include <QMenuBar>
 #include <QSignalMapper>
 #include <QMessageBox>
@@ -7,6 +8,7 @@
 #include "componentGraph.h"
 #include "componentGraphScene.h"
 #include "componentGraphView.h"
+#include "componentGraphWriter.h"
 #include "mainWindow.h"
 #include "inputDialogs.h"
 #include "components/testComponent.h"
@@ -75,6 +77,7 @@ namespace CutePathSim
     // connect the signals/slots
     connect(m_addComponent, SIGNAL(activated()), this, SLOT(addComponent()));
     connect(m_runSimulation, SIGNAL(activated()), this, SLOT(runSimulation()));
+    connect(m_fileSave, SIGNAL(activated()), this, SLOT(saveComponentGraph()));
   }
 
   MainWindow::~MainWindow()
@@ -105,6 +108,21 @@ namespace CutePathSim
       return;
     }
     m_componentGraphScene->rootGraph()->addComponent(new LuaComponent(name));
+  }
+
+  void MainWindow::saveComponentGraph()
+  {
+    QFile file("testFile.xml");
+    if(file.open(QIODevice::WriteOnly))
+    {
+      ComponentGraphWriter writer(m_componentGraphScene->rootGraph());
+      writer.writeFile(&file);
+      file.close();
+    }
+    else
+    {
+      QMessageBox::warning(this, tr("Failed to open file"), file.errorString());
+    }
   }
 
   void MainWindow::addDock(QWidget *widget)

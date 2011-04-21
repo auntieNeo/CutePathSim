@@ -1,8 +1,8 @@
 CONFIG += debug
 message($$CONFIG)
 VERSION = 0.0.1
-HEADERS += assembler.h common.h component.h componentDataModel.h componentGraph.h componentGraphScene.h componentGraphView.h edge.h graphLayoutManager.h inputDialogs.h interface.h mainWindow.h
-SOURCES += assembler.cpp common.cpp component.cpp componentDataModel.cpp componentGraph.cpp componentGraphScene.cpp componentGraphView.cpp edge.cpp graphLayoutManager.cpp inputDialogs.cpp interface.cpp main.cpp mainWindow.cpp
+HEADERS += assembler.h common.h component.h componentDataModel.h componentGraph.h componentGraphScene.h componentGraphView.h componentGraphWriter.h edge.h graphLayoutManager.h inputDialogs.h interface.h mainWindow.h
+SOURCES += assembler.cpp common.cpp component.cpp componentDataModel.cpp componentGraph.cpp componentGraphScene.cpp componentGraphView.cpp componentGraphWriter.cpp edge.cpp graphLayoutManager.cpp inputDialogs.cpp interface.cpp main.cpp mainWindow.cpp
 include(components/components.pri)
 FORMS += interfacesWidget.ui mainWindow.ui stringDialog.ui
 #TRANSLATIONS += cutePathSim_ja.ts
