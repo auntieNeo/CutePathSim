@@ -11,7 +11,6 @@ namespace CutePathSim
 
   ControlUnit::~ControlUnit()
   {
-    delete m_instruction;
   }
 
   void ControlUnit::run()

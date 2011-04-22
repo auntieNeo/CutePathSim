@@ -32,6 +32,7 @@ namespace CutePathSim
       static GraphLayoutManager *instance();
 
       void scheduleLayoutGraph(ComponentGraph *graph);
+      void remove(ComponentGraph *graph);
 
       bool event(QEvent *e);
   };

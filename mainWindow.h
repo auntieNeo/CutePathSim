@@ -34,6 +34,7 @@ namespace CutePathSim
       void runSimulation();
       void addComponent();
       void saveComponentGraph();
+      void loadComponentGraph();
 
     private:
       ComponentGraphScene *m_componentGraphScene;

@@ -26,7 +26,7 @@ namespace CutePathSim
       ~ComponentGraph();
 
       bool addComponent(Component *component);
-      Component *getComponent(const QString &name) { return m_components.value(name); }
+      Component *getComponent(const QString &name) const { return m_components.value(name); }
 
       void run();
 

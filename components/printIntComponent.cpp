@@ -20,8 +20,6 @@ namespace CutePathSim
 
   PrintIntComponent::~PrintIntComponent()
   {
-    // it's important to destroy all of the inputs/outputs that we created with the new operator
-    delete m_input;
   }
 
   void PrintIntComponent::run()

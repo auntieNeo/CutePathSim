@@ -13,9 +13,6 @@ namespace CutePathSim
 
   AndGate::~AndGate()
   {
-    delete m_a;
-    delete m_b;
-    delete m_output;
   }
 
   void AndGate::run()
@@ -36,9 +33,6 @@ namespace CutePathSim
 
   OrGate::~OrGate()
   {
-    delete m_a;
-    delete m_b;
-    delete m_output;
   }
 
   void OrGate::run()
@@ -59,9 +53,6 @@ namespace CutePathSim
 
   XOrGate::~XOrGate()
   {
-    delete m_a;
-    delete m_b;
-    delete m_output;
   }
 
   void XOrGate::run()

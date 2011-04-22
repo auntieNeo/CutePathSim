@@ -25,6 +25,7 @@ namespace CutePathSim
       bool addComponent(Component *component);
 
       ComponentGraph *rootGraph() { return m_rootGraph; };
+      void clearRootGraph();
 
     protected:
       void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);

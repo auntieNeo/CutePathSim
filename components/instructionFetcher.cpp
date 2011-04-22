@@ -11,7 +11,6 @@ namespace CutePathSim
 
   InstructionFetcher::~InstructionFetcher()
   {
-    delete m_output;
   }
 
   void InstructionFetcher::run()

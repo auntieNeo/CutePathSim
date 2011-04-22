@@ -139,6 +139,9 @@ namespace CutePathSim
     // free graphviz graph and context
     agclose(m_graph);
     gvFreeContext(m_graphvizContext);
+
+    // prevent the layout manager from trying to re-layout this graph
+    GraphLayoutManager::instance()->remove(this);
   }
 
   /**
@@ -335,7 +338,10 @@ namespace CutePathSim
     Q_ASSERT(m_edgeItems.contains(key));
 
     Edge *edgeItem = m_edgeItems.take(key);
-    scene()->removeItem(edgeItem);
+    if(scene() != 0)
+    {
+      scene()->removeItem(edgeItem);
+    }
     delete edgeItem;
 
     agDELedge(m_graph, m_edges.take(key));

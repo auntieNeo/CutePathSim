@@ -58,6 +58,14 @@ namespace CutePathSim
     }
   }
 
+  /**
+   * Removes \a graph from the queue of graphs to be layed out.
+   */
+  void GraphLayoutManager::remove(ComponentGraph *graph)
+  {
+    m_graphs.removeOne(graph);
+  }
+
   void GraphLayoutManager::processQueue()
   {
     while(!m_graphs.isEmpty())

@@ -6,6 +6,7 @@
 
 #include "common.h"
 #include "componentGraph.h"
+#include "componentGraphReader.h"
 #include "componentGraphScene.h"
 #include "componentGraphView.h"
 #include "componentGraphWriter.h"
@@ -78,6 +79,7 @@ namespace CutePathSim
     connect(m_addComponent, SIGNAL(activated()), this, SLOT(addComponent()));
     connect(m_runSimulation, SIGNAL(activated()), this, SLOT(runSimulation()));
     connect(m_fileSave, SIGNAL(activated()), this, SLOT(saveComponentGraph()));
+    connect(m_fileOpen, SIGNAL(activated()), this, SLOT(loadComponentGraph()));
   }
 
   MainWindow::~MainWindow()
@@ -121,7 +123,23 @@ namespace CutePathSim
     }
     else
     {
-      QMessageBox::warning(this, tr("Failed to open file"), file.errorString());
+      QMessageBox::warning(this, tr("Failed to open file for writing"), file.errorString());
+    }
+  }
+
+  void MainWindow::loadComponentGraph()
+  {
+    QFile file("testFile.xml");
+    if(file.open(QIODevice::ReadOnly))
+    {
+      m_componentGraphScene->clearRootGraph();
+      ComponentGraphReader reader(m_componentGraphScene->rootGraph());
+      reader.readFile(&file);
+      file.close();
+    }
+    else
+    {
+      QMessageBox::warning(this, tr("Failed to open file for reading"), file.errorString());
     }
   }
 

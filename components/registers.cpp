@@ -10,7 +10,6 @@ namespace CutePathSim
 
   Registers::~Registers()
   {
-    delete m_output;
   }
 
   void Registers::run()

@@ -16,9 +16,6 @@ namespace CutePathSim
 
   BinaryMultiplier::BinaryAnder::~BinaryAnder()
   {
-    delete m_a;
-    delete m_b;
-    delete m_output;
   }
 
   void BinaryMultiplier::BinaryAnder::run()
@@ -54,8 +51,6 @@ namespace CutePathSim
 
   BinaryMultiplier::BinaryShifter::~BinaryShifter()
   {
-    delete m_input;
-    delete m_output;
   }
 
   void BinaryMultiplier::BinaryShifter::run()
@@ -116,9 +111,6 @@ namespace CutePathSim
 
   BinaryMultiplier::~BinaryMultiplier()
   {
-    delete m_a;
-    delete m_b;
-    delete m_product;
   }
 
   void BinaryMultiplier::run()

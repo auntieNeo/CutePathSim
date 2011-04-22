@@ -36,6 +36,7 @@ namespace CutePathSim
 
   ComponentGraphScene::~ComponentGraphScene()
   {
+    delete m_rootGraph;
   }
 
   /**
@@ -181,5 +182,12 @@ namespace CutePathSim
     m_dragging = false;
 
     QGraphicsScene::mouseReleaseEvent(mouseEvent);
+  }
+
+  void ComponentGraphScene::clearRootGraph()
+  {
+    removeItem(m_rootGraph);
+    delete m_rootGraph;  // FIXME: sweeping this problem under the rug dosen't solve anything...
+    addItem(m_rootGraph = new ComponentGraph());
   }
 }

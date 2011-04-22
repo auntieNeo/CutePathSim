@@ -19,8 +19,6 @@ namespace CutePathSim
 
   IntGeneratorComponent::~IntGeneratorComponent()
   {
-    // it's important to destroy all of the inputs/outputs that we created with the new operator
-    delete m_output;
   }
 
   void IntGeneratorComponent::run()

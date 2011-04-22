@@ -272,7 +272,7 @@ namespace CutePathSim
   /**
    * Adds an input to the list of inputs used by the component. Should be called from the derived class for every input it has.
    *
-   * Component does \b not assume ownership of \a input. The derived class is responsible for storing inputs and outputs.
+   * Component assumes ownership of \a input. The input will be destroyed when the component is destroyed.
    * \sa addOutput()
    */
   void Component::addInput(Component::Input * input)
@@ -289,7 +289,7 @@ namespace CutePathSim
   /**
    * Adds an output to the list of outputs used by the component.
    *
-   * Component does \b not assume ownership of \a output. The derived class is responsible for storing inputs and outputs.
+   * Component assumes ownership of \a output. The output will be destroyed when the component is destroyed.
    * \sa addInput()
    */
   void Component::addOutput(Component::Output *output)
@@ -431,7 +431,7 @@ namespace CutePathSim
       return;
 
     // tell the component graph and Graphviz to remove the edge
-    component()->parentGraph()->removeEdge(m_connection, this);
+    parentGraph()->removeEdge(m_connection, this);
 
     m_connection->m_disconnect(this);
     m_disconnect();

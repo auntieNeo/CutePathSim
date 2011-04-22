@@ -21,11 +21,6 @@ namespace CutePathSim
 
   BoolsToIntComponent::~BoolsToIntComponent()
   {
-    foreach(Input *input, m_inputBools)
-    {
-      delete input;
-    }
-    delete m_output;
   }
 
   void BoolsToIntComponent::run()

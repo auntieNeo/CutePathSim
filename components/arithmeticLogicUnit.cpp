@@ -12,7 +12,6 @@ namespace CutePathSim
 
   ArithmeticLogicUnit::~ArithmeticLogicUnit()
   {
-    delete m_output;
   }
 
   void ArithmeticLogicUnit::run()

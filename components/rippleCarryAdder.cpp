@@ -46,11 +46,6 @@ namespace CutePathSim
 
   RippleCarryAdder::FullAdder::~FullAdder()
   {
-    delete m_a;
-    delete m_b;
-    delete m_cin;
-    delete m_cout;
-    delete m_s;
   }
 
   void RippleCarryAdder::FullAdder::run()
@@ -105,10 +100,6 @@ namespace CutePathSim
 
   RippleCarryAdder::~RippleCarryAdder()
   {
-    foreach(FullAdder *adder, adders)
-    {
-      delete adder;
-    }
   }
 
   void RippleCarryAdder::run()
