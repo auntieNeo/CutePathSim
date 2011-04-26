@@ -83,14 +83,14 @@ namespace CutePathSim
              return QByteArray();
          }
 
-
-    switch((instruction & OP_MASK) >> OP_SHIFT)
+    int opcode = (instruction >> OP_SHIFT);
+    switch((instruction) >> OP_SHIFT)
     {
       case ADD_OP:
 //      case SUB_OP:
         {
           // parse the register numbers
-          QRegExp rx("^\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.$");
+          QRegExp rx("\\$(\\d+)\\,\\$(\\d+),\\$(\\d+)");
           int pos = rx.indexIn(words[1]);
 
           if(pos < 0)
@@ -99,15 +99,17 @@ namespace CutePathSim
             return QByteArray();
           }
 
-          QStringList registers = rx.capturedTexts();
+          unsigned int rd;
+          unsigned int rt;
+          unsigned int rs;
 
-          if(registers.length() < (1 << 5))
-          {
-            Q_ASSERT(false);  // TODO: throw an exception
-            return QByteArray();
+          if(pos > -1){
+              rs = rx.cap(1).toInt();
+              rt = rx.cap(2).toInt();
+              rd = rx.cap(3).toInt();
+
           }
 
-          unsigned int rd = QVariant(registers[0]).toInt();
 
           if(rd >= NUM_REGISTERS)
           {
@@ -115,33 +117,93 @@ namespace CutePathSim
             return QByteArray();
           }
 
-          unsigned int rs = QVariant(registers[1]).toInt();
-
           if(rs >= NUM_REGISTERS)
           {
             Q_ASSERT(false);  // TODO: throw an exception
             return QByteArray();
           }
 
-          unsigned int rt = QVariant(registers[2]).toInt();
-
           if(rt >= NUM_REGISTERS)
           {
             Q_ASSERT(false);  // TODO: throw an exception
             return QByteArray();
           }
-
+          instruction << OP_SHIFT;
           instruction |= rd << RD_SHIFT;
           instruction |= rs << RS_SHIFT;
           instruction |= rt << RT_SHIFT;
         }
+        break;
 
     case ORI_OP:
         //Also for LW,SW,BEQ
     {
           // parse the register numbers
-          QRegExp rx("^\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.$");
+            QRegExp rx("\\$(\\d+)\\,\\$(\\d+)\\,(\\d+)");
+            int pos = rx.indexIn(words[1]);
+
+
+            if(pos < 0)
+            {
+              Q_ASSERT(false);  // TODO: throw an exception
+              return QByteArray();
+            }
+
+            unsigned int rs;
+            unsigned int rt;
+            unsigned int IMM16;
+            if(pos > -1){
+                rs = rx.cap(1).toInt();
+                rt = rx.cap(2).toInt();
+                IMM16 = rx.cap(3).toInt();
+            }
+
+
+            if(rs > (1 << 5))
+            {
+               Q_ASSERT(false);  // TODO: throw an exception
+               return QByteArray();
+            }
+
+            if(rt > (1 << 5))
+            {
+               Q_ASSERT(false);  // TODO: throw an exception
+               return QByteArray();
+            }
+
+            //unsigned int rs = QVariant(registers[0]).toInt();
+
+            if(rs >= NUM_REGISTERS)
+            {
+              Q_ASSERT(false);  // TODO: throw an exception
+              return QByteArray();
+            }
+
+           // unsigned int rt = QVariant(registers[1]).toInt();
+
+            if(rt >= NUM_REGISTERS)
+            {
+              Q_ASSERT(false);  // TODO: throw an exception
+              return QByteArray();
+            }
+
+            //unsigned int IMM16 = QVariant(registers[2]).toInt();
+
+            rs = IMM16;
+            instruction << OP_SHIFT;
+            instruction |= rs << RS_SHIFT;
+            instruction |= rt << RT_SHIFT;
+
+      }
+        break;
+
+    case LW_OP:
+        //Also for LW,SW,BEQ
+    {
+          // parse the register numbers
+          QRegExp rx("\\$(\\d+)\\,\\$(\\d+)\\,(\\d+)");
           int pos = rx.indexIn(words[1]);
+
 
           if(pos < 0)
           {
@@ -149,15 +211,29 @@ namespace CutePathSim
             return QByteArray();
           }
 
-          QStringList registers = rx.capturedTexts();
+          unsigned int rs;
+          unsigned int rt;
+          unsigned int IMM16;
+          if(pos > -1){
+              rs = rx.cap(1).toInt();
+              rt = rx.cap(2).toInt();
+              IMM16 = rx.cap(3).toInt();
 
-          if(registers.length() < (1 << 5))
-          {
-            Q_ASSERT(false);  // TODO: throw an exception
-            return QByteArray();
           }
 
-          unsigned int rs = QVariant(registers[0]).toInt();
+          if(rs > (1 << 5))
+          {
+             Q_ASSERT(false);  // TODO: throw an exception
+             return QByteArray();
+          }
+
+          if(rt > (1 << 5))
+          {
+             Q_ASSERT(false);  // TODO: throw an exception
+             return QByteArray();
+          }
+
+          //unsigned int rs = QVariant(registers[0]).toInt();
 
           if(rs >= NUM_REGISTERS)
           {
@@ -165,7 +241,7 @@ namespace CutePathSim
             return QByteArray();
           }
 
-          unsigned int rt = QVariant(registers[1]).toInt();
+         // unsigned int rt = QVariant(registers[1]).toInt();
 
           if(rt >= NUM_REGISTERS)
           {
@@ -173,18 +249,148 @@ namespace CutePathSim
             return QByteArray();
           }
 
-          unsigned int IMM16 = QVariant(registers[2]).toInt();
-
-          rs |= IMM16;
+          //unsigned int IMM16 = QVariant(registers[2]).toInt();
+          instruction << OP_SHIFT;
+          rs = IMM16;
 
           instruction |= rs << RS_SHIFT;
           instruction |= rt << RT_SHIFT;
       }
+        break;
+
+    case SW_OP:
+        //Also for LW,SW,BEQ
+    {
+          // parse the register numbers
+            QRegExp rx("\\$(\\d+)\\,\\$(\\d+)\\,(\\d+)");
+            int pos = rx.indexIn(words[1]);
+
+
+            if(pos < 0)
+            {
+              Q_ASSERT(false);  // TODO: throw an exception
+              return QByteArray();
+            }
+
+            unsigned int rs;
+            unsigned int rt;
+            unsigned int IMM16;
+
+            if(pos > -1){
+                rs = rx.cap(1).toInt();
+                rt = rx.cap(2).toInt();
+                IMM16 = rx.cap(3).toInt();
+
+            }
+
+
+
+            if(rs > (1 << 5))
+            {
+               Q_ASSERT(false);  // TODO: throw an exception
+               return QByteArray();
+            }
+
+            if(rt > (1 << 5))
+            {
+               Q_ASSERT(false);  // TODO: throw an exception
+               return QByteArray();
+            }
+
+            //unsigned int rs = QVariant(registers[0]).toInt();
+
+            if(rs >= NUM_REGISTERS)
+            {
+              Q_ASSERT(false);  // TODO: throw an exception
+              return QByteArray();
+            }
+
+           // unsigned int rt = QVariant(registers[1]).toInt();
+
+            if(rt >= NUM_REGISTERS)
+            {
+              Q_ASSERT(false);  // TODO: throw an exception
+              return QByteArray();
+            }
+
+            //unsigned int IMM16 = QVariant(registers[2]).toInt();
+            instruction << OP_SHIFT;
+            rs = IMM16;
+
+            instruction |= rs << RS_SHIFT;
+            instruction |= rt << RT_SHIFT;
+      }
+        break;
+
+    case BEQ_OP:
+        //Also for LW,SW,BEQ
+    {
+          // parse the register numbers
+            QRegExp rx("\\$(\\d+)\\,\\$(\\d+)\\,(\\d+)");
+            int pos = rx.indexIn(words[1]);
+
+
+            if(pos < 0)
+            {
+              Q_ASSERT(false);  // TODO: throw an exception
+              return QByteArray();
+            }
+
+            unsigned int rs;
+            unsigned int rt;
+            unsigned int IMM16;
+            if(pos > -1){
+                rs = rx.cap(1).toInt();
+                rt = rx.cap(2).toInt();
+                IMM16 = rx.cap(3).toInt();
+
+            }
+
+
+
+            if(rs > (1 << 5))
+            {
+               Q_ASSERT(false);  // TODO: throw an exception
+               return QByteArray();
+            }
+
+            if(rt > (1 << 5))
+            {
+               Q_ASSERT(false);  // TODO: throw an exception
+               return QByteArray();
+            }
+
+            //unsigned int rs = QVariant(registers[0]).toInt();
+
+            if(rs >= NUM_REGISTERS)
+            {
+              Q_ASSERT(false);  // TODO: throw an exception
+              return QByteArray();
+            }
+
+           // unsigned int rt = QVariant(registers[1]).toInt();
+
+            if(rt >= NUM_REGISTERS)
+            {
+              Q_ASSERT(false);  // TODO: throw an exception
+              return QByteArray();
+            }
+
+            //unsigned int IMM16 = QVariant(registers[2]).toInt();
+
+            if(rs == rt){
+                rs = IMM16;
+            }
+               instruction << OP_SHIFT;
+               instruction |= rs << RS_SHIFT;
+
+      }
+        break;
 
     case JMP_OP:
       {
           // Parse the target value
-          QRegExp rx("^\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.,\\s.\\$(\\d+)\\s.$");
+          QRegExp rx("(\\d+)");
 
           int pos = rx.indexIn(words[1]);
 
@@ -204,9 +410,12 @@ namespace CutePathSim
               return QByteArray();
           }
 
+          instruction << OP_SHIFT;
           instruction |= jmp << FUNC_SHIFT; // Jump function takes the target value and points to
                                             // an arbitrary value that we will set in a register.
-      }
+       }
+        break;
+
 
 
 

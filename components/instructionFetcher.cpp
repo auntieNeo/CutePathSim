@@ -6,8 +6,8 @@ namespace CutePathSim
   InstructionFetcher::InstructionFetcher(const QString &name, QGraphicsItem *parent) : Component(name, parent)
   {
     addOutput(m_output = new Output("output", 32, this));
-    m_textEdit = new QPlainTextEdit();
-    m_assemtext = new QPlainTextEdit();
+    m_textEdit = new QPlainTextEdit;
+    m_assemtext = 0;
   }
 
   InstructionFetcher::~InstructionFetcher()
@@ -27,13 +27,7 @@ namespace CutePathSim
       m_instructionCounter = 0;
       QByteArray hexassembly = m_assembled.toHex();
 
-      for(int i=0; i < hexassembly.length(); i++)
-      {
-          if (hexassembly.at(i))
-          {
-              m_assemtext->appendPlainText(hexassembly);
-          }
-      }
+      m_assemtext->appendPlainText(hexassembly);
 
     }
 
@@ -42,8 +36,13 @@ namespace CutePathSim
   QToolBox *InstructionFetcher::getToolBox()
   {
     QToolBox *toolBox = Component::getToolBox();
-    toolBox->addItem(m_assemtext,QObject::tr("Instructions"));
-    toolBox->addItem(m_textEdit, QObject::tr("Assembly Code"));
+    if(m_assemtext == 0)
+    {
+        toolBox->addItem(m_assemtext = new QPlainTextEdit(),QObject::tr("Instructions"));
+        toolBox->addItem(m_textEdit, QObject::tr("Assembly Code"));
+        m_assemtext->setReadOnly(true);
+    }
+
 
     return toolBox;
 
@@ -53,5 +52,7 @@ namespace CutePathSim
   void InstructionFetcher::closeToolBox()
   {
     Component::closeToolBox();
+    delete m_assemtext;
+    m_assemtext = 0;
   }
 }
